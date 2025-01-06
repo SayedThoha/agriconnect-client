@@ -1,0 +1,21 @@
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
+  }
+  
+  .content {
+    flex-grow: 1; 
+    
+  }
+  
+  .user-header, .user-footer {
+    background-color: #fbf4e3;
+    padding: 20px;
+    z-index: 10;
+  }
+  
+  .user-footer {
+    margin-top: auto;
+  }
+  

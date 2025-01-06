@@ -1,0 +1,149 @@
+<nav class="border-white bg-white header">
+  <div
+    class="p-2 px-24 max-w-screen-xxl flex flex-wrap items-center justify-between bg-white"
+  >
+    <img
+      src="https://res.cloudinary.com/ds3bmnf1p/image/upload/c_thumb,w_200,g_face/v1735234093/Logo_no_bg_gf62ce.png"
+      class="h-16"
+      alt="Agri Connect"
+    />
+    <!-- <span class="self-center text-black text-2xl font-semibold whitespace-nowrap dark:text-black">Agri Connect</span> -->
+    <div class="mr-24 hidden w-full md:block md:w-auto" id="navbar-solid-bg">
+      <ul
+        class="flex flex-col font-medium mt-4 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-transparent dark:bg-gray-800 md:dark:bg-transparent dark:border-gray-700"
+      >
+        <ng-container *ngIf="nobody">
+          <li>
+            <p-button
+              variant="text"
+              severity="secondary"
+              (click)="expertSignIn()"
+              class="block py-2 px-3 md:p-0 text-black rounded md:bg-transparent md:dark:bg-transparent"
+              aria-current="page"
+              >Login as Expert</p-button
+            >
+          </li>
+          <li>
+            <p-button
+              variant="text"
+              severity="secondary"
+              (click)="userLogin()"
+              class="block py-2 px-3 md:p-0 text-black rounded md:bg-transparent md:dark:bg-transparent"
+              aria-current="page"
+              >login
+            </p-button>
+          </li>
+          <li>
+            <p-button
+              variant="text"
+              severity="secondary"
+              (click)="home()"
+              class="block py-2 px-3 md:p-0 text-black rounded md:bg-transparent md:dark:bg-transparent"
+              aria-current="page"
+              >Home</p-button
+            >
+          </li>
+        </ng-container>
+        <ng-container *ngIf="user">
+          <li>
+            <p-button
+              variant="text"
+              severity="secondary"
+              (click)="userHome()"
+              class="block py-2 px-3 md:p-0 text-black rounded md:bg-transparent md:dark:bg-transparent"
+              aria-current="page"
+              >Home</p-button
+            >
+          </li>
+          <li>
+            <p-button
+              variant="text"
+              severity="secondary"
+              (click)="expertsListing()"
+              class="block py-2 px-3 md:p-0 text-black rounded md:hover:bg-transparent md:border-0 dark:hover:text-black md:dark:hover:bg-transparent"
+              >Experts</p-button
+            >
+          </li>
+          <!-- <li>
+              <a (click)="user_bookings()" class="block py-2 px-3 md:p-0 rounded md:hover:bg-transparent md:border-0 text-black dark:hover:text-black md:dark:hover:bg-transparent">Appointments</a>
+            </li> -->
+          <li>
+            <p-button
+              variant="text"
+              severity="secondary"
+              (click)="userChat()"
+              class="block py-2 px-3 md:p-0 rounded md:hover:bg-transparent md:border-0 text-black dark:hover:text-black md:dark:hover:bg-transparent"
+              >Chat with Experts</p-button
+            >
+          </li>
+          <li>
+            <p-button
+              variant="text"
+              severity="secondary"
+              (click)="userProfile()"
+              class="block py-2 px-3 md:p-0 text-black rounded md:hover:bg-transparent md:border-0 dark:hover:text-black md:dark:hover:bg-transparent"
+              >Profile</p-button
+            >
+          </li>
+          <li>
+            <p-button
+              variant="text"
+              severity="secondary"
+              (click)="userLogout()"
+              class="block py-2 text-black px-3 md:p-0 rounded md:hover:bg-transparent md:border-0 dark:hover:text-black md:dark:hover:bg-transparent"
+              >Logout</p-button
+            >
+          </li>
+        </ng-container>
+        <ng-container *ngIf="expert">
+          <li>
+            <p-button
+              variant="text"
+              severity="secondary"
+              (click)="expertHome()"
+              class="block py-2 px-3 md:p-0 bg-blue-700 rounded md:bg-transparent md:dark:bg-transparent"
+              aria-current="page"
+              >Home</p-button
+            >
+          </li>
+          <li>
+            <p-button
+              variant="text"
+              severity="secondary"
+              (click)="bookings()"
+              class="block py-2 px-3 md:p-0 rounded md:hover:bg-transparent md:border-0 text-black dark:hover:text-black md:dark:hover:bg-transparent"
+              >Appointments</p-button
+            >
+          </li>
+          <li>
+            <p-button
+              variant="text"
+              severity="secondary"
+              (click)="expertChat()"
+              class="block py-2 px-3 md:p-0 rounded md:hover:bg-transparent md:border-0 text-black dark:hover:text-black md:dark:hover:bg-transparent"
+              >Chat with users</p-button
+            >
+          </li>
+          <li>
+            <p-button
+              variant="text"
+              severity="secondary"
+              (click)="expertProfile()"
+              class="block py-2 px-3 md:p-0 rounded md:hover:bg-transparent md:border-0 text-black dark:hover:text-black md:dark:hover:bg-transparent"
+              >Profile</p-button
+            >
+          </li>
+          <li>
+            <p-button
+              variant="text"
+              severity="secondary"
+              (click)="userLogout()"
+              class="block py-2 px-3 md:p-0 ] rounded md:hover:bg-transparent md:border-0 text-black dark:hover:text-black md:dark:hover:bg-transparent"
+              >Logout</p-button
+            >
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+  </div>
+</nav>

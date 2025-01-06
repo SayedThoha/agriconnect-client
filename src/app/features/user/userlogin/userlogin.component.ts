@@ -10,6 +10,8 @@ import { passwordPattern } from '../../../shared/regexp/regexp';
 import { loginUser } from '../../../core/store/user/user.actions';
 import { loginExpert } from '../../../core/store/expert/expert.actions';
 import { ButtonModule } from 'primeng/button';
+
+import { SocialAuthService, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 @Component({
   selector: 'app-userlogin',
   imports: [
@@ -19,6 +21,7 @@ import { ButtonModule } from 'primeng/button';
     ReactiveFormsModule,
     ButtonModule,
     FormsModule,
+    GoogleSigninButtonModule
   ],
   templateUrl: './userlogin.component.html',
   styleUrl: './userlogin.component.css',
@@ -32,12 +35,17 @@ export class UserloginComponent implements OnInit {
     private formbuilder: FormBuilder,
     private router: Router,
     private store: Store,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private authService:SocialAuthService
   ) {}
 
   ngOnInit() {
     this.user_login();
     this.auth = this.commonService.getAuthFromLocalStorage();
+    this.authService.authState.subscribe((user) => {
+      console.log(user)
+      //perform further logics
+    });
   }
 
   user_login() {

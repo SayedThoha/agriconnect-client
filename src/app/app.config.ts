@@ -30,6 +30,11 @@ import { expertReducer } from './core/store/expert/expert.reducer';
 import { expertEffects } from './core/store/expert/expert.effects';
 import { adminReducer } from './features/admin/store/admin.reducer';
 import { adminEffects } from './features/admin/store/admin.effects';
+
+import { SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
+import {
+  GoogleLoginProvider,
+} from '@abacritt/angularx-social-login';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
@@ -52,5 +57,22 @@ export const appConfig: ApplicationConfig = {
     provideEffects([UserEffects,expertEffects,adminEffects]),
     provideToastr(),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(
+              '585658094459-fi70ddmdcfcaapcmgj7hahheahnek4t5.apps.googleusercontent.com'
+            )
+          }
+        ],
+        onError: (error) => {
+          console.error(error);
+        }
+      } as SocialAuthServiceConfig,
+    }
   ],
 };

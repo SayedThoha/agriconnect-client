@@ -21,10 +21,7 @@ export class AdminServiceService {
 
   //admin login
   adminLogin(data: Adminlogin): Observable<adminLoginResponse> {
-    return this._http.post<adminLoginResponse>(
-      `${this.api}/admin/login`,
-      data
-    );
+    return this._http.post<adminLoginResponse>(`${this.api}/admin/login`, data);
   }
 
   //get all the expert details
@@ -42,7 +39,7 @@ export class AdminServiceService {
 
   //change the status of a expert
   expertBlock(data: Object): Observable<HttpResponseModel> {
-    console.log('doctor block service:', data);
+    console.log('expert block service:', data);
     return this._http.post<HttpResponseModel>(
       `${this.api}/admin/expertBlock`,
       data
@@ -68,21 +65,13 @@ export class AdminServiceService {
     return this._http.post<userdata>(`${this.api}/admin/userDetails`, data);
   }
 
-  //kyc data fetching
-  kycdata(): Observable<kyc_verification[]> {
-    console.log('kyc details');
-    return this._http.get<kyc_verification[]>(
-      `${this.api}/admin/kycDataCollection`
-    );
-  }
-
   //userlist-search
   searchUser(data: Object): Observable<userdata[]> {
     console.log('search user service:', data);
     return this._http.post<userdata[]>(`${this.api}/admin/searchUser`, data);
   }
 
-  //get specialization
+  //get specialisation
   getSpecialisation(): Observable<specialisation[]> {
     console.log('get specialisation Service');
     return this._http.get<specialisation[]>(
@@ -124,6 +113,14 @@ export class AdminServiceService {
     return this._http.post<HttpResponseModel>(
       `${this.api}/admin/editpayOut`,
       data
+    );
+  }
+
+  //kyc data fetching
+  kycdata(): Observable<kyc_verification[]> {
+    console.log('kyc details');
+    return this._http.get<kyc_verification[]>(
+      `${this.api}/admin/kycDataCollection`
     );
   }
 

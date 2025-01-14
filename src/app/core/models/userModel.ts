@@ -45,7 +45,7 @@ export interface UserInfo{
     lastname:string,
     email:string,
     role:string,
-    wallet?:number
+    wallet?:number,
 }
 
 //getting data when login success

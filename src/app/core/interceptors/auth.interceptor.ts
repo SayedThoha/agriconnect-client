@@ -11,7 +11,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
   // Skip interceptor for Cloudinary requests
-  if (req.url.includes('cloudinary.com')) {
+  if (req.url.includes('cloudinary.com')|| req.url.includes('googleapis.com')) {
     return next(req);
   }
 
@@ -45,6 +45,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         Authorization: `admin-Bearer ${adminToken}`
       }
     });
+
+    
   }
 
   return next(authRequest).pipe(

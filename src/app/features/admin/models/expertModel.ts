@@ -27,7 +27,7 @@ export interface kyc_verification{
     id_proof_type:string
     id_proof:string,
     specialisation:string,
-    curr_work:string,
+    current_working_address:string,
 }
 
 export interface specialisation{

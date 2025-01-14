@@ -1,7 +1,7 @@
 //user.reducer.ts
 import { createReducer, on } from '@ngrx/store';
 import { user_State } from './user.state';
-import { loginUserSuccess, logoutUser } from './user.actions';
+import {loginUserSuccess, logoutUser } from './user.actions';
 
 export function userReducer(state: any | undefined, action: any) {
   return _userReducer(state, action);
@@ -9,13 +9,7 @@ export function userReducer(state: any | undefined, action: any) {
 
 const _userReducer = createReducer(
   user_State,
-  // on(registerusersuccess,(state,action)=>{
-  //     return {
-  //         ...state,
-  //         // list:[...state.list,action.inputdata],
-  //         // errorMessage:''
-  //     }
-  // }),
+
   on(loginUserSuccess, (state, action) => {
     const user = { ...action.data };
     return {
@@ -27,6 +21,7 @@ const _userReducer = createReducer(
         email: user.email,
         role: user.role,
       },
+        
     };
   }),
   on(logoutUser, (state) => {
@@ -39,6 +34,8 @@ const _userReducer = createReducer(
         email: '',
         role: '',
       },
+
     };
-  })
+  }),
+  
 );

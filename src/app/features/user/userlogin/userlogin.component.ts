@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -7,45 +7,63 @@ import { CommonService } from '../../../shared/services/common.service';
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
 import { passwordPattern } from '../../../shared/regexp/regexp';
-import { loginUser } from '../../../core/store/user/user.actions';
+import { googleLogin, loginUser } from '../../../core/store/user/user.actions';
 import { loginExpert } from '../../../core/store/expert/expert.actions';
 import { ButtonModule } from 'primeng/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import {
+  SocialAuthService,
+  GoogleSigninButtonModule,
+  SocialUser,
+  GoogleLoginProvider,
+} from '@abacritt/angularx-social-login';
+import { UserService } from '../../../shared/services/user.service';
+import { AuthGoogleService } from '../../../shared/services/googleauth.service';
 
-import { SocialAuthService, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
+
 @Component({
   selector: 'app-userlogin',
   imports: [
-
     CommonModule,
     HeaderComponent,
     ReactiveFormsModule,
     ButtonModule,
     FormsModule,
-    GoogleSigninButtonModule
+    GoogleSigninButtonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatCardModule,
   ],
   templateUrl: './userlogin.component.html',
   styleUrl: './userlogin.component.css',
-  
 })
 export class UserloginComponent implements OnInit {
+
   loginForm!: FormGroup;
   auth!: string;
 
+  user: SocialUser | null = null;
+  // private authService = inject(AuthGoogleService);
+
+ 
   constructor(
     private formbuilder: FormBuilder,
     private router: Router,
     private store: Store,
     private commonService: CommonService,
-    private authService:SocialAuthService
+    private authService:AuthGoogleService
+    
   ) {}
 
   ngOnInit() {
     this.user_login();
     this.auth = this.commonService.getAuthFromLocalStorage();
-    this.authService.authState.subscribe((user) => {
-      console.log(user)
-      //perform further logics
-    });
+    console.log(this.auth)
+    
   }
 
   user_login() {
@@ -58,6 +76,8 @@ export class UserloginComponent implements OnInit {
     });
   }
 
+
+  
   forgetPassword() {
     if (this.commonService.getAuthFromLocalStorage() === 'user') {
       this.router.navigate(['/user/verify_email']);
@@ -86,13 +106,14 @@ export class UserloginComponent implements OnInit {
         password: this.loginForm.value.password,
       };
       console.log('Form submitted data:', data);
-      console.log('auth:',this.auth)
+      console.log('auth:', this.auth);
       if (this.auth === 'expert') {
         this.store.dispatch(loginExpert({ data }));
         console.log('Dispatching loginExpert action');
       } else if (this.auth === 'user') {
-        console.log('Form data:', this.loginForm.value); 
+        console.log('Form data:', this.loginForm.value);
         this.store.dispatch(loginUser({ data }));
+        
       }
     }
   }
@@ -103,5 +124,11 @@ export class UserloginComponent implements OnInit {
     } else if (this.auth === 'user') {
       this.router.navigate(['/user/userRegister']);
     }
+  }
+
+  signInWithGoogle() {
+    
+    this.authService.login();
+    
   }
 }

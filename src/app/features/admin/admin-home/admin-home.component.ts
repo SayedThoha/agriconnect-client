@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { AdminHeaderComponent } from '../admin-header/admin-header.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-home',
-  imports: [RouterOutlet,AdminHeaderComponent,SidebarComponent],
+  imports: [RouterOutlet,AdminHeaderComponent,SidebarComponent,RouterModule,CommonModule,FormsModule],
   templateUrl: './admin-home.component.html',
   styleUrl: './admin-home.component.css'
 })
@@ -14,6 +16,8 @@ constructor(private router:Router) {
   
 }
   ngOnInit(): void {
+    if (this.router.url === '/adminHome') {
     this.router.navigate(['adminHome/dashboard']);
+    }
   }
 }

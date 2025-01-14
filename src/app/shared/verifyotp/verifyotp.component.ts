@@ -16,7 +16,7 @@ import { HeaderComponent } from '../header/header.component';
 import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-verifyotp',
-  imports: [CommonModule, ReactiveFormsModule,HeaderComponent,ButtonModule],
+  imports: [CommonModule, ReactiveFormsModule, HeaderComponent, ButtonModule],
   templateUrl: './verifyotp.component.html',
   styleUrl: './verifyotp.component.css',
 })
@@ -175,4 +175,5 @@ export class VerifyotpComponent implements OnInit {
       }
     }
   }
+  
 }

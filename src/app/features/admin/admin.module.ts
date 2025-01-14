@@ -10,6 +10,13 @@ import {
   adminLoggedInGuard,
   adminLoggedOutGuard,
 } from './guards/admin-auth.guard';
+import { ExpertListComponent } from './expert-list/expert-list.component';
+import { KycVerificationComponent } from './kyc-verification/kyc-verification.component';
+import { PdfViewerComponent } from './pdf-viewer/pdf-viewer.component';
+import { UserListComponent } from './user-list/user-list.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
+import { KycComponent } from './kyc/kyc.component';
+import { SpecialisationComponent } from './specialisation/specialisation.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -24,12 +31,18 @@ const routes: Routes = [
     canActivate: [adminLoggedOutGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      
-      {path: '**', redirectTo:'dashboard',pathMatch:'full' }
+      { path: 'expert_listing', component: ExpertListComponent },
+      { path: 'kyc_verification', component: KycComponent },
+      { path: 'pdf_viewer', component: PdfViewerComponent },
+      { path: 'user_listing', component: UserListComponent },
+      { path: 'userProfile/:id', component: UserProfileComponent },
+      { path: 'checkDocumentsKyc', component: KycVerificationComponent },
+      { path: 'specialisation', component: SpecialisationComponent },
+      { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
 
-  { path: '**', redirectTo: 'login', pathMatch: 'full' }
+  { path: '**', redirectTo: 'login', pathMatch: 'full' },
 ];
 
 @NgModule({

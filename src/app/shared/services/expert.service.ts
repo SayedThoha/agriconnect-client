@@ -115,4 +115,67 @@ export class ExpertService {
       data
     );
   }
+
+
+   //get slots for expert
+   getSlots(data: any): Observable<any> {
+    const httpParams = new HttpParams({ fromObject: data })
+    return this.http.get<any>(`${this.apiUrl}/expert/expertSlotDetails`, { params: httpParams })
+  }
+
+  //add slot for expert
+  addSlots(data: Object): Observable<HttpResponseModel> {
+    return this.http.post<HttpResponseModel>(`${this.apiUrl}/expert/slotCreation`, data)
+  }
+
+  add_all_slots(data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/expert/add_all_slots`, data);
+  }
+
+  removeSlot(data: any): Observable<HttpResponseModel> {
+    const httpParams = new HttpParams({ fromObject: data })
+    return this.http.delete<HttpResponseModel>(`${this.apiUrl}/expert/RemoveSlot`, { params: httpParams })
+  }
+
+  get_booking_details_of_expert(data: any): Observable<any> {
+    const httpParams = new HttpParams({ fromObject: data })
+    return this.http.get<any>(`${this.apiUrl}/expert/get_booking_details`, { params: httpParams })
+  }
+
+  get_bookings_of_expert(data: any): Observable<any> {
+    const httpParams = new HttpParams({ fromObject: data })
+    return this.http.get<any>(`${this.apiUrl}/expert/get_bookings_of_doctor`, { params: httpParams })
+  }
+
+  get_expert_dashboard_details(data: any): Observable<any> {
+    const httpParams = new HttpParams({ fromObject: data })
+    return this.http.get<any>(`${this.apiUrl}/expert/get_expert_dashboard_details`, { params: httpParams })
+  }
+
+  // upcomingAppointment(data: upcomingAppointment): Observable<any> {
+  //   const httpParams = new HttpParams({ fromObject: data })
+  //   return this.http.get<any>(`${this.apiUrl}/expert/upcoming_appointment`, { params: httpParams })
+  // }
+
+  updateUpcomingSlot(data: any): Observable<any> {
+    const httpParams = new HttpParams({ fromObject: data })
+    return this.http.get<any>(`${this.apiUrl }/expert/updateUpcomingSlot`, { params: httpParams })
+  }
+
+  update_consultationStatus(data: any): Observable<any> {
+    const httpParams = new HttpParams({ fromObject: data })
+    return this.http.get<any>(`${this.apiUrl}/expert/update_consultationStatus`, { params: httpParams })
+  }
+
+  add_prescription(data: any): Observable<any> {
+    const httpParams = new HttpParams({ fromObject: data })
+    return this.http.get<any>(`${this.apiUrl}/expert/add_prescription`, { params: httpParams })
+  }
+
+  share_roomId_through_email(data: any): Observable<any> {
+    const httpParams = new HttpParams({ fromObject: data })
+    return this.http.get<any>(`${this.apiUrl}/expert/share_roomId_through_email`, { params: httpParams })
+  }
+
+
 }

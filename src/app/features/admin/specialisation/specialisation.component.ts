@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { AdminServiceService } from '../services/admin-service.service';
 import { CommonModule } from '@angular/common';
@@ -7,7 +13,7 @@ import { specialisation } from '../models/expertModel';
 
 @Component({
   selector: 'app-specialisation',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule],
   templateUrl: './specialisation.component.html',
   styleUrl: './specialisation.component.css',
 })
@@ -18,6 +24,7 @@ export class SpecialisationComponent implements OnInit {
   edit = false;
   specialisationForm!: FormGroup;
   editspecialisationForm!: FormGroup;
+
   constructor(
     private adminService: AdminServiceService,
     private messageService: MessageToasterService,
@@ -27,30 +34,33 @@ export class SpecialisationComponent implements OnInit {
   ngOnInit() {
     this.getSpecialisation();
     this.getSpecialisation();
+    this.initializeForms();
   }
-  initializeForms() {
-  this.specialisationForm = this.formBuilder.group({
-    specialisation: [
-      '',
-      [
-        Validators.required,
-        Validators.maxLength(50),
-        Validators.pattern(this.namePattern),
-      ],
-    ],
-  });
 
-  this.editspecialisationForm = this.formBuilder.group({
-    specialisation: [
-      '',
-      [
-        Validators.required,
-        Validators.maxLength(50),
-        Validators.pattern(this.namePattern),
+  initializeForms() {
+    this.specialisationForm = this.formBuilder.group({
+      specialisation: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(50),
+          Validators.pattern(this.namePattern),
+        ],
       ],
-    ],
-  });
+    });
+
+    this.editspecialisationForm = this.formBuilder.group({
+      specialisation: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(50),
+          Validators.pattern(this.namePattern),
+        ],
+      ],
+    });
   }
+
   getSpecialisation() {
     this.adminService.getSpecialisation().subscribe({
       next: (Response) => {
@@ -178,4 +188,5 @@ export class SpecialisationComponent implements OnInit {
     }
     return ``;
   }
+  
 }

@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonService } from '../services/common.service';
 import { Store } from '@ngrx/store';
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
+import { AuthGoogleService } from '../services/googleauth.service';
 
 @Component({
   selector: 'app-header',
@@ -21,16 +22,24 @@ export class HeaderComponent implements OnInit {
     private router: Router,
     private commonService: CommonService,
     private store: Store,
-    private authService: AuthService
+    private authService: AuthService,
+    private authGoogleService: AuthGoogleService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.checkuser();
+
+    this.authService.authState$.subscribe((isLoggedIn) => {
+      console.log('Google authState updated:', isLoggedIn);
+      this.checkuser();
+    });
   }
 
   checkuser() {
     const user = this.authService.checkUserLoggedIn();
     const expert = this.authService.checkExpertLoggedIn();
+
     if (user) {
       this.user = true;
       this.expert = false;
@@ -44,6 +53,8 @@ export class HeaderComponent implements OnInit {
       this.user = false;
       this.expert = false;
     }
+
+    this.cdr.detectChanges();
   }
 
   home() {
@@ -63,6 +74,7 @@ export class HeaderComponent implements OnInit {
   }
 
   userHome() {
+    console.log(this.commonService.getAuthFromLocalStorage());
     this.router.navigate(['/user/userHome']);
   }
 
@@ -97,6 +109,7 @@ export class HeaderComponent implements OnInit {
 
   userLogout() {
     if (this.authService.checkUserLoggedIn()) {
+      this.authGoogleService.logout();
       localStorage.removeItem('userToken');
       this.router.navigate(['/home']);
       localStorage.removeItem('auth');
@@ -105,5 +118,6 @@ export class HeaderComponent implements OnInit {
       this.router.navigate(['/home']);
       localStorage.removeItem('auth');
     }
+    this.cdr.detectChanges();
   }
 }

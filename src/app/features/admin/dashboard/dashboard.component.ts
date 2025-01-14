@@ -5,13 +5,15 @@ import { ChartOptions } from '../../../core/models/commonModel';
 import { ChartModule } from 'primeng/chart';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [ChartModule, CommonModule, FormsModule],
+  imports: [ChartModule, CommonModule, FormsModule,RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
+
 export class DashboardComponent implements OnInit {
   data!: any;
   options!: ChartOptions;
@@ -60,62 +62,62 @@ export class DashboardComponent implements OnInit {
   }
 
   get_dashboard_display_contents() {
-    this.total_revenue = this.booked_Slots.reduce((acc: number, data: any) => {
-      if (
-        data.consultation_status === 'consulted' ||
-        data.consultation_status === 'not_consulted'
-      ) {
-        return acc + data.slotId.adminPaymentAmount;
-      }
-      return acc;
-    }, 0);
+    // this.total_revenue = this.booked_Slots.reduce((acc: number, data: any) => {
+    //   if (
+    //     data.consultation_status === 'consulted' ||
+    //     data.consultation_status === 'not_consulted'
+    //   ) {
+    //     return acc + data.slotId.adminPaymentAmount;
+    //   }
+    //   return acc;
+    // }, 0);
 
-    this.total_upcoming_booking = this.booked_Slots.reduce(
-      (acc: number, data: any) => {
-        if (data.consultation_status === 'pending') {
-          return acc + 1;
-        }
-        return acc;
-      },
-      0
-    );
-    this.total_booking = this.booked_Slots.reduce((acc: number, data: any) => {
-      if (
-        data.consultation_status === 'pending' ||
-        data.consultation_status === 'consulted'
-      ) {
-        return acc + 1;
-      }
-      return acc;
-    }, 0);
+    // this.total_upcoming_booking = this.booked_Slots.reduce(
+    //   (acc: number, data: any) => {
+    //     if (data.consultation_status === 'pending') {
+    //       return acc + 1;
+    //     }
+    //     return acc;
+    //   },
+    //   0
+    // );
+    // this.total_booking = this.booked_Slots.reduce((acc: number, data: any) => {
+    //   if (
+    //     data.consultation_status === 'pending' ||
+    //     data.consultation_status === 'consulted'
+    //   ) {
+    //     return acc + 1;
+    //   }
+    //   return acc;
+    // }, 0);
 
-    this.total_consulted_bookings = this.booked_Slots.reduce(
-      (acc: number, data: any) => {
-        if (data.consultation_status === 'consulted') {
-          return acc + 1;
-        }
-        return acc;
-      },
-      0
-    );
-    this.total_not_consulted_bookings = this.booked_Slots.reduce(
-      (acc: number, data: any) => {
-        if (data.consultation_status === 'not_consulted') {
-          return acc + 1;
-        }
-        return acc;
-      },
-      0
-    );
-    this.total_cancelled_bookings = this.booked_Slots.reduce(
-      (acc: number, data: any) => {
-        if (data.consultation_status === 'cancelled') {
-          return acc + 1;
-        }
-        return acc;
-      },
-      0
-    );
+    // this.total_consulted_bookings = this.booked_Slots.reduce(
+    //   (acc: number, data: any) => {
+    //     if (data.consultation_status === 'consulted') {
+    //       return acc + 1;
+    //     }
+    //     return acc;
+    //   },
+    //   0
+    // );
+    // this.total_not_consulted_bookings = this.booked_Slots.reduce(
+    //   (acc: number, data: any) => {
+    //     if (data.consultation_status === 'not_consulted') {
+    //       return acc + 1;
+    //     }
+    //     return acc;
+    //   },
+    //   0
+    // );
+    // this.total_cancelled_bookings = this.booked_Slots.reduce(
+    //   (acc: number, data: any) => {
+    //     if (data.consultation_status === 'cancelled') {
+    //       return acc + 1;
+    //     }
+    //     return acc;
+    //   },
+    //   0
+    // );
   }
 
   graph_details(graph_data_based_on: string) {
@@ -270,4 +272,6 @@ export class DashboardComponent implements OnInit {
     });
     return monthlyData;
   }
+
+
 }

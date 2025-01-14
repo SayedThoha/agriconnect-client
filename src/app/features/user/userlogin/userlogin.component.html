@@ -1,4 +1,3 @@
-<script src="https://accounts.google.com/gsi/client" async></script>
 <app-header></app-header>
 <div class="py-16">
   <div
@@ -103,25 +102,16 @@
           </button>
         </div>
       </form>
-
-      <div class="mt-8"
-        id="g_id_onload"
-        data-client_id="585658094459-fi70ddmdcfcaapcmgj7hahheahnek4t5.apps.googleusercontent.com"
-        data-context="signin"
-        data-ux_mode="popup"
-        data-login_uri="http://localhost:4200"
-        data-auto_prompt="false"
-      ></div>
-
-      <div
-        class="g_id_signin"
-        data-type="standard"
-        data-shape="pill"
-        data-theme="filled_blue"
-        data-text="signin_with"
-        data-size="medium"
-        data-logo_alignment="left"
-      ></div>
+      <div class="login-button" *ngIf="auth==='user'">
+        <button mat-raised-button (click)="signInWithGoogle()">
+          <img
+            class="google-icon"
+            src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
+            alt="Google"
+          />
+          Sign in with Google
+        </button>
+      </div>
 
       <div class="mt-4 flex items-center justify-between">
         <span class="border-b w-1/5 md:w-1/4"></span>

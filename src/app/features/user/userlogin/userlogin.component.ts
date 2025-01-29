@@ -22,7 +22,7 @@ import {
 } from '@abacritt/angularx-social-login';
 import { UserService } from '../../../shared/services/user.service';
 import { AuthGoogleService } from '../../../shared/services/googleauth.service';
-
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'app-userlogin',
@@ -42,28 +42,24 @@ import { AuthGoogleService } from '../../../shared/services/googleauth.service';
   styleUrl: './userlogin.component.css',
 })
 export class UserloginComponent implements OnInit {
-
   loginForm!: FormGroup;
   auth!: string;
 
   user: SocialUser | null = null;
-  // private authService = inject(AuthGoogleService);
+  private gauthService = inject(AuthGoogleService);
 
- 
   constructor(
     private formbuilder: FormBuilder,
     private router: Router,
     private store: Store,
     private commonService: CommonService,
-    private authService:AuthGoogleService
     
   ) {}
 
   ngOnInit() {
     this.user_login();
     this.auth = this.commonService.getAuthFromLocalStorage();
-    console.log(this.auth)
-    
+    console.log(this.auth);
   }
 
   user_login() {
@@ -76,13 +72,11 @@ export class UserloginComponent implements OnInit {
     });
   }
 
-
-  
   forgetPassword() {
     if (this.commonService.getAuthFromLocalStorage() === 'user') {
-      this.router.navigate(['/user/verify_email']);
+      this.router.navigate(['/user/verifyEmail']);
     } else if (this.commonService.getAuthFromLocalStorage() === 'expert') {
-      this.router.navigate(['/expert/verify_email']);
+      this.router.navigate(['/expert/verifyEmail']);
     }
   }
 
@@ -113,7 +107,6 @@ export class UserloginComponent implements OnInit {
       } else if (this.auth === 'user') {
         console.log('Form data:', this.loginForm.value);
         this.store.dispatch(loginUser({ data }));
-        
       }
     }
   }
@@ -127,8 +120,6 @@ export class UserloginComponent implements OnInit {
   }
 
   signInWithGoogle() {
-    
-    this.authService.login();
-    
+    this.gauthService.login();
   }
 }

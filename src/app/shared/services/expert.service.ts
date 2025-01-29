@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { OtpData } from '../../core/models/commonModel';
@@ -24,19 +24,25 @@ import {
 })
 export class ExpertService {
   constructor(private http: HttpClient) {}
+
   private apiUrl: string = environment.apiUrl;
 
   //Expert registration
   expertRegister(data: FormData): Observable<HttpResponseModel> {
-    return this.http.post<HttpResponseModel>(
-      `${this.apiUrl}/expert/registration`,
-      data
-    ).pipe(
-      catchError(error => {
-        console.error('Registration failed:', error);
-        return throwError(() => new Error('Registration failed. Please try again.'));
-      })
-    );
+    // Log FormData entries
+    for (const [key, value] of data.entries()) {
+      console.log(`${key}:`, value);
+    }
+    return this.http
+      .post<HttpResponseModel>(`${this.apiUrl}/expert/registration`, data)
+      .pipe(
+        catchError((error) => {
+          console.error('Registration failed:', error.error);
+          return throwError(
+            () => new Error('Registration failed. Please try again.')
+          );
+        })
+      );
   }
 
   getSpecialisation(): Observable<specialisation> {
@@ -101,12 +107,13 @@ export class ExpertService {
     );
   }
 
-  edit_expert_profile_picture(data: object): Observable<HttpResponseModel> {
+  edit_expert_profile_picture(data:object): Observable<HttpResponseModel> {
     return this.http.post<HttpResponseModel>(
       `${this.apiUrl}/expert/edit_expert_profile_picture`,
       data
     );
   }
+
 
   opt_for_new_email(data: object): Observable<HttpResponseModel> {
     console.log('edit opt_for_new_email service');
@@ -116,16 +123,24 @@ export class ExpertService {
     );
   }
 
+  checkExpertStatus(expertId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/expert/status/${expertId}`);
+  }
 
-   //get slots for expert
-   getSlots(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data })
-    return this.http.get<any>(`${this.apiUrl}/expert/expertSlotDetails`, { params: httpParams })
+  //get slots for expert
+  getSlots(data: any): Observable<any> {
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<any>(`${this.apiUrl}/expert/expertSlotDetails`, {
+      params: httpParams,
+    });
   }
 
   //add slot for expert
   addSlots(data: Object): Observable<HttpResponseModel> {
-    return this.http.post<HttpResponseModel>(`${this.apiUrl}/expert/slotCreation`, data)
+    return this.http.post<HttpResponseModel>(
+      `${this.apiUrl}/expert/slotCreation`,
+      data
+    );
   }
 
   add_all_slots(data: any): Observable<any> {
@@ -133,23 +148,33 @@ export class ExpertService {
   }
 
   removeSlot(data: any): Observable<HttpResponseModel> {
-    const httpParams = new HttpParams({ fromObject: data })
-    return this.http.delete<HttpResponseModel>(`${this.apiUrl}/expert/RemoveSlot`, { params: httpParams })
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.delete<HttpResponseModel>(
+      `${this.apiUrl}/expert/RemoveSlot`,
+      { params: httpParams }
+    );
   }
 
   get_booking_details_of_expert(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data })
-    return this.http.get<any>(`${this.apiUrl}/expert/get_booking_details`, { params: httpParams })
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<any>(`${this.apiUrl}/expert/get_booking_details`, {
+      params: httpParams,
+    });
   }
 
   get_bookings_of_expert(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data })
-    return this.http.get<any>(`${this.apiUrl}/expert/get_bookings_of_doctor`, { params: httpParams })
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<any>(`${this.apiUrl}/expert/get_bookings_of_doctor`, {
+      params: httpParams,
+    });
   }
 
   get_expert_dashboard_details(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data })
-    return this.http.get<any>(`${this.apiUrl}/expert/get_expert_dashboard_details`, { params: httpParams })
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<any>(
+      `${this.apiUrl}/expert/get_expert_dashboard_details`,
+      { params: httpParams }
+    );
   }
 
   // upcomingAppointment(data: upcomingAppointment): Observable<any> {
@@ -158,24 +183,40 @@ export class ExpertService {
   // }
 
   updateUpcomingSlot(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data })
-    return this.http.get<any>(`${this.apiUrl }/expert/updateUpcomingSlot`, { params: httpParams })
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<any>(`${this.apiUrl}/expert/updateUpcomingSlot`, {
+      params: httpParams,
+    });
   }
 
   update_consultationStatus(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data })
-    return this.http.get<any>(`${this.apiUrl}/expert/update_consultationStatus`, { params: httpParams })
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<any>(
+      `${this.apiUrl}/expert/update_consultationStatus`,
+      { params: httpParams }
+    );
   }
 
   add_prescription(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data })
-    return this.http.get<any>(`${this.apiUrl}/expert/add_prescription`, { params: httpParams })
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<any>(`${this.apiUrl}/expert/add_prescription`, {
+      params: httpParams,
+    });
   }
 
   share_roomId_through_email(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data })
-    return this.http.get<any>(`${this.apiUrl}/expert/share_roomId_through_email`, { params: httpParams })
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<any>(
+      `${this.apiUrl}/expert/share_roomId_through_email`,
+      { params: httpParams }
+    );
   }
 
+  refreshToken(refreshToken: string) {
+    return this.http.post<{ accessToken: string; refreshToken: string }>(
+      `${this.apiUrl}/expert/auth/refresh-token`,
+      { refreshToken }
+    );
+  }
 
 }

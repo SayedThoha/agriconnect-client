@@ -1,30 +1,33 @@
-export const expert_state={
-    expertInfo:{
-        _id:'',
-        firstName:'',
-        lastName:'',
+
+
+import { ExpertModel } from "../../models/expertModel"
+
+
+
+export const expertstate:ExpertModel={
+    list:[],
+    errormessage:'',
+    userobj:{
+        firstname:'',
+        lastname:'',
         email:'',
-        role:'',
+        password:'',
+        otp:0,
+        isverified:false,
+        blocked:false
     }
 }
 
-export interface expert_state{
-    expertInfo: {
-        _id: string;
-        firstName: string;
-        lastName: string;
-        email: string;
-        role: string;
-    };
-}
 
-export const initialExpertState: expert_state = {
-    
-    expertInfo: {
-        _id: '',
-        firstName: '',
-        lastName: '',
-        email: '',
-        role: '',
-    }
-};
+export const expert_State = {
+        userInfo:{
+           _id:'',
+           firstName:'',
+           lastName:'',
+           email:'',
+           role:''
+        }
+     }
+
+
+     

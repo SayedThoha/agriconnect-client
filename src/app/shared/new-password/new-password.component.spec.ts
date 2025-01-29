@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ExpertProfileComponent } from './expert-profile.component';
+import { NewPasswordComponent } from './new-password.component';
 
-describe('ExpertProfileComponent', () => {
-  let component: ExpertProfileComponent;
-  let fixture: ComponentFixture<ExpertProfileComponent>;
+describe('NewPasswordComponent', () => {
+  let component: NewPasswordComponent;
+  let fixture: ComponentFixture<NewPasswordComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ExpertProfileComponent]
+      imports: [NewPasswordComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ExpertProfileComponent);
+    fixture = TestBed.createComponent(NewPasswordComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

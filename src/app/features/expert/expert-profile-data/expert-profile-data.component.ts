@@ -77,7 +77,7 @@ export class ExpertProfileDataComponent implements OnInit {
   uploadImage() {
     if (this.selectedFile) {
       this.imageuploadService
-        .uploadImage(this.selectedFile, 'AgriConnect')
+        .uploadFile(this.selectedFile, 'AgriConnect')
         .subscribe(
           (imageUrl) => {
             // Assume response.secure_url is the image URL returned by Cloudinary

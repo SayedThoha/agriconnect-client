@@ -17,6 +17,10 @@ import { UserListComponent } from './user-list/user-list.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { KycComponent } from './kyc/kyc.component';
 import { SpecialisationComponent } from './specialisation/specialisation.component';
+import { StoreModule } from '@ngrx/store';
+import { adminReducer } from './store/admin.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { adminEffects } from './store/admin.effects';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -47,6 +51,11 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [],
-  imports: [CommonModule, ReactiveFormsModule, RouterModule.forChild(routes)],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule.forChild(routes),
+   
+  ],
 })
 export class AdminModule {}

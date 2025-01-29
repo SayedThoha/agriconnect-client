@@ -12,6 +12,7 @@ import { userdata } from '../models/userModel';
 import { debounceTime } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 
 @Component({
   selector: 'app-user-list',
@@ -19,6 +20,8 @@ import { RouterModule } from '@angular/router';
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.css',
 })
+@AutoUnsubscribe
+
 export class UserListComponent implements OnInit {
   users!: userdata[];
   users_to_display!: userdata[];

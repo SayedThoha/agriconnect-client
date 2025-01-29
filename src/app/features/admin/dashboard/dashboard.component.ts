@@ -43,22 +43,22 @@ export class DashboardComponent implements OnInit {
   }
 
   get_Slot_Details() {
-    console.log('client side');
-    const expertId = localStorage.getItem('expertId');
-    this.adminService
-      .get_admin_dashboard_details({ expertId: expertId })
-      .subscribe({
-        next: (Response) => {
-          this.booked_Slots = Response.slotDetails;
-          this.total_users = Response.user_count;
-          this.total_experts = Response.expert_count;
-          this.get_dashboard_display_contents();
-          this.graph_details(this.graph_data_based_on);
-        },
-        error: (error) => {
-          this.messageService.showErrorToastr(error.error.message);
-        },
-      });
+    // console.log('client side');
+    // const expertId = localStorage.getItem('expertId');
+    // this.adminService
+    //   .get_admin_dashboard_details({ expertId: expertId })
+    //   .subscribe({
+    //     next: (Response) => {
+    //       this.booked_Slots = Response.slotDetails;
+    //       this.total_users = Response.user_count;
+    //       this.total_experts = Response.expert_count;
+    //       this.get_dashboard_display_contents();
+    //       this.graph_details(this.graph_data_based_on);
+    //     },
+    //     error: (error) => {
+    //       this.messageService.showErrorToastr(error.error.message);
+    //     },
+    //   });
   }
 
   get_dashboard_display_contents() {

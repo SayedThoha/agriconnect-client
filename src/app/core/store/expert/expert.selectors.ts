@@ -1,11 +1,18 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
-// import { UserModel } from "../../models/userModel";
-import { expert_state } from "./expert.state";
-// import { ExpertInfo } from "../../models/expertModel";
 
-const getuserstate=createFeatureSelector<expert_state>('user')
+import { ExpertInfo } from "../../models/expertModel";
 
-export const selectExpert = createSelector(
-    getuserstate,
-    (state:expert_state) => state.expertInfo
+
+// Define the shape of the user feature state
+export interface ExpertState {
+    expertInfo: ExpertInfo;
+  }
+  
+  // Selector to get the user feature state
+  export const getExpertFeatureState = createFeatureSelector<ExpertState>('expert');
+  
+  // Selector to get the userInfo from the user feature state
+  export const getexpertstate = createSelector(
+    getExpertFeatureState,
+    (state) => state.expertInfo
   );

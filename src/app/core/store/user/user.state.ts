@@ -15,25 +15,7 @@ export const userstate:UserModel={
         blocked:false
     }
 }
-// export interface UserState {
-//     userInfo: {
-//         _id: string;
-//         firstName: string;
-//         lastName: string;
-//         email: string;
-//         role: string;
-//     };
-// }
 
-// export const user_State:UserState = {
-//     userInfo:{
-//        _id:'',
-//        firstName:'',
-//        lastName:'',
-//        email:'',
-//        role:''
-//     }
-//  }
 
 export const user_State = {
         userInfo:{
@@ -44,3 +26,6 @@ export const user_State = {
            role:''
         }
      }
+
+
+     

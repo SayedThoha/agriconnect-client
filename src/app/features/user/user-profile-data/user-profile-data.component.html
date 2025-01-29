@@ -45,9 +45,10 @@
             class="flex lg:flex-row md:flex-col sm:flex-col xs:flex-col gap-2 justify-center w-full"
           >
             <div class="w-full mb-4 mt-4">
-              <label for="" class="mb-2 dark:text-gray-300">First Name</label>
+              <label for="firstName" class="mb-2 dark:text-gray-300">First Name</label>
               <input
                 type="text"
+                id="firstName"
                 formControlName="firstName"
                 class="mt-2 p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
                 [ngClass]="{
@@ -78,9 +79,10 @@
               </div>
             </div>
             <div class="w-full mb-4 lg:mt-4">
-              <label for="" class="dark:text-gray-300">Last Name</label>
+              <label for="lastName" class="dark:text-gray-300">Last Name</label>
               <input
                 type="text"
+                id="lastName"
                 formControlName="lastName"
                 class="mt-2 p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
                 [ngClass]="{
@@ -151,8 +153,9 @@
             class="flex lg:flex-row md:flex-col sm:flex-col xs:flex-col gap-2 justify-center w-full"
           >
             <div class="w-full mb-4 mt-4">
-              <label for="" class="mb-2 dark:text-gray-300">Email</label>
+              <label for="email" class="mb-2 dark:text-gray-300">Email</label>
               <input
+              id="email"
                 formControlName="email"
                 type="text"
                 class="mt-2 p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"

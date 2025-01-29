@@ -3,7 +3,10 @@ import { HomeComponent } from './features/home/home/home.component';
 import { UsersignupComponent } from './features/user/usersignup/usersignup.component';
 import { UserloginComponent } from './features/user/userlogin/userlogin.component';
 import { authGuard } from './core/guards/auth.guard';
-import { userLoggedInGuard, userLoggedOutGuard } from './core/guards/user-auth.guard';
+import {
+  userLoggedInGuard,
+  userLoggedOutGuard,
+} from './core/guards/user-auth.guard';
 import { ExpertsignupComponent } from './features/expert/expertsignup/expertsignup.component';
 import {
   expertLoggedInGuard,
@@ -24,6 +27,7 @@ import { PrescriptionHistoryComponent } from './features/expert/prescription-his
 
 import { UserProfileDataComponent } from './features/user/user-profile-data/user-profile-data.component';
 import { UserProfileComponent } from './features/user/user-profile/user-profile.component';
+import { NewPasswordComponent } from './shared/new-password/new-password.component';
 
 const userRoutes: Routes = [
   {
@@ -43,17 +47,26 @@ const userRoutes: Routes = [
   },
   { path: 'verifyOtp', component: VerifyotpComponent },
   { path: 'registrationCompleted', redirectTo: 'login' },
-  { path: 'userHome', component: UserHomeComponent ,canActivate:[userLoggedInGuard] },
+  {
+    path: 'new_password',
+    component: NewPasswordComponent,
+    canActivate: [userLoggedOutGuard],
+  },
+  {
+    path: 'userHome',
+    component: UserHomeComponent,
+    canActivate: [userLoggedInGuard],
+  },
   {
     path: 'user_profile',
     component: UserProfileComponent,
-    canActivate:[userLoggedInGuard],
+    canActivate: [userLoggedInGuard],
     children: [
       { path: '', redirectTo: 'user_profile_data', pathMatch: 'full' },
       { path: 'user_profile_data', component: UserProfileDataComponent },
     ],
   },
-  { path: '**', redirectTo: 'userHome' }
+  { path: '**', redirectTo: 'userHome' },
 ];
 
 const expertRoutes: Routes = [
@@ -71,6 +84,11 @@ const expertRoutes: Routes = [
   { path: 'verifyOtp', component: VerifyotpComponent },
   { path: 'registrationCompleted', redirectTo: 'expertLogin' },
   {
+    path: 'new_password',
+    component: NewPasswordComponent,
+    canActivate: [expertLoggedOutGuard],
+  },
+  {
     path: 'expertHome',
     component: ExpertHomeComponent,
   },
@@ -87,7 +105,7 @@ const expertRoutes: Routes = [
       { path: 'prescription_history', component: PrescriptionHistoryComponent },
     ],
   },
-  { path: '**', redirectTo: 'expertHome' }
+  { path: '**', redirectTo: 'expertHome' },
 ];
 
 export const routes: Routes = [

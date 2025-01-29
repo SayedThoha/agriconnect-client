@@ -3,6 +3,7 @@ import { userdata } from '../models/userModel';
 import { ActivatedRoute } from '@angular/router';
 import { AdminServiceService } from '../services/admin-service.service';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
+import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 
 @Component({
   selector: 'app-user-profile',
@@ -10,6 +11,7 @@ import { MessageToasterService } from '../../../shared/services/message-toaster.
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css'
 })
+@AutoUnsubscribe
 export class UserProfileComponent implements OnInit {
 
   userId!:string;

@@ -64,7 +64,7 @@ export class UserProfileDataComponent {
     if (this.selectedFile) {
       console.log('upload file in ts,before service call');
       this.imageuploadService
-        .uploadImage(this.selectedFile, 'AgriConnect')
+        .uploadFile(this.selectedFile,'AgriConnect')
         .subscribe(
           (imageUrl) => {
             console.log('Image uploaded successfully:', imageUrl);
@@ -90,6 +90,8 @@ export class UserProfileDataComponent {
       },
     });
   }
+
+
 
   triggerFileInput() {
     const fileInput = document.getElementById(

@@ -63,18 +63,18 @@ export class VerifyemailComponent implements OnInit {
         this.userservice.verifyEmail(data).subscribe({
           next: (response) => {
             this.showMessage.showSuccessToastr(response.message);
-            this.router.navigate(['/user/verify_otp']);
+            this.router.navigate(['/user/verifyOtp']);
           },
           error: (error) => {
             // console.log(error.error.message)
             this.showMessage.showErrorToastr(error.error.message);
           },
         });
-      } else if (this.commonService.getAuthFromLocalStorage() === 'doctor') {
+      } else if (this.commonService.getAuthFromLocalStorage() === 'expert') {
         this.expertService.verifyEmail(data).subscribe({
           next: (response) => {
             this.showMessage.showSuccessToastr(response.message);
-            this.router.navigate(['/expert/verify_otp']);
+            this.router.navigate(['/expert/verifyOtp']);
           },
           error: (error) => {
             // console.log(error.error.message)

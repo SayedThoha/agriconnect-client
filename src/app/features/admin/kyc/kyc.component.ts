@@ -5,6 +5,7 @@ import { MessageToasterService } from '../../../shared/services/message-toaster.
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 
 @Component({
   selector: 'app-kyc',
@@ -12,6 +13,7 @@ import { RouterModule } from '@angular/router';
   templateUrl: './kyc.component.html',
   styleUrl: './kyc.component.css'
 })
+@AutoUnsubscribe
 export class KycComponent implements OnInit{
 
   kycdatas!:kyc_verification[]

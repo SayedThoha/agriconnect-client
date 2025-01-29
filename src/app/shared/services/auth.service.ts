@@ -9,7 +9,7 @@ export class AuthService {
 
   constructor(private commonService: CommonService) {}
   private userLoggedIn$ = new BehaviorSubject<boolean>(false);
-  // Observable for login state
+  
   authState$ = this.userLoggedIn$.asObservable()
 
   setLoginState(isLoggedIn: boolean) {

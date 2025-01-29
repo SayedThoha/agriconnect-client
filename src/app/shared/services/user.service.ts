@@ -67,9 +67,10 @@ export class UserService {
       data
     );
   }
+
   // getuserDetails(data: { _id: string }): Observable<UserInfo> {
   getuserDetails(data: { _id: string }): Observable<UserInfo> {
-    console.log('user profile _api',data);
+    console.log('user profile _api', data);
     const httpParams = new HttpParams({ fromObject: data });
     return this.http.get<UserInfo>(`${this.apiUrl}/user/getuserDetails`, {
       params: httpParams,
@@ -99,8 +100,19 @@ export class UserService {
     );
   }
 
-
   googleLogin(token: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/user/googleLogin`, { token });
   }
+
+  checkUserStatus(userId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/user/status/${userId}`);
+  }
+
+  refreshToken(refreshToken: string) {
+    return this.http.post<{ accessToken: string; refreshToken: string }>(
+      `${this.apiUrl}/user/auth/refresh-token`,
+      { refreshToken }
+    );
+  }
+  
 }

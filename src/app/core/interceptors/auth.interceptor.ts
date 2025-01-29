@@ -1,7 +1,13 @@
-import { HttpErrorResponse, HttpHandler, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpHandler,
+  HttpHandlerFn,
+  HttpInterceptorFn,
+  HttpRequest,
+} from '@angular/common/http';
 import { CommonService } from '../../shared/services/common.service';
 import { Router } from '@angular/router';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, Observable, switchMap, throwError } from 'rxjs';
 import { inject } from '@angular/core';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -10,53 +16,59 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const commonService = inject(CommonService);
   const router = inject(Router);
 
+  const s3BucketUrl = 'https://agriconnect.s3.ap-south-1.amazonaws.com';
   // Skip interceptor for Cloudinary requests
-  if (req.url.includes('cloudinary.com')|| req.url.includes('googleapis.com')) {
+  if (
+    req.url.includes('cloudinary.com') ||
+    req.url.includes('googleapis.com') ||
+    req.url.includes(s3BucketUrl)
+  ) {
     return next(req);
   }
 
   const userToken = commonService.getTokenFromLocalStorage();
   const expertToken = commonService.getExpertTokenFromLocalStorage();
-   // Assuming you have a method for admin token
-   const adminToken = localStorage.getItem('adminToken'); 
+  // Assuming you have a method for admin token
+  // const adminToken = localStorage.getItem('adminToken');
+const adminToken=commonService.getAdminTokenFromLocalStorage();
+  let authRequest = req;
 
-   let authRequest = req;
-
-   
   // Add appropriate headers based on the current route
   if (window.location.pathname.includes('/user') && userToken) {
     authRequest = req.clone({
       setHeaders: {
         'Content-Type': 'application/json',
-        Authorization: `user-Bearer ${userToken}`
-      }
+        Authorization: `user-Bearer ${userToken}`,
+      },
     });
   } else if (window.location.pathname.includes('/expert') && expertToken) {
     authRequest = req.clone({
       setHeaders: {
         'Content-Type': 'application/json',
-        Authorization: `expert-Bearer ${expertToken}`
-      }
+        Authorization: `expert-Bearer ${expertToken}`,
+      },
     });
   } else if (window.location.pathname.includes('/admin') && adminToken) {
     authRequest = req.clone({
       setHeaders: {
         'Content-Type': 'application/json',
-        Authorization: `admin-Bearer ${adminToken}`
-      }
+        Authorization: `admin-Bearer ${adminToken}`,
+      },
     });
-
-    
   }
 
   return next(authRequest).pipe(
     catchError((error: HttpErrorResponse) => {
+      
+
       if (error.status === 403) {
         // Handle 403 Forbidden error
         if (window.location.pathname.includes('/user')) {
           localStorage.removeItem('userToken');
+          localStorage.removeItem('userRefreshToken');
         } else if (window.location.pathname.includes('/expert')) {
           localStorage.removeItem('expertToken');
+          localStorage.removeItem('expertRefreshToken');
         } else if (window.location.pathname.includes('/admin')) {
           localStorage.removeItem('adminToken');
         }
@@ -67,4 +79,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       return throwError(() => error);
     })
   );
-};
+
+
+
+}

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AdminServiceService } from '../services/admin-service.service';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { CapitaliseFirstPipe } from '../../../shared/pipes/capitalise-first.pipe';
+import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 
 
 @Component({
@@ -13,6 +14,8 @@ import { CapitaliseFirstPipe } from '../../../shared/pipes/capitalise-first.pipe
   templateUrl: './kyc-verification.component.html',
   styleUrl: './kyc-verification.component.css'
 })
+
+@AutoUnsubscribe
 export class KycVerificationComponent implements OnInit {
 
   expert_kyc_details!:any

@@ -71,6 +71,10 @@ export class AdminServiceService {
     return this._http.post<userdata[]>(`${this.api}/admin/searchUser`, data);
   }
 
+  searchExpert(data: Object): Observable<expertData[]> {
+    console.log('search user service:', data);
+    return this._http.post<expertData[]>(`${this.api}/admin/searchExpert`, data);
+  }
   //get specialisation
   getSpecialisation(): Observable<specialisation[]> {
     console.log('get specialisation Service');

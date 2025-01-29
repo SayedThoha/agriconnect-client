@@ -1,7 +1,7 @@
 //user.reducer.ts
 import { createReducer, on } from '@ngrx/store';
 import { user_State } from './user.state';
-import {loginUserSuccess, logoutUser } from './user.actions';
+import {loginUserSuccess, logoutUser, userBlocked } from './user.actions';
 
 export function userReducer(state: any | undefined, action: any) {
   return _userReducer(state, action);
@@ -20,8 +20,22 @@ const _userReducer = createReducer(
         lastName: user.lastname,
         email: user.email,
         role: user.role,
+        blocked: user.blocked
       },
         
+    };
+  }),
+  on(userBlocked, (state) => {
+    return {
+      ...state,
+      userInfo: {
+        _id: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        role: '',
+        blocked: ''
+      },
     };
   }),
   on(logoutUser, (state) => {
@@ -33,6 +47,7 @@ const _userReducer = createReducer(
         lastName: '',
         email: '',
         role: '',
+        blocked: ''
       },
 
     };

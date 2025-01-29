@@ -16,6 +16,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     router.navigate(['/user/userHome']);
     return false;
   }
+  
   if (expertToken) {
     router.navigate(['/expert/expertHome']);
     return false;

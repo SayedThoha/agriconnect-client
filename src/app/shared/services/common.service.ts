@@ -1,10 +1,14 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CommonService {
+  
+  private http =inject(HttpClient)
   getEmailFromLocalStrorage(): string {
     return localStorage.getItem('email') as string;
     // return this.getLocalStorageItem('email') as string;
@@ -46,4 +50,36 @@ export class CommonService {
     return localStorage.getItem('auth') as string;
     // return this.getLocalStorageItem('auth') as string;
   }
+
+  getUserRefreshToken(): string | null {
+    return localStorage.getItem('userRefreshToken');
+  }
+
+  getExpertRefreshToken(): string | null {
+    return localStorage.getItem('expertRefreshToken');
+  }
+
+  storeUserTokens(accessToken: string, refreshToken: string): void {
+    localStorage.setItem('userToken', accessToken);
+    localStorage.setItem('userRefreshToken', refreshToken);
+  }
+
+  storeExpertTokens(accessToken: string, refreshToken: string): void {
+    localStorage.setItem('expertToken', accessToken);
+    localStorage.setItem('expertRefreshToken', refreshToken);
+  }
+
+  refreshToken(refreshToken: string): Observable<{ accessToken: string; refreshToken: string }> {
+    // Call your backend's refresh token endpoint here
+    return this.http.post<{ accessToken: string; refreshToken: string }>('/auth/refresh', {
+      refreshToken,
+    });
+  }
+
+ //get admin Token from the local storage
+ getAdminTokenFromLocalStorage(): string {
+  return localStorage.getItem('adminToken') as string;
+  // return this.getLocalStorageItem('expertToken') as string;
+}
+
 }

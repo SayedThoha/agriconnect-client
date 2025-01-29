@@ -6,6 +6,8 @@ import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { AuthGoogleService } from '../services/googleauth.service';
+import { logoutUser } from '../../core/store/user/user.actions';
+import { logoutExpert } from '../../core/store/expert/expert.actions';
 
 @Component({
   selector: 'app-header',
@@ -110,11 +112,15 @@ export class HeaderComponent implements OnInit {
   userLogout() {
     if (this.authService.checkUserLoggedIn()) {
       this.authGoogleService.logout();
+      this.store.dispatch(logoutUser())
       localStorage.removeItem('userToken');
+      localStorage.removeItem('userRefreshToken')
       this.router.navigate(['/home']);
       localStorage.removeItem('auth');
     } else if (this.authService.checkExpertLoggedIn()) {
+      this.store.dispatch(logoutExpert())
       localStorage.removeItem('expertToken');
+      localStorage.removeItem('expertRefreshToken')
       this.router.navigate(['/home']);
       localStorage.removeItem('auth');
     }

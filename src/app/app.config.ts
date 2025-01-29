@@ -55,7 +55,7 @@ export const appConfig: ApplicationConfig = {
       ripple: true,
     }),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
-    provideStore({ user: userReducer,expert:expertReducer,admin:adminReducer}),
+    provideStore({ user: userReducer,expert:expertReducer,Admin:adminReducer}),
     provideEffects([UserEffects,expertEffects,adminEffects]),
     provideToastr(),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),

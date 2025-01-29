@@ -10,6 +10,7 @@ import { MessageToasterService } from '../../../shared/services/message-toaster.
 import { AdminServiceService } from '../services/admin-service.service';
 import { CommonModule } from '@angular/common';
 import { specialisation } from '../models/expertModel';
+import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 
 @Component({
   selector: 'app-specialisation',
@@ -17,6 +18,8 @@ import { specialisation } from '../models/expertModel';
   templateUrl: './specialisation.component.html',
   styleUrl: './specialisation.component.css',
 })
+
+@AutoUnsubscribe
 export class SpecialisationComponent implements OnInit {
   namePattern = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*\s*$/;
   specialisation!: specialisation[];

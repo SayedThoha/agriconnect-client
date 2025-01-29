@@ -1,5 +1,5 @@
 export interface Expert{
-    firstNmae:string,
+    firstName:string,
     lastName:string,
     email:string,
     contactno:string,
@@ -12,13 +12,15 @@ export interface Expert{
     expert_liscence:File,
     qualification_certificate:File,
     experience_certificate:File,
-    password:string
+    password:string,
+    blocked:boolean
 }
 
 //getting data when login success
 export interface ExpertLoginResponseModel{
-    accessToken:string,
-    accessedUser:ExpertInfo,
+    accessToken?:string,
+    refreshToken?: string;
+    accessedUser?:ExpertInfo,
     message:string,
     email?:string
 }
@@ -29,8 +31,11 @@ export interface ExpertInfo{
     firstName:string,
     lastName:string,
     email:string,
-    role:string
+    role:string,
+    isverified:boolean,
+    blocked:boolean
 }
+
 
 //login model
 export interface LoginModel{
@@ -38,13 +43,32 @@ export interface LoginModel{
     password:string
 }
 
+//message model
+export interface Msg {
+    message: string;
+  }
+
+
+export interface ExpertState{
+  message?: Msg;
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+  otp?: number;
+  isverified?: boolean;
+  blocked?: boolean;
+}
+
+//model for state
+export interface ExpertModel {
+  list: ExpertState[];
+  userobj: ExpertState;
+  errormessage: string;
+}
 
 
 
-
-// export type upcomingAppointment={
-//     doctorId:string
-// }
 
 export interface upcomingAppointment{
     expertId:string
@@ -56,40 +80,3 @@ export interface Email{
 
 
 
-// // admin side verification
-// interface ExpertData{
-//     _id?:string,
-//     firstName:string,
-//     lastName:string,
-//     email:string,
-//     contactno:number,
-//     profile_picture?:string,
-//     specialization:string,
-//     current_working_address:string,
-//     experience:string,
-//     consultation_fee:number,
-//     qualification_certificate?:[string],
-//     experience_certificate?:[string],
-//     liscence?:string,
-//     identity_proof_type?:string,
-//     identity_proof?:string,
-//     kyc_verification?:string,
-//     blocked?:string
-// }
-
-// interface kyc_verification{
-//     _id:string,
-//     docId:ExpertData,
-//     exp_certificate:string,
-//     qualification_certificate:string,
-//     liscence:string,
-//     id_proof_type:string
-//     id_proof:string,
-//     specialisation:string,
-//     curr_work:string,
-// }
-
-// interface Specialisation{
-//     _id:string,
-//     specialisation:string
-// }

@@ -21,6 +21,9 @@ import { StoreModule } from '@ngrx/store';
 import { adminReducer } from './store/admin.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { adminEffects } from './store/admin.effects';
+import { AppointmentHistoryComponent } from './appointment-history/appointment-history.component';
+import { CommisionComponent } from './commision/commision.component';
+import { PaymentHistoryComponent } from './payment-history/payment-history.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -42,6 +45,9 @@ const routes: Routes = [
       { path: 'userProfile/:id', component: UserProfileComponent },
       { path: 'checkDocumentsKyc', component: KycVerificationComponent },
       { path: 'specialisation', component: SpecialisationComponent },
+      { path: 'payOut', component: CommisionComponent },
+      { path: 'appointment_history', component: AppointmentHistoryComponent },
+      {path:'payment_details',component:PaymentHistoryComponent},
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
@@ -51,11 +57,6 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule.forChild(routes),
-   
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule.forChild(routes)],
 })
 export class AdminModule {}

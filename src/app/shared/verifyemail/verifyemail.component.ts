@@ -12,7 +12,9 @@ import { ExpertService } from '../services/expert.service';
 import { Router } from '@angular/router';
 import { CommonService } from '../services/common.service';
 import { CommonModule } from '@angular/common';
+import { AutoUnsubscribe } from '../../core/decorators/auto-usub.decorator';
 
+@AutoUnsubscribe
 @Component({
   selector: 'app-verifyemail',
   imports: [HeaderComponent, ReactiveFormsModule, CommonModule],
@@ -31,12 +33,14 @@ export class VerifyemailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initialisForms();
+  }
+
+  initialisForms(): void {
     this.verifyEmailForm = this.formbuilder.group({
       email: ['', [Validators.required, Validators.email]],
     });
   }
-  
-
   markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();

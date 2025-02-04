@@ -8,70 +8,65 @@ import { googleLogin } from '../../core/store/user/user.actions';
 import { MessageToasterService } from './message-toaster.service';
 
 import { AuthService } from './auth.service';
-
+import {
+  Auth,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from '@angular/fire/auth';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthGoogleService {
-  private oAuthService = inject(OAuthService);
+  private auth = inject(Auth);
   private router = inject(Router);
   private store = inject(Store);
+  private messageToaster = inject(MessageToasterService);
   private commonService = inject(CommonService);
-  private showMessage = inject(MessageToasterService);
-  private authService=inject(AuthService);
+  private authService = inject(AuthService);
+  constructor() {}
 
-
-  constructor() {
-    this.initConfiguration();
-  }
-
-
- 
-
-  initConfiguration() {
-    this.oAuthService.configure(authConfig);
-    this.oAuthService.setupAutomaticSilentRefresh();
-
-    this.oAuthService.loadDiscoveryDocumentAndTryLogin().then(() => {
-      const hasValidToken =
-        this.oAuthService.hasValidIdToken() &&
-        this.oAuthService.hasValidAccessToken();
-  
-        if (hasValidToken) {
-        
-        this.handleGoogleLogin();
-      }else{
-        
-      }
-    });
-  }
-
-  private async handleGoogleLogin() {
+  async login() {
     try {
-      const token = this.oAuthService.getIdToken();
-      if (token  && this.oAuthService.hasValidIdToken()) {
-        this.store.dispatch(googleLogin({ token }));
-        
-      }else {
-        
-      }
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(this.auth, provider);
+      const user = result.user;
+      // Store user details in local storage or a service
+      this.commonService.setGoogleUser({
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        uid: user.uid,
+        token: await user.getIdToken(),
+      });
+      this.authService.setLoginState(true);
+      localStorage.setItem('userToken', await user.getIdToken());
+      localStorage.setItem('userId', user.uid);
+      this.messageToaster.showSuccessToastr('Google login successful!');
+      
+    
+    
+      this.router.navigate(['/user/userHome']);
+    
     } catch (error) {
       console.error('Google login failed:', error);
-      this.showMessage.showErrorToastr('Google login failed');
-      this.logout();
+      this.messageToaster.showErrorToastr(
+        'Google login failed. Please try again.'
+      );
     }
   }
 
-  login() {
-    this.oAuthService.initLoginFlow();
-    
-
-  }
-
-  logout() {
-    this.oAuthService.logOut();
-    this.authService.setLoginState(false);
-  
+  async logout() {
+    try{
+    await this.auth.signOut();
+    this.commonService.logoutGoogleUser()
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userId');
+    this.authService.setLoginState(false)
     this.router.navigate(['/home']);
+  }catch(error){
+    console.error('Logout failed:', error);
+      this.messageToaster.showErrorToastr('Logout failed. Please try again.');
   }
+}
 }

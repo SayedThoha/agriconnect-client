@@ -11,6 +11,7 @@ import {
 import {
   LoginModel,
   ExpertLoginResponseModel,
+  upcomingAppointment,
   // ExpertData,
   // Specialization,
 } from '../../core/models/expertModel';
@@ -150,7 +151,7 @@ export class ExpertService {
   removeSlot(data: any): Observable<HttpResponseModel> {
     const httpParams = new HttpParams({ fromObject: data });
     return this.http.delete<HttpResponseModel>(
-      `${this.apiUrl}/expert/RemoveSlot`,
+      `${this.apiUrl}/expert/removeSlot`,
       { params: httpParams }
     );
   }
@@ -164,7 +165,7 @@ export class ExpertService {
 
   get_bookings_of_expert(data: any): Observable<any> {
     const httpParams = new HttpParams({ fromObject: data });
-    return this.http.get<any>(`${this.apiUrl}/expert/get_bookings_of_doctor`, {
+    return this.http.get<any>(`${this.apiUrl}/expert/get_bookings_of_expert`, {
       params: httpParams,
     });
   }
@@ -177,10 +178,10 @@ export class ExpertService {
     );
   }
 
-  // upcomingAppointment(data: upcomingAppointment): Observable<any> {
-  //   const httpParams = new HttpParams({ fromObject: data })
-  //   return this.http.get<any>(`${this.apiUrl}/expert/upcoming_appointment`, { params: httpParams })
-  // }
+  upcomingAppointment(data:any): Observable<any> {
+    const httpParams = new HttpParams({ fromObject: data })
+    return this.http.get<any>(`${this.apiUrl}/expert/upcoming_appointment`, { params: httpParams })
+  }
 
   updateUpcomingSlot(data: any): Observable<any> {
     const httpParams = new HttpParams({ fromObject: data });
@@ -212,7 +213,7 @@ export class ExpertService {
     );
   }
 
-  refreshToken(refreshToken: string) {
+  refreshExpertToken(refreshToken: string) {
     return this.http.post<{ accessToken: string; refreshToken: string }>(
       `${this.apiUrl}/expert/auth/refresh-token`,
       { refreshToken }

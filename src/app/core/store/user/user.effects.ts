@@ -12,15 +12,16 @@ import {
   loginUserFailure,
   userBlocked,
   logoutUser,
-  refreshTokenSuccess,
-  refreshTokenFailure,
-  refreshToken,
+  refreshUserToken,
+  refreshUserTokenFailure,
+  refreshUserTokenSuccess,
 } from './user.actions';
 import {
   catchError,
   EMPTY,
   exhaustMap,
   filter,
+  from,
   interval,
   map,
   mergeMap,
@@ -35,6 +36,7 @@ import { AuthService } from '../../../shared/services/auth.service';
 import { getuserstate } from './user.selectors';
 import { UserInfo } from '../../models/userModel';
 import { Store } from '@ngrx/store';
+import { AuthGoogleService } from '../../../shared/services/googleauth.service';
 
 // Define the AppState interface
 interface AppState {
@@ -49,7 +51,8 @@ export class UserEffects {
     private userService: UserService,
     private showMessage: MessageToasterService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private gauthService:AuthGoogleService
   ) {}
 
   _loginUser = createEffect(() =>
@@ -124,49 +127,46 @@ export class UserEffects {
     )
   );
 
-  // Refresh token effect
-  _refreshToken = createEffect(() =>
-    this.actions$.pipe(
-      ofType(refreshToken),
-      switchMap(() => {
-        const refreshToken = localStorage.getItem('userRefreshToken');
+  
+ // Refresh token effect for user
+ _refreshUserToken = createEffect(() =>
+  this.actions$.pipe(
+    ofType(refreshUserToken),
+    switchMap(() => {
+      const refreshToken = localStorage.getItem('userRefreshToken');
 
-        if (!refreshToken) {
+      if (!refreshToken) {
+        this.showMessage.showErrorToastr('Session expired. Please log in again.');
+        this.router.navigate(['/home']);
+        return of(refreshUserTokenFailure({ error: 'No refresh token found for user' }));
+      }
+
+      return this.userService.refreshUserToken(refreshToken).pipe(
+        map((data) => {
+          if (data.accessToken && data.refreshToken) {
+            localStorage.setItem('userToken', data.accessToken);
+            localStorage.setItem('userRefreshToken', data.refreshToken);
+            return refreshUserTokenSuccess({ accessToken: data.accessToken });
+          } else {
+            this.showMessage.showErrorToastr('Failed to refresh user token.');
+            return refreshUserTokenFailure({ error: 'Invalid user refresh token response' });
+          }
+        }),
+        catchError((error) => {
           this.showMessage.showErrorToastr('Session expired. Please log in again.');
+          localStorage.clear();
           this.router.navigate(['/home']);
-          return of(refreshTokenFailure({ error: 'No refresh token found' }));
-        }
-
-        return this.userService.refreshToken(refreshToken).pipe(
-          map((data) => {
-            if (data.accessToken && data.refreshToken) {
-              // Update tokens in localStorage
-              localStorage.setItem('userToken', data.accessToken);
-
-              localStorage.setItem('userRefreshToken', data.refreshToken);
-
-              return refreshTokenSuccess({ accessToken: data.accessToken });
-            } else {
-              this.showMessage.showErrorToastr('Failed to refresh token.');
-              return refreshTokenFailure({ error: 'Invalid refresh token response' });
-            }
-          }),
-          catchError((error) => {
-            this.showMessage.showErrorToastr('Session expired. Please log in again.');
-            localStorage.clear();
-            this.router.navigate(['/home']);
-            return of(refreshTokenFailure({ error: error.error.message }));
-          })
-        );
-      })
-    )
-  );
-
+          return of(refreshUserTokenFailure({ error: error.message }));
+        })
+      );
+    })
+  )
+);
 
   refreshTokenPeriodically = createEffect(() =>
-    interval(15 * 60 * 1000).pipe( // Every 15 minutes
+    interval(4 * 60 * 1000).pipe( // Every 4 minutes
       filter(() => !!localStorage.getItem('userRefreshToken')), // Only proceed if refreshToken exists
-      switchMap(() => of(refreshToken())) // Trigger the refreshToken action
+      switchMap(() => of(refreshUserToken())) // Trigger the refreshToken action
     )
   );
   
@@ -204,37 +204,6 @@ export class UserEffects {
 
 
   
-  googleLogin$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(googleLogin),
-      exhaustMap(({ token }) =>
-        this.userService.googleLogin(token).pipe(
-          map((response) => {
-            if (response.success) {
-              // localStorage.setItem('auth', 'user');
-              localStorage.setItem('userToken', response.token);
-              localStorage.setItem('userId', response.user._id);
-              this.showMessage.showSuccessToastr('Google login successful');
-
-              // Notify AuthService about login state change
-              this.authService.setLoginState(true);
-
-              this.router.navigate(['/user/userHome']);
-
-              return googleLoginSuccess({ user: response.user });
-            }
-            throw new Error('Login failed');
-          }),
-          catchError((error) => {
-            console.error('Google login error:', error);
-            this.showMessage.showErrorToastr(
-              error.message || 'Google login failed'
-            );
-            return of(googleLoginFailure({ error }));
-          })
-        )
-      )
-    )
-  );
+  
 
 }

@@ -16,13 +16,7 @@ export class PdfViewerComponent implements OnInit {
     private _sanitizer: DomSanitizer
   ) {}
 
-  // ngOnInit(): void {
-  //   this._route.queryParams.subscribe(params => {
-  //     const unsafeUrl = params['url'];
-  //     this.pdfUrl = this._sanitizer.bypassSecurityTrustResourceUrl(decodeURIComponent(unsafeUrl));
-  //     console.log('pdfurl:',this.pdfUrl)
-  //   });
-  // }
+  
   ngOnInit(): void {
     this._route.queryParams.subscribe((params) => {
       const unsafeUrl = params['url'];

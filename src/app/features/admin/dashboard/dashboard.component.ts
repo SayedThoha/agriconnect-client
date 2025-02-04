@@ -4,16 +4,23 @@ import { MessageToasterService } from '../../../shared/services/message-toaster.
 import { ChartOptions } from '../../../core/models/commonModel';
 import { ChartModule } from 'primeng/chart';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 
+@AutoUnsubscribe
 @Component({
   selector: 'app-dashboard',
-  imports: [ChartModule, CommonModule, FormsModule,RouterModule],
+  imports: [
+    ChartModule,
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    ReactiveFormsModule,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
-
 export class DashboardComponent implements OnInit {
   data!: any;
   options!: ChartOptions;
@@ -43,81 +50,81 @@ export class DashboardComponent implements OnInit {
   }
 
   get_Slot_Details() {
-    // console.log('client side');
-    // const expertId = localStorage.getItem('expertId');
-    // this.adminService
-    //   .get_admin_dashboard_details({ expertId: expertId })
-    //   .subscribe({
-    //     next: (Response) => {
-    //       this.booked_Slots = Response.slotDetails;
-    //       this.total_users = Response.user_count;
-    //       this.total_experts = Response.expert_count;
-    //       this.get_dashboard_display_contents();
-    //       this.graph_details(this.graph_data_based_on);
-    //     },
-    //     error: (error) => {
-    //       this.messageService.showErrorToastr(error.error.message);
-    //     },
-    //   });
+    console.log('client side');
+    const expertId = localStorage.getItem('expertId');
+    this.adminService
+      .get_admin_dashboard_details({ expertId: expertId })
+      .subscribe({
+        next: (Response) => {
+          this.booked_Slots = Response.slotDetails;
+          this.total_users = Response.user_count;
+          this.total_experts = Response.expert_count;
+          this.get_dashboard_display_contents();
+          this.graph_details(this.graph_data_based_on);
+        },
+        error: (error) => {
+          this.messageService.showErrorToastr(error.error.message);
+        },
+      });
   }
 
   get_dashboard_display_contents() {
-    // this.total_revenue = this.booked_Slots.reduce((acc: number, data: any) => {
-    //   if (
-    //     data.consultation_status === 'consulted' ||
-    //     data.consultation_status === 'not_consulted'
-    //   ) {
-    //     return acc + data.slotId.adminPaymentAmount;
-    //   }
-    //   return acc;
-    // }, 0);
+    this.total_revenue = this.booked_Slots.reduce((acc: number, data: any) => {
+      if (
+        data.consultation_status === 'consulted' ||
+        data.consultation_status === 'not_consulted'
+      ) {
+        return acc + data.slotId.adminPaymentAmount;
+      }
+      return acc;
+    }, 0);
 
-    // this.total_upcoming_booking = this.booked_Slots.reduce(
-    //   (acc: number, data: any) => {
-    //     if (data.consultation_status === 'pending') {
-    //       return acc + 1;
-    //     }
-    //     return acc;
-    //   },
-    //   0
-    // );
-    // this.total_booking = this.booked_Slots.reduce((acc: number, data: any) => {
-    //   if (
-    //     data.consultation_status === 'pending' ||
-    //     data.consultation_status === 'consulted'
-    //   ) {
-    //     return acc + 1;
-    //   }
-    //   return acc;
-    // }, 0);
+    this.total_upcoming_booking = this.booked_Slots.reduce(
+      (acc: number, data: any) => {
+        if (data.consultation_status === 'pending') {
+          return acc + 1;
+        }
+        return acc;
+      },
+      0
+    );
+    this.total_booking = this.booked_Slots.reduce((acc: number, data: any) => {
+      if (
+        data.consultation_status === 'pending' ||
+        data.consultation_status === 'consulted'
+      ) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
 
-    // this.total_consulted_bookings = this.booked_Slots.reduce(
-    //   (acc: number, data: any) => {
-    //     if (data.consultation_status === 'consulted') {
-    //       return acc + 1;
-    //     }
-    //     return acc;
-    //   },
-    //   0
-    // );
-    // this.total_not_consulted_bookings = this.booked_Slots.reduce(
-    //   (acc: number, data: any) => {
-    //     if (data.consultation_status === 'not_consulted') {
-    //       return acc + 1;
-    //     }
-    //     return acc;
-    //   },
-    //   0
-    // );
-    // this.total_cancelled_bookings = this.booked_Slots.reduce(
-    //   (acc: number, data: any) => {
-    //     if (data.consultation_status === 'cancelled') {
-    //       return acc + 1;
-    //     }
-    //     return acc;
-    //   },
-    //   0
-    // );
+    this.total_consulted_bookings = this.booked_Slots.reduce(
+      (acc: number, data: any) => {
+        if (data.consultation_status === 'consulted') {
+          return acc + 1;
+        }
+        return acc;
+      },
+      0
+    );
+    this.total_not_consulted_bookings = this.booked_Slots.reduce(
+      (acc: number, data: any) => {
+        if (data.consultation_status === 'not_consulted') {
+          return acc + 1;
+        }
+        return acc;
+      },
+      0
+    );
+    this.total_cancelled_bookings = this.booked_Slots.reduce(
+      (acc: number, data: any) => {
+        if (data.consultation_status === 'cancelled') {
+          return acc + 1;
+        }
+        return acc;
+      },
+      0
+    );
   }
 
   graph_details(graph_data_based_on: string) {
@@ -272,6 +279,4 @@ export class DashboardComponent implements OnInit {
     });
     return monthlyData;
   }
-
-
 }

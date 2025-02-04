@@ -15,7 +15,9 @@ import { UserService } from '../services/user.service';
 import { ExpertService } from '../services/expert.service';
 import { passwordPattern } from '../regexp/regexp';
 import { UpdatePasswordRequest } from '../../core/models/commonModel';
+import { AutoUnsubscribe } from '../../core/decorators/auto-usub.decorator';
 
+@AutoUnsubscribe
 @Component({
   selector: 'app-new-password',
   imports: [HeaderComponent, CommonModule, ReactiveFormsModule, FormsModule],
@@ -23,8 +25,8 @@ import { UpdatePasswordRequest } from '../../core/models/commonModel';
   styleUrl: './new-password.component.css',
 })
 export class NewPasswordComponent implements OnInit {
-  email!: string; // Initialize later in ngOnInit
-  newPasswordForm!: FormGroup; // Initialize later in ngOnInit
+  email!: string;
+  newPasswordForm!: FormGroup;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -37,7 +39,10 @@ export class NewPasswordComponent implements OnInit {
 
   ngOnInit(): void {
     this.email = this.commonService.getEmailFromLocalStrorage();
+    this.initialiseForms();
+  }
 
+  initialiseForms(): void {
     this.newPasswordForm = this.formBuilder.group({
       newPassword: [
         '',
@@ -46,7 +51,6 @@ export class NewPasswordComponent implements OnInit {
       confirmPassword: ['', [Validators.required]],
     });
   }
-
   markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();

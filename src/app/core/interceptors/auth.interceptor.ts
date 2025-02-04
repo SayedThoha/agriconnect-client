@@ -10,12 +10,18 @@ import { Router } from '@angular/router';
 import { catchError, Observable, switchMap, throwError } from 'rxjs';
 import { inject } from '@angular/core';
 
+import { Store } from '@ngrx/store';
+import { MessageToasterService } from '../../shared/services/message-toaster.service';
+import { TokenService } from '../../shared/services/token.service';
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // return next(req);
 
   const commonService = inject(CommonService);
   const router = inject(Router);
-
+  const store = inject(Store);
+  const showMessage = inject(MessageToasterService);
+  const tokenService=inject(TokenService)
   const s3BucketUrl = 'https://agriconnect.s3.ap-south-1.amazonaws.com';
   // Skip interceptor for Cloudinary requests
   if (
@@ -28,9 +34,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const userToken = commonService.getTokenFromLocalStorage();
   const expertToken = commonService.getExpertTokenFromLocalStorage();
-  // Assuming you have a method for admin token
-  // const adminToken = localStorage.getItem('adminToken');
-const adminToken=commonService.getAdminTokenFromLocalStorage();
+
+  const adminToken = commonService.getAdminTokenFromLocalStorage();
   let authRequest = req;
 
   // Add appropriate headers based on the current route
@@ -59,8 +64,46 @@ const adminToken=commonService.getAdminTokenFromLocalStorage();
 
   return next(authRequest).pipe(
     catchError((error: HttpErrorResponse) => {
-      
-
+      if (error.status === 401) {
+        // If unauthorized (expired token), trigger the refresh
+        if (window.location.pathname.includes('/user')) {
+          return tokenService.refreshUserAccessToken().pipe(
+            switchMap(() => {
+              const updatedToken = localStorage.getItem('userToken');
+              const clonedReq = req.clone({
+                setHeaders: {
+                  Authorization: `Bearer ${updatedToken}`,
+                },
+              });
+              return next(clonedReq);
+            }),
+            catchError(() => {
+              showMessage.showErrorToastr('Session expired. Please log in again.');
+              localStorage.clear();
+              router.navigate(['/home']);
+              return throwError(() => error);
+            })
+          );
+        } else if (window.location.pathname.includes('/expert')) {
+          return tokenService.refreshExpertAccessToken().pipe(
+            switchMap(() => {
+              const updatedToken = localStorage.getItem('expertToken');
+              const clonedReq = req.clone({
+                setHeaders: {
+                  Authorization: `Bearer ${updatedToken}`,
+                },
+              });
+              return next(clonedReq);
+            }),
+            catchError(() => {
+              showMessage.showErrorToastr('Session expired. Please log in again.');
+              localStorage.clear();
+              router.navigate(['/home']);
+              return throwError(() => error);
+            })
+          );
+        }
+      }
       if (error.status === 403) {
         // Handle 403 Forbidden error
         if (window.location.pathname.includes('/user')) {
@@ -76,10 +119,8 @@ const adminToken=commonService.getAdminTokenFromLocalStorage();
         console.log('403 Forbidden - Redirecting to home page');
         router.navigate(['/home']);
       }
+
       return throwError(() => error);
     })
   );
-
-
-
-}
+};

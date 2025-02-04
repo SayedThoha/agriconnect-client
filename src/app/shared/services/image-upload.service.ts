@@ -41,6 +41,16 @@ export class ImageUploadService {
       formData
     );
   }
+
+  uploadProfileFile(file: File, folder: string): Observable<string> {
+    console.log(file,folder)
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', folder);
+    console.log(formData)
+    return this.http.post<string>(`${this.apiUrl}/image/uploadprofilepic`, formData);
+  }
+
 }
 
 // { fileUrl: string }

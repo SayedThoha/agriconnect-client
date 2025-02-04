@@ -11,7 +11,7 @@ import { AdminServiceService } from '../services/admin-service.service';
 import { CommonModule } from '@angular/common';
 import { specialisation } from '../models/expertModel';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
-
+@AutoUnsubscribe
 @Component({
   selector: 'app-specialisation',
   imports: [ReactiveFormsModule, CommonModule, FormsModule],
@@ -19,7 +19,7 @@ import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
   styleUrl: './specialisation.component.css',
 })
 
-@AutoUnsubscribe
+
 export class SpecialisationComponent implements OnInit {
   namePattern = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*\s*$/;
   specialisation!: specialisation[];

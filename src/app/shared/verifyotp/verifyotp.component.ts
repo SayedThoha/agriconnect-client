@@ -14,6 +14,9 @@ import { ExpertService } from '../services/expert.service';
 import { otpPattern } from '../regexp/regexp';
 import { HeaderComponent } from '../header/header.component';
 import { ButtonModule } from 'primeng/button';
+import { AutoUnsubscribe } from '../../core/decorators/auto-usub.decorator';
+
+@AutoUnsubscribe
 @Component({
   selector: 'app-verifyotp',
   imports: [CommonModule, ReactiveFormsModule, HeaderComponent, ButtonModule],
@@ -24,10 +27,7 @@ export class VerifyotpComponent implements OnInit {
   timerInterval!: ReturnType<typeof setInterval>;
   counter = 59;
   email!: string;
-  // email = this.commonservice.getEmailFromLocalStrorage();
-  // new_email = localStorage.getItem('new_email');
-  // role = this.commonservice.getRoleFromLocalStorage();
-  // verifyEmailForm!: FormGroup;
+  
   new_email!: string | null;
   role!: string;
   otpForm!: FormGroup;
@@ -140,7 +140,7 @@ export class VerifyotpComponent implements OnInit {
             this.showMessage.showErrorToastr(error.error.message);
           },
         });
-        // this.router.navigate(['/doctor/registration_completed'])
+       
       } else if (this.commonservice.getAuthFromLocalStorage() === 'user') {
         this.userService.verifyOtp(otpdata).subscribe({
           next: (response) => {

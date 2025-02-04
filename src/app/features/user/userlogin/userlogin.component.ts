@@ -122,4 +122,5 @@ export class UserloginComponent implements OnInit {
   signInWithGoogle() {
     this.gauthService.login();
   }
+  
 }

@@ -3,7 +3,7 @@
 >
   <div class="relative">
     <div class="m-4 rounded-lg">
-      <p-calendar
+      <p-datepicker
         [(ngModel)]="date"
         (ngModelChange)="onDateChange($event)"
         [minDate]="minDate"
@@ -11,11 +11,6 @@
         [readonlyInput]="true"
         dateFormat="dd/mm/yy"
       />
-      <!-- <p-calendar 
-                [(ngModel)]="date" 
-                [minDate]="minDate" 
-                [maxDate]="maxDate" 
-                [readonlyInput]="true" /> -->
     </div>
     <div class="card m-4 mt-6">
       <div class="mb-3">

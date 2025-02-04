@@ -28,6 +28,17 @@ import { PrescriptionHistoryComponent } from './features/expert/prescription-his
 import { UserProfileDataComponent } from './features/user/user-profile-data/user-profile-data.component';
 import { UserProfileComponent } from './features/user/user-profile/user-profile.component';
 import { NewPasswordComponent } from './shared/new-password/new-password.component';
+import { UserNextAppointmentComponent } from './features/user/user-next-appointment/user-next-appointment.component';
+import { BookingDetailsComponent } from './features/user/booking-details/booking-details.component';
+import { PaymentDetailsComponent } from './features/user/payment-details/payment-details.component';
+import { SuccessPaymentComponent } from './features/user/success-payment/success-payment.component';
+import { ExpertListingComponent } from './features/user/expert-listing/expert-listing.component';
+import { UserExpertProfileComponent } from './features/user/user-expert-profile/user-expert-profile.component';
+import { AppointmentBookingComponent } from './features/user/appointment-booking/appointment-booking.component';
+import { WalletComponent } from './features/user/wallet/wallet.component';
+import { AddPrescriptionComponent } from './features/expert/add-prescription/add-prescription.component';
+import { BookingsComponent } from './features/expert/bookings/bookings.component';
+import { UserPrescriptionHistoryComponent } from './features/user/user-prescription-history/user-prescription-history.component';
 
 const userRoutes: Routes = [
   {
@@ -64,7 +75,34 @@ const userRoutes: Routes = [
     children: [
       { path: '', redirectTo: 'user_profile_data', pathMatch: 'full' },
       { path: 'user_profile_data', component: UserProfileDataComponent },
+      {
+        path: 'user_next_appointment',
+        component: UserNextAppointmentComponent,
+      },
+      { path: 'user_booking_details', component: BookingDetailsComponent },
+      { path: 'user_payment_details', component: PaymentDetailsComponent },
+      {
+        path: 'prescription_history',
+        component: UserPrescriptionHistoryComponent,
+      },
+      { path: 'user_wallet', component: WalletComponent },
     ],
+  },
+  {
+    path: 'success_payment/:id',
+    component: SuccessPaymentComponent,
+    canActivate: [userLoggedInGuard],
+  },
+  { path: 'expert_listing', component: ExpertListingComponent },
+  {
+    path: 'expert_profile/:id',
+    component: UserExpertProfileComponent,
+    canActivate: [userLoggedInGuard],
+  },
+  {
+    path: 'appoinment_booking',
+    component: AppointmentBookingComponent,
+    canActivate: [userLoggedInGuard],
   },
   { path: '**', redirectTo: 'userHome' },
 ];
@@ -95,6 +133,7 @@ const expertRoutes: Routes = [
   {
     path: 'expert_profile',
     component: ExpertProfileComponent,
+    canActivate: [expertLoggedInGuard],
     children: [
       { path: 'expertDashboard', component: ExpertDashboardComponent },
       { path: 'expert_profile_data', component: ExpertProfileDataComponent },
@@ -104,6 +143,16 @@ const expertRoutes: Routes = [
       { path: 'booking_history', component: ExpertBookingDetailsComponent },
       { path: 'prescription_history', component: PrescriptionHistoryComponent },
     ],
+  },
+  {
+    path: 'add_prescription/:appointmentId',
+    component: AddPrescriptionComponent,
+    canActivate: [expertLoggedInGuard],
+  },
+  {
+    path: 'bookings',
+    component: BookingsComponent,
+    canActivate: [expertLoggedInGuard],
   },
   { path: '**', redirectTo: 'expertHome' },
 ];

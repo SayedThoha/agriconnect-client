@@ -7,8 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class CommonService {
-  
-  private http =inject(HttpClient)
+  private http = inject(HttpClient);
   getEmailFromLocalStrorage(): string {
     return localStorage.getItem('email') as string;
     // return this.getLocalStorageItem('email') as string;
@@ -69,17 +68,38 @@ export class CommonService {
     localStorage.setItem('expertRefreshToken', refreshToken);
   }
 
-  refreshToken(refreshToken: string): Observable<{ accessToken: string; refreshToken: string }> {
+  refreshToken(
+    refreshToken: string
+  ): Observable<{ accessToken: string; refreshToken: string }> {
     // Call your backend's refresh token endpoint here
-    return this.http.post<{ accessToken: string; refreshToken: string }>('/auth/refresh', {
-      refreshToken,
-    });
+    return this.http.post<{ accessToken: string; refreshToken: string }>(
+      '/auth/refresh',
+      {
+        refreshToken,
+      }
+    );
   }
 
- //get admin Token from the local storage
- getAdminTokenFromLocalStorage(): string {
-  return localStorage.getItem('adminToken') as string;
-  // return this.getLocalStorageItem('expertToken') as string;
-}
+  //get admin Token from the local storage
+  getAdminTokenFromLocalStorage(): string {
+    return localStorage.getItem('adminToken') as string;
+    // return this.getLocalStorageItem('expertToken') as string;
+  }
 
+  private user: any = null;
+
+  setGoogleUser(user: any) {
+    this.user = user;
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+
+  getGoogleUser() {
+    return this.user || JSON.parse(localStorage.getItem('user') || '{}');
+  }
+
+  logoutGoogleUser() {
+    this.user = null;
+    localStorage.removeItem('user');
+  }
+  
 }

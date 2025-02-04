@@ -7,7 +7,11 @@ import { ImageUploadService } from '../../../shared/services/image-upload.servic
 import { namePattern } from '../../../shared/regexp/regexp';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
+import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
+@AutoUnsubscribe
 @Component({
   selector: 'app-user-profile-data',
   imports: [ReactiveFormsModule,FormsModule,CommonModule,ButtonModule],
@@ -27,13 +31,14 @@ export class UserProfileDataComponent {
   edit_profile_picture!: FormGroup;
   name_form!: FormGroup;
   email_form!: FormGroup;
-
+  profile_form!:FormGroup;
   constructor(
     private userService: UserService,
     private showMessage: MessageToasterService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private imageuploadService: ImageUploadService
+    private imageuploadService: ImageUploadService,
+    private http:HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -47,36 +52,101 @@ export class UserProfileDataComponent {
   selectedFile: File | null = null;
   previewUrl: string | null = null;
 
+  // onFileSelected(event: any): void {
+  //   const file = event.target.files[0];
+  //   console.log(file)
+  //   if (file) {
+  //     this.selectedFile = file;
+      
+  //     const reader = new FileReader();
+  //     reader.onload = (e: any) => {
+  //       this.previewUrl = e.target.result;
+  //     };
+  //     reader.readAsDataURL(file);
+  //     // this.uploadImage();
+  //   }
+  // }
+
+ 
+  // uploadProfilePicture() {
+  //   if (this.selectedFile) {
+  //     console.log('upload file in ts,before service call');
+  //     console.log(this.selectedFile)
+  //     this.imageuploadService
+  //       .uploadProfileFile(this.selectedFile,'user-profile-images')
+  //       .subscribe(
+  //         (imageUrl) => {
+  //           console.log('Image uploaded successfully:', imageUrl);
+  //           this.url = imageUrl;
+  //           // this.upload_image_to_server();
+  //           this.updateUserProfileImage();
+  //         },
+  //         (error) => console.error('Error uploading image:', error)
+  //       );
+  //   }
+  // }
   onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
+    const inputFile = event.target as HTMLInputElement;
+  
+    if (inputFile.files && inputFile.files.length > 0) {
+      const file = inputFile.files[0];
+  
+      // Validate file type
+      if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+        this.showMessage.showErrorToastr('Please upload .jpg, .jpeg, or .png images only');
+        return;
+      }
+  
       this.selectedFile = file;
-      this.uploadImage();
+  
+      // Preview Image
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.previewUrl = e.target.result;
+        this.url = this.previewUrl; // Update UI instantly
       };
       reader.readAsDataURL(file);
+  
+      this.profile_form.patchValue({
+        profile_picture: file,
+      });
     }
   }
-
-  uploadImage() {
-    if (this.selectedFile) {
-      console.log('upload file in ts,before service call');
-      this.imageuploadService
-        .uploadFile(this.selectedFile,'AgriConnect')
-        .subscribe(
-          (imageUrl) => {
-            console.log('Image uploaded successfully:', imageUrl);
-            this.url = imageUrl;
-            this.upload_image_to_server();
-          },
-          (error) => console.error('Error uploading image:', error)
-        );
+  
+  
+  
+  uploadProfilePicture() {
+    if (!this.selectedFile) {
+      this.showMessage.showErrorToastr('Please select an image first.');
+      return;
     }
-  }
+  
+    console.log('Uploading profile picture...');
+  
+    const formData = new FormData();
+    formData.append('profile_picture', this.selectedFile);
 
-  upload_image_to_server() {
+  const profile_picture =
+    this.profile_form.get('profile_picture')?.value;
+    this.imageuploadService.uploadFile(profile_picture, 'user-profile-images').subscribe({
+      next: (response) => {
+        console.log('Profile picture uploaded:', response.fileUrl);
+        this.url = response.fileUrl;
+  
+        this.updateUserProfileImage();
+  
+        // Reset file input
+        (document.getElementById('upload_profile') as HTMLInputElement).value = '';
+      },
+      error: (error) => {
+        console.error('Error uploading image:', error);
+        this.showMessage.showErrorToastr('File upload failed');
+      },
+    });
+  }
+  
+
+  updateUserProfileImage() {
     const data = {
       userId: this.userId,
       image_url: this.url,
@@ -100,11 +170,18 @@ export class UserProfileDataComponent {
     if (fileInput) {
       fileInput.click();
     }
+
   }
 
   private initializeForms(): void {
 
     this.edit_profile_picture = this.formBuilder.group({
+      profile_picture: [null, Validators.required],
+
+    });
+
+    
+    this.profile_form = this.formBuilder.group({
       profile_picture: [null, Validators.required],
 
     });

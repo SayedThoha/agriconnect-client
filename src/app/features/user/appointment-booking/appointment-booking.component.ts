@@ -1,0 +1,199 @@
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { MessageToasterService } from '../../../shared/services/message-toaster.service';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { UserService } from '../../../shared/services/user.service';
+import { HeaderComponent } from '../../../shared/header/header.component';
+import { CommonModule } from '@angular/common';
+import { CapitaliseFirstPipe } from '../../../shared/pipes/capitalise-first.pipe';
+import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+
+declare var Razorpay:any;
+@AutoUnsubscribe
+@Component({
+  selector: 'app-appointment-booking',
+  imports: [HeaderComponent,ReactiveFormsModule,CommonModule,FormsModule,CapitaliseFirstPipe],
+  templateUrl: './appointment-booking.component.html',
+  styleUrl: './appointment-booking.component.css'
+})
+export class AppointmentBookingComponent implements OnInit {
+
+  slotId!:any
+  slotDetails!:any
+  visible: boolean = false;
+  namePattern = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*\s*$/;
+  agePattern=/^(?:[1-9][0-9]?|10[0-9])$/;
+  isDisable=true
+  farmer_details!:any
+  userId=localStorage.getItem('userId')
+  farmer_details_form!:FormGroup;
+  payment_form!:FormGroup
+
+  constructor(
+    private userService:UserService,
+    private formBuilder:FormBuilder,
+    private messageService:MessageToasterService,
+    private router:Router,
+  ){}
+
+  ngOnInit(): void {
+    this.intialiseForms();
+    this.slotId=localStorage.getItem('slotId')
+    console.log('slotId from localStorage:',this.slotId)
+    this.userService.getSlot({slotId:this.slotId}).subscribe({
+      next:(Response)=>{
+        console.log(Response)
+        this.slotDetails=Response
+      },error:(error)=>{
+        this.messageService.showErrorToastr(error.error.message)
+      }
+    })
+    
+  }
+
+  intialiseForms():void{
+  this.farmer_details_form=this.formBuilder.group({
+    name:['',[Validators.required,Validators.minLength(2),Validators.pattern(this.namePattern)]],
+    email:['',[Validators.required,Validators.email]],
+    age:['',[Validators.required,Validators.pattern(this.agePattern)]],
+    gender:['',Validators.required],
+    address:['',Validators.required],
+    reason_for_visit:['',Validators.required]
+  })
+
+  this.payment_form=this.formBuilder.group({
+    payment_method:['online_payment',Validators.required]
+  })
+  }
+
+  markFormGroupTouched(formGroup: FormGroup) {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
+
+  farmer_details_form_submit(){
+    if(this.farmer_details_form.invalid){
+      this.markFormGroupTouched(this.farmer_details_form);
+      return;
+    }else{
+      this.farmer_details={
+        slotId:this.slotId,
+        userId:this.userId,
+        expertId:this.slotDetails.expertId._id,
+        farmer_details:{
+          name:this.farmer_details_form.value.name,
+          email:this.farmer_details_form.value.email,
+          age:this.farmer_details_form.value.age,
+          gender:this.farmer_details_form.value.gender,
+          address:this.farmer_details_form.value.address,
+          reason_for_visit:this.farmer_details_form.value.reason_for_visit
+        }
+      }
+      this.isDisable=false
+    }
+  }
+
+  
+
+  payment_form_submit(){
+    this.userService.check_if_the_slot_available({slotId:this.slotId}).subscribe({
+      next:(Response)=>{
+
+        if(this.payment_form.value.payment_method==='online_payment'){
+          this.onlinePayment()
+        }else if(this.payment_form.value.payment_method==='wallet_payment'){
+          this.walletPayment()
+        }else{
+          this.messageService.showSuccessToastr('select any payment method')
+        }
+      },error:(error)=>{
+        this.messageService.showErrorToastr(error.error.message)
+      }
+    })
+  }
+
+
+  onlinePayment(){
+    this.isDisable=true
+    const slot_id = this.slotDetails._id;
+    this.userService.booking_payment({consultation_fee:this.slotDetails.expertId.consultation_fee}).subscribe({   // For payment 
+      next:(response)=>{
+        // console.log('razorpay, booking response',response);
+        this.razorpayPopUp(response);
+      },
+      error:(error)=>{
+        console.log(error.message)
+      }
+    })
+  }
+  
+  razorpayPopUp(res:any){
+    console.log('razorpayPopUp');
+    const RazorpayOptions = {
+      description:'Agriconnect Razorpay payment',
+      currency:'INR',
+      amount:res.fee,
+      name:'agriconnect',
+      key:res.key_id,
+      order_id:res.order_id,
+      image:'https://imgs.search.brave.com/bmhZt0Gh9CjW_Wk8CCob0T2V4PS_bHQYW3lfF_Ptlso/rs:fit:500:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzA0LzM3LzM1LzA2/LzM2MF9GXzQzNzM1/MDY3Nl85Y1VibE1k/N29zNnNrZzA0VmE1/dUhhTWY1VFRaaEhX/Zy5qcGc',
+      prefill:{
+        name:'agriconnect',
+        email:'devsaytho@gmail.com',
+        phone:'8921535373'
+      },
+      theme:{
+        color:'#6466e3'
+      },
+      modal:{
+        ondismiss:()=>{
+          this.messageService.showWarningToastr('Payment Failed');
+        }
+      },
+      handler:this.paymentSuccess.bind(this)
+    }
+    const rpz = new Razorpay(RazorpayOptions);
+    rpz.open()
+  }
+
+  paymentSuccess(options:any){
+    this.farmer_details.payment_method='online_payment'
+    this.farmer_details.payment_status=true
+    this.payment(this.farmer_details)
+ }
+
+  walletPayment(){
+    this.isDisable=false
+    this.userService.userDetails({userId:this.userId}).subscribe({
+      next:(Response)=>{
+        if(Response.wallet<this.slotDetails.adminPaymentAmount){
+          this.messageService.showErrorToastr('Insufficient Balance!')
+        }else{
+          this.farmer_details.payment_method='wallet_payment'
+          this.farmer_details.payment_status=true
+          this.payment(this.farmer_details)
+        }
+      }
+    })
+  }
+
+  payment(data:any){
+    this.userService.appointmnet_booking(this.farmer_details).subscribe({
+      next:(Response)=>{
+        console.log(Response)
+        this.messageService.showSuccessToastr(Response.message)
+        //go to next page where the doctor profile page itself, where have the video call button and message button instead of slot booking list
+        // this.router.navigate(['/user/doctor_profile',this.slotDetails.docId._id])
+        this.router.navigate(['/user/success_payment',this.slotDetails.expertId._id])
+      },
+      error:(error)=>{
+        console.log(error.error);
+        this.messageService.showErrorToastr(error.error.message)
+      }
+    })
+  }
+}

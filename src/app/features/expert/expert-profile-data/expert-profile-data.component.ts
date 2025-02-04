@@ -18,7 +18,8 @@ import {
   namePattern,
 } from '../../../shared/regexp/regexp';
 import { CommonModule } from '@angular/common';
-
+import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+@AutoUnsubscribe
 @Component({
   selector: 'app-expert-profile-data',
   imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],

@@ -27,11 +27,12 @@ export class ExpertListComponent implements OnInit {
   experts_to_display!: expertData[];
   searchForm!: FormGroup;
   verificationForm!: FormGroup;
+
   constructor(
-    private _adminService: AdminServiceService,
-    private _messageservice: MessageToasterService,
-    private _router: Router,
-    private _formBuilder: FormBuilder
+    private adminService: AdminServiceService,
+    private messageservice: MessageToasterService,
+    private router: Router,
+    private formBuilder: FormBuilder
   ) {}
 
   ngOnInit() {
@@ -45,11 +46,11 @@ export class ExpertListComponent implements OnInit {
   }
 
   private initializeForms(): void {
-    this.searchForm = this._formBuilder.group({
+    this.searchForm = this.formBuilder.group({
       searchData: ['', Validators.required],
     });
 
-    this.verificationForm = this._formBuilder.group({
+    this.verificationForm = this.formBuilder.group({
       status: ['all'],
     });
   }
@@ -110,12 +111,12 @@ export class ExpertListComponent implements OnInit {
     const _id = data;
     console.log('_id for expert kyc from expert listing component:', _id);
     localStorage.setItem('expert_id_for_kyc_details', _id);
-    this._router.navigate(['admin/adminHome/checkDocumentsKyc']);
+    this.router.navigate(['admin/adminHome/checkDocumentsKyc']);
   }
 
   getAllExperts() {
     const queryparams = { expert: 'all' };
-    this._adminService.getExperts(queryparams).subscribe({
+    this.adminService.getExperts(queryparams).subscribe({
       next: (Response) => {
         console.log('get expert details', Response);
         this.experts = Response;
@@ -123,7 +124,7 @@ export class ExpertListComponent implements OnInit {
       },
       error: (error) => {
         console.log('got error');
-        this._messageservice.showErrorToastr(error.message);
+        this.messageservice.showErrorToastr(error.message);
       },
     });
   }
@@ -131,7 +132,7 @@ export class ExpertListComponent implements OnInit {
   changeStatus(data: any) {
     const datas = { _id: data._id };
     console.log('queryparams:', datas);
-    this._adminService.expertBlock(datas).subscribe({
+    this.adminService.expertBlock(datas).subscribe({
       next: (Response) => {
         console.log('status changes');
         // data.blocked=!data.blocked
@@ -139,7 +140,7 @@ export class ExpertListComponent implements OnInit {
       },
       error: (error) => {
         console.log('got error', error);
-        this._messageservice.showErrorToastr(error.message);
+        this.messageservice.showErrorToastr(error.message);
       },
     });
   }

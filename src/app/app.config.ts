@@ -32,10 +32,33 @@ import { adminReducer } from './features/admin/store/admin.reducer';
 import { adminEffects } from './features/admin/store/admin.effects';
 
 import { SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
-import {
-  GoogleLoginProvider,
-} from '@abacritt/angularx-social-login';
+import { GoogleLoginProvider } from '@abacritt/angularx-social-login';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import {
+  getAnalytics,
+  provideAnalytics,
+  ScreenTrackingService,
+  UserTrackingService,
+} from '@angular/fire/analytics';
+import {
+  initializeAppCheck,
+  ReCaptchaEnterpriseProvider,
+  provideAppCheck,
+} from '@angular/fire/app-check';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: 'AIzaSyDTdj8lanYgoE3Rve70hnAnhggjz5piqzY',
+  authDomain: 'agriconnect-6517e.firebaseapp.com',
+  projectId: 'agriconnect-6517e',
+  storageBucket: 'agriconnect-6517e.firebasestorage.app',
+  messagingSenderId: '261747620554',
+  appId: '1:261747620554:web:9f63b8c6b9db543d2dd233',
+  measurementId: 'G-VH44W75R20',
+};
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -55,11 +78,22 @@ export const appConfig: ApplicationConfig = {
       ripple: true,
     }),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
-    provideStore({ user: userReducer,expert:expertReducer,Admin:adminReducer}),
-    provideEffects([UserEffects,expertEffects,adminEffects]),
+    provideStore({
+      user: userReducer,
+      expert: expertReducer,
+      Admin: adminReducer,
+    }),
+    provideEffects([UserEffects, expertEffects, adminEffects]),
     provideToastr(),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     provideOAuthClient(),
-    
+    provideFirebaseApp(() =>
+      initializeApp(firebaseConfig)
+    ),
+    provideAuth(() => getAuth()),
+    provideAnalytics(() => getAnalytics()),
+    ScreenTrackingService,
+    UserTrackingService,
+    provideFirestore(() => getFirestore()),
   ],
 };

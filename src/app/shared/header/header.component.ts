@@ -33,7 +33,7 @@ export class HeaderComponent implements OnInit {
     this.checkuser();
 
     this.authService.authState$.subscribe((isLoggedIn) => {
-      console.log('Google authState updated:', isLoggedIn);
+      // console.log('Google authState updated:', isLoggedIn);
       this.checkuser();
     });
   }

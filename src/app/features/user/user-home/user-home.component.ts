@@ -26,7 +26,7 @@ export class UserHomeComponent implements OnInit {
       } 
   }
   consultButton(){
-    this._router.navigate(['/user/ExpertListing'])
+    this._router.navigate(['/user/expert_listing'])
   }
 
 }

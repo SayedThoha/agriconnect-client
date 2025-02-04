@@ -12,8 +12,11 @@
 
 export interface HttpResponseModel {
   message: string;
+  success:boolean;
+  statusCode:number
   error: string;
-  slot?: object;
+  // slot?: object;
+  data?:object
 }
 
 export interface OtpData {

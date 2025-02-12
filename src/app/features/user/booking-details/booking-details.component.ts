@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { PrescriptionModalComponent } from '../../../shared/prescription-modal/prescription-modal.component';
 import { CommonModule } from '@angular/common';
 import {
@@ -10,7 +10,7 @@ import {
 } from '@angular/forms';
 import { UserService } from '../../../shared/services/user.service';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
-import { debounceTime } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 @AutoUnsubscribe
 @Component({
@@ -25,12 +25,16 @@ import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
   styleUrl: './booking-details.component.css',
 })
 export class BookingDetailsComponent implements OnInit {
+
+  @ViewChild(PrescriptionModalComponent) prescriptionModal!: PrescriptionModalComponent;
   userId!: any;
   appointments!: any;
   appointments_to_display!: any;
   searchForm!: FormGroup;
   consultationForm!: FormGroup;
+  prescription_id: string | null = null;
 
+  bookingDetailsSubscription!:Subscription
   constructor(
     private userService: UserService,
     private messageService: MessageToasterService,
@@ -47,9 +51,11 @@ export class BookingDetailsComponent implements OnInit {
 
   getAppointmentDetails() {
     const userId = localStorage.getItem('userId');
-    this.userService.get_booking_details_of_user({ userId: userId }).subscribe({
+    
+    this.bookingDetailsSubscription= this.userService.get_booking_details_of_user({ userId: userId }).subscribe({
       next: (Response) => {
         this.appointments = Response;
+        // console.log("appointments details",this.appointments)
         this.appointments_to_display = this.appointments;
       },
       error: (error) => {
@@ -59,19 +65,17 @@ export class BookingDetailsComponent implements OnInit {
   }
 
  
+  
+
   openPrescriptionModal(prescription_id: string | null) {
-    prescription_id = '66b43fa6725d8689a520191f';
-    console.log('Opening prescription modal with ID:', prescription_id);
-    const modal = document.querySelector(
-      'app-prescription-modal'
-    ) as unknown as PrescriptionModalComponent;
-    if (modal) {
-      modal.prescription_id = prescription_id;
-      if (prescription_id) {
-        modal.openModal;
-      } else {
-        console.error('Invalid prescription ID:', prescription_id);
-      }
+    // console.log('Opening prescription modal with ID:', prescription_id);
+    this.prescription_id = prescription_id;
+    if (this.prescriptionModal) {
+      this.prescriptionModal.prescription_id = prescription_id;
+      this.prescriptionModal.get_prescription(); // Fetch prescription details
+      this.prescriptionModal.openModal(); // Open the modal
+    } else {
+      console.error('Prescription modal is not available');
     }
   }
 

@@ -11,7 +11,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { debounceTime } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 
 @Component({
@@ -20,7 +20,6 @@ import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
   templateUrl: './expert-list.component.html',
   styleUrl: './expert-list.component.css',
 })
-
 @AutoUnsubscribe
 export class ExpertListComponent implements OnInit {
   experts!: expertData[];
@@ -28,6 +27,7 @@ export class ExpertListComponent implements OnInit {
   searchForm!: FormGroup;
   verificationForm!: FormGroup;
 
+  expertListSubscription!: Subscription;
   constructor(
     private adminService: AdminServiceService,
     private messageservice: MessageToasterService,
@@ -40,7 +40,7 @@ export class ExpertListComponent implements OnInit {
     this.getAllExperts();
     this.setupSearchSubscription();
     this.verificationForm.get('status')?.valueChanges.subscribe((value) => {
-      console.log('Status changed to:', value);
+      // console.log('Status changed to:', value);
       if (value) this.verificationFormSubmit();
     });
   }
@@ -79,11 +79,11 @@ export class ExpertListComponent implements OnInit {
   }
 
   verificationFormSubmit() {
-    console.log('verification form submit');
+    // console.log('verification form submit');
 
     if (this.verificationForm.valid) {
       const selectedStatus = this.verificationForm.value.status;
-      console.log('status:', selectedStatus);
+      // console.log('status:', selectedStatus);
       if (selectedStatus === 'all') {
         this.experts_to_display = this.experts;
       } else if (selectedStatus === 'verified') {
@@ -109,32 +109,34 @@ export class ExpertListComponent implements OnInit {
 
   kyc_verification(data: any) {
     const _id = data;
-    console.log('_id for expert kyc from expert listing component:', _id);
+    // console.log('_id for expert kyc from expert listing component:', _id);
     localStorage.setItem('expert_id_for_kyc_details', _id);
     this.router.navigate(['admin/adminHome/checkDocumentsKyc']);
   }
 
   getAllExperts() {
     const queryparams = { expert: 'all' };
-    this.adminService.getExperts(queryparams).subscribe({
-      next: (Response) => {
-        console.log('get expert details', Response);
-        this.experts = Response;
-        this.experts_to_display = this.experts;
-      },
-      error: (error) => {
-        console.log('got error');
-        this.messageservice.showErrorToastr(error.message);
-      },
-    });
+    this.expertListSubscription = this.adminService
+      .getExperts(queryparams)
+      .subscribe({
+        next: (Response) => {
+          // console.log('get expert details', Response);
+          this.experts = Response;
+          this.experts_to_display = this.experts;
+        },
+        error: (error) => {
+          console.log('got error');
+          this.messageservice.showErrorToastr(error.message);
+        },
+      });
   }
 
   changeStatus(data: any) {
     const datas = { _id: data._id };
-    console.log('queryparams:', datas);
+    // console.log('queryparams:', datas);
     this.adminService.expertBlock(datas).subscribe({
       next: (Response) => {
-        console.log('status changes');
+        // console.log('status changes');
         // data.blocked=!data.blocked
         data.blocked === true ? (data.blocked = false) : (data.blocked = true);
       },

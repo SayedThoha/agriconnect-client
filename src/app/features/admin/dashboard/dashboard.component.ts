@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { Subscription } from 'rxjs';
 
 @AutoUnsubscribe
 @Component({
@@ -36,6 +37,8 @@ export class DashboardComponent implements OnInit {
   total_cancelled_bookings!: number;
   graph_data_based_on: string = 'weekly';
 
+
+  dashBoardSubscription!:Subscription
   constructor(
     private adminService: AdminServiceService,
     private messageService: MessageToasterService
@@ -50,9 +53,9 @@ export class DashboardComponent implements OnInit {
   }
 
   get_Slot_Details() {
-    console.log('client side');
+    // console.log('client side');
     const expertId = localStorage.getItem('expertId');
-    this.adminService
+   this.dashBoardSubscription= this.adminService
       .get_admin_dashboard_details({ expertId: expertId })
       .subscribe({
         next: (Response) => {

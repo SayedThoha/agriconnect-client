@@ -102,8 +102,8 @@
           </button>
         </div>
       </form>
-      <div class="login-button" *ngIf="auth==='user'">
-        <button mat-raised-button (click)="signInWithGoogle()">
+      <div class="login-button" *ngIf="auth === 'user'">
+        <button (click)="signInWithGoogle()">
           <img
             class="google-icon"
             src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"

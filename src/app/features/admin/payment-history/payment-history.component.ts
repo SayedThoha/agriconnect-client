@@ -8,7 +8,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { debounceTime } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 @AutoUnsubscribe
@@ -23,6 +23,8 @@ export class PaymentHistoryComponent {
   payments_to_display!: any;
   searchForm!: FormGroup;
   paymentForm!: FormGroup;
+
+  paymentHistorySubscription!:Subscription
   constructor(
     private adminService: AdminServiceService,
     private messageService: MessageToasterService,
@@ -40,7 +42,7 @@ export class PaymentHistoryComponent {
   }
 
   getAppointmentDetails() {
-    this.adminService.getAppointment().subscribe({
+  this.paymentHistorySubscription=  this.adminService.getAppointment().subscribe({
       next: (Response) => {
         this.payments = Response;
         this.payments_to_display = this.payments;
@@ -84,7 +86,7 @@ export class PaymentHistoryComponent {
   }
 
   paymentFormSubmit() {
-    console.log('payment form submit');
+    // console.log('payment form submit');
     if (this.paymentForm.valid) {
       const selectedStatus = this.paymentForm.value.status;
       if (selectedStatus === 'all') {

@@ -1,6 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../../shared/services/user.service';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { Router } from '@angular/router';
 import { ImageUploadService } from '../../../shared/services/image-upload.service';
@@ -9,19 +15,18 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 
-@AutoUnsubscribe
 @Component({
   selector: 'app-user-profile-data',
-  imports: [ReactiveFormsModule,FormsModule,CommonModule,ButtonModule],
+  imports: [ReactiveFormsModule, FormsModule, CommonModule, ButtonModule],
   templateUrl: './user-profile-data.component.html',
-  styleUrl: './user-profile-data.component.css'
+  styleUrl: './user-profile-data.component.css',
 })
-export class UserProfileDataComponent {
-
+@AutoUnsubscribe
+export class UserProfileDataComponent implements OnInit {
   user_profile_data: any = { firstName: '', lastName: '' };
-  userId!: any ;
+  userId!: any;
   email_edit: boolean = false;
   name_edit: boolean = false;
   url: any = null;
@@ -31,14 +36,17 @@ export class UserProfileDataComponent {
   edit_profile_picture!: FormGroup;
   name_form!: FormGroup;
   email_form!: FormGroup;
-  profile_form!:FormGroup;
+  profile_form!: FormGroup;
+  uploadForm!: FormGroup;
+
+  profileDataSubscription!: Subscription;
   constructor(
     private userService: UserService,
     private showMessage: MessageToasterService,
     private formBuilder: FormBuilder,
     private router: Router,
     private imageuploadService: ImageUploadService,
-    private http:HttpClient
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -47,106 +55,49 @@ export class UserProfileDataComponent {
     this.name_form.get('firstName')?.disable();
     this.name_form.get('lastName')?.disable();
     this.email_form.get('email')?.disable();
+    this.uploadForm = this.formBuilder.group({
+      profile: ['']
+    });
   }
 
   selectedFile: File | null = null;
   previewUrl: string | null = null;
 
-  // onFileSelected(event: any): void {
-  //   const file = event.target.files[0];
-  //   console.log(file)
-  //   if (file) {
-  //     this.selectedFile = file;
-      
-  //     const reader = new FileReader();
-  //     reader.onload = (e: any) => {
-  //       this.previewUrl = e.target.result;
-  //     };
-  //     reader.readAsDataURL(file);
-  //     // this.uploadImage();
-  //   }
-  // }
-
- 
-  // uploadProfilePicture() {
-  //   if (this.selectedFile) {
-  //     console.log('upload file in ts,before service call');
-  //     console.log(this.selectedFile)
-  //     this.imageuploadService
-  //       .uploadProfileFile(this.selectedFile,'user-profile-images')
-  //       .subscribe(
-  //         (imageUrl) => {
-  //           console.log('Image uploaded successfully:', imageUrl);
-  //           this.url = imageUrl;
-  //           // this.upload_image_to_server();
-  //           this.updateUserProfileImage();
-  //         },
-  //         (error) => console.error('Error uploading image:', error)
-  //       );
-  //   }
-  // }
   onFileSelected(event: any): void {
-    const inputFile = event.target as HTMLInputElement;
-  
-    if (inputFile.files && inputFile.files.length > 0) {
-      const file = inputFile.files[0];
-  
-      // Validate file type
-      if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
-        this.showMessage.showErrorToastr('Please upload .jpg, .jpeg, or .png images only');
-        return;
-      }
-  
+    const file = event.target.files[0];
+    // this.uploadForm.get('profile').setValue(file);
+    if (file) {
       this.selectedFile = file;
-  
-      // Preview Image
+      this.uploadImage();
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.previewUrl = e.target.result;
-        this.url = this.previewUrl; // Update UI instantly
       };
       reader.readAsDataURL(file);
-  
-      this.profile_form.patchValue({
-        profile_picture: file,
-      });
     }
   }
-  
-  
-  
-  uploadProfilePicture() {
-    if (!this.selectedFile) {
-      this.showMessage.showErrorToastr('Please select an image first.');
-      return;
+
+  uploadImage() {
+    if (this.selectedFile) {
+      console.log('upload file in ts,before service call');
+      console.log(this.selectedFile);
+      console.log("I AM HERE");
+      // this.imageuploadService
+        // .uploadProfilePic(this.selectedFile, 'user-profile-picture')
+      this.imageuploadService
+        .uploadProfilePic(this.selectedFile, 'user-profile-picture')
+        .subscribe({
+          next: (imageUrl) => {
+            console.log('Image uploaded successfully:', imageUrl);
+            this.url = imageUrl;
+            this.upload_image_to_server();
+          },
+          error: (error) => console.error('Error uploading image:', error),
+        });
     }
-  
-    console.log('Uploading profile picture...');
-  
-    const formData = new FormData();
-    formData.append('profile_picture', this.selectedFile);
-
-  const profile_picture =
-    this.profile_form.get('profile_picture')?.value;
-    this.imageuploadService.uploadFile(profile_picture, 'user-profile-images').subscribe({
-      next: (response) => {
-        console.log('Profile picture uploaded:', response.fileUrl);
-        this.url = response.fileUrl;
-  
-        this.updateUserProfileImage();
-  
-        // Reset file input
-        (document.getElementById('upload_profile') as HTMLInputElement).value = '';
-      },
-      error: (error) => {
-        console.error('Error uploading image:', error);
-        this.showMessage.showErrorToastr('File upload failed');
-      },
-    });
   }
-  
 
-  updateUserProfileImage() {
+  upload_image_to_server() {
     const data = {
       userId: this.userId,
       image_url: this.url,
@@ -161,8 +112,6 @@ export class UserProfileDataComponent {
     });
   }
 
-
-
   triggerFileInput() {
     const fileInput = document.getElementById(
       'upload_profile'
@@ -170,20 +119,15 @@ export class UserProfileDataComponent {
     if (fileInput) {
       fileInput.click();
     }
-
   }
 
   private initializeForms(): void {
-
     this.edit_profile_picture = this.formBuilder.group({
       profile_picture: [null, Validators.required],
-
     });
 
-    
     this.profile_form = this.formBuilder.group({
       profile_picture: [null, Validators.required],
-
     });
 
     this.name_form = this.formBuilder.group({
@@ -211,8 +155,7 @@ export class UserProfileDataComponent {
   }
 
   close_name() {
-
-    console.log('close_name called', this.name_edit)
+    // console.log('close_name called', this.name_edit)
 
     this.name_form.patchValue({
       firstName: this.user_profile_data.firstName,
@@ -242,9 +185,9 @@ export class UserProfileDataComponent {
   }
 
   submit_name() {
-    console.log('edit profile submitted');
+    // console.log('edit profile submitted');
     if (this.name_form.invalid) {
-      console.log('Form is invalid');
+      // console.log('Form is invalid');
       this.markFormGroupTouched(this.name_form);
       return;
     } else {
@@ -259,11 +202,11 @@ export class UserProfileDataComponent {
         _id: this.userId,
         firstName: this.name_form.value.firstName,
         lastName: this.name_form.value.lastName,
-        email:this.user_profile_data.email
+        email: this.user_profile_data.email,
       };
       this.userService.editUserProfile_name(data).subscribe({
         next: (response) => {
-          console.log('Success response:', response);
+          // console.log('Success response:', response);
           this.showMessage.showSuccessToastr(response.message);
           this.user_profile_data.firstName = data.firstName;
           this.user_profile_data.lastName = data.lastName;
@@ -279,9 +222,9 @@ export class UserProfileDataComponent {
   }
 
   submit_email() {
-    console.log('edit profile submitted');
+    // console.log('edit profile submitted');
     if (this.email_form.invalid) {
-      console.log('Form is invalid');
+      // console.log('Form is invalid');
       this.markFormGroupTouched(this.email_form);
       return;
     } else {
@@ -295,13 +238,15 @@ export class UserProfileDataComponent {
       };
       this.userService.opt_for_new_email(data).subscribe({
         next: (Response) => {
-          this.showMessage.showSuccessToastr(Response.message || 'Email update OTP sent successfully.');
+          this.showMessage.showSuccessToastr(
+            Response.message || 'Email update OTP sent successfully.'
+          );
           if (data.email) {
             localStorage.setItem('email', this.user_profile_data.email);
             localStorage.setItem('new_email', data.email);
             localStorage.setItem('role', 'user_new_email');
           }
-          this.router.navigate(['user/verifyOtp']);
+          this.router.navigate(['/user/verifyOtp']);
         },
         error: (error) => {
           this.showMessage.showErrorToastr(error.error.message);
@@ -321,28 +266,26 @@ export class UserProfileDataComponent {
 
   profileData() {
     this.userId = localStorage.getItem('userId');
-    console.log("this.userid",this.userId)
+    // console.log("this.userid",this.userId)
 
-    this.userService.getuserDetails({ _id: this.userId }).subscribe({
-      next: (response) => {
-        console.log(response)
-        this.user_profile_data = response;
-        this.url = this.user_profile_data.profile_picture;
-        this.name_form.patchValue({
-
-          firstName: this.user_profile_data.firstName,
-          lastName: this.user_profile_data.lastName,
-        });
-        this.email_form.patchValue({
-          email: this.user_profile_data.email,
-        });
-      },
-      error: (error) => {
-        this.showMessage.showErrorToastr('Error in fetching profile data');
-      },
-    });
-
+    this.profileDataSubscription = this.userService
+      .getuserDetails({ _id: this.userId })
+      .subscribe({
+        next: (response) => {
+          // console.log(response)
+          this.user_profile_data = response;
+          this.url = this.user_profile_data.profile_picture;
+          this.name_form.patchValue({
+            firstName: this.user_profile_data.firstName,
+            lastName: this.user_profile_data.lastName,
+          });
+          this.email_form.patchValue({
+            email: this.user_profile_data.email,
+          });
+        },
+        error: (error) => {
+          this.showMessage.showErrorToastr('Error in fetching profile data');
+        },
+      });
+  }
 }
-}
-
-

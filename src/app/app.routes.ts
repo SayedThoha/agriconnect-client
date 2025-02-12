@@ -39,6 +39,10 @@ import { WalletComponent } from './features/user/wallet/wallet.component';
 import { AddPrescriptionComponent } from './features/expert/add-prescription/add-prescription.component';
 import { BookingsComponent } from './features/expert/bookings/bookings.component';
 import { UserPrescriptionHistoryComponent } from './features/user/user-prescription-history/user-prescription-history.component';
+import { UserChatComponent } from './features/user/user-chat/user-chat.component';
+import { UserVideoCallRoomComponent } from './features/user/user-video-call-room/user-video-call-room.component';
+import { ExpertVideoCallRoomComponent } from './features/expert/expert-video-call-room/expert-video-call-room.component';
+import { ExpertChatComponent } from './features/expert/expert-chat/expert-chat.component';
 
 const userRoutes: Routes = [
   {
@@ -104,8 +108,21 @@ const userRoutes: Routes = [
     component: AppointmentBookingComponent,
     canActivate: [userLoggedInGuard],
   },
+  {
+    path: 'userchat',
+    component: UserChatComponent,
+    canActivate: [userLoggedInGuard],
+  },
+  {
+    path: 'user_video_call_room/:id/:appointmentId',
+    component: UserVideoCallRoomComponent,
+    canActivate: [userLoggedInGuard],
+  },
+
   { path: '**', redirectTo: 'userHome' },
 ];
+
+
 
 const expertRoutes: Routes = [
   {
@@ -143,6 +160,16 @@ const expertRoutes: Routes = [
       { path: 'booking_history', component: ExpertBookingDetailsComponent },
       { path: 'prescription_history', component: PrescriptionHistoryComponent },
     ],
+  },
+  {
+    path: 'expert_chat',
+    component: ExpertChatComponent,
+    canActivate: [expertLoggedInGuard],
+  },
+  {
+    path: 'expert_video_call_room/:id/:appointmentId',
+    component: ExpertVideoCallRoomComponent,
+    canActivate: [expertLoggedInGuard],
   },
   {
     path: 'add_prescription/:appointmentId',

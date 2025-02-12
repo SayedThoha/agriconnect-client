@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import {
   FormBuilder,
@@ -8,28 +8,36 @@ import {
   Validators,
 } from '@angular/forms';
 import { ExpertService } from '../../../shared/services/expert.service';
-import { debounceTime } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { PrescriptionModalComponent } from '../../../shared/prescription-modal/prescription-modal.component';
 @AutoUnsubscribe
 @Component({
   selector: 'app-expert-booking-details',
-  imports: [ReactiveFormsModule, FormsModule, CommonModule],
+  imports: [ReactiveFormsModule, FormsModule, CommonModule,PrescriptionModalComponent,],
   templateUrl: './expert-booking-details.component.html',
   styleUrl: './expert-booking-details.component.css',
 })
 export class ExpertBookingDetailsComponent implements OnInit {
+
+   @ViewChild(PrescriptionModalComponent) prescriptionModal!: PrescriptionModalComponent;
   payments!: any;
   payments_to_display!: any;
   expertId!: string | null;
   searchForm!: FormGroup;
   consultationForm!: FormGroup;
+  prescription_id: string | null = null;
+
+  appoitmentDetailsSubscription!:Subscription
+
   constructor(
     private messageService: MessageToasterService,
     private formBuilder: FormBuilder,
     private cdr: ChangeDetectorRef,
     private expertService: ExpertService
   ) {}
+
 
   ngOnInit(): void {
     this.initialiseForms();
@@ -41,8 +49,10 @@ export class ExpertBookingDetailsComponent implements OnInit {
     this.setupSearchSubscription();
   }
 
+
+
   getAppointmentDetails() {
-    this.expertService
+   this.appoitmentDetailsSubscription= this.expertService
       .get_booking_details_of_expert({
         expertId: localStorage.getItem('expertId'),
       })
@@ -57,6 +67,7 @@ export class ExpertBookingDetailsComponent implements OnInit {
       });
   }
 
+
   initialiseForms(): void {
     this.searchForm = this.formBuilder.group({
       searchData: ['', Validators.required],
@@ -66,6 +77,7 @@ export class ExpertBookingDetailsComponent implements OnInit {
       status: ['all'],
     });
   }
+
   setupSearchSubscription() {
     this.searchForm
       .get('searchData')
@@ -74,6 +86,7 @@ export class ExpertBookingDetailsComponent implements OnInit {
         this.filterExperts(value);
       });
   }
+
 
   filterExperts(searchTerm: string | null) {
     if (searchTerm) {
@@ -88,6 +101,7 @@ export class ExpertBookingDetailsComponent implements OnInit {
       this.payments_to_display = this.payments;
     }
   }
+
 
   consultationFormSubmit() {
     if (this.consultationForm.valid) {
@@ -114,4 +128,19 @@ export class ExpertBookingDetailsComponent implements OnInit {
       this.cdr.detectChanges();
     }
   }
+
+
+  openPrescriptionModal(prescription_id: string | null) {
+    console.log('Opening prescription modal with ID:', prescription_id);
+    this.prescription_id = prescription_id;
+    if (this.prescriptionModal) {
+      this.prescriptionModal.prescription_id = prescription_id;
+      this.prescriptionModal.get_prescription(); // Fetch prescription details
+      this.prescriptionModal.openModal(); // Open the modal
+    } else {
+      console.error('Prescription modal is not available');
+    }
+  }
+  
+
 }

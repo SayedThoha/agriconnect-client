@@ -80,7 +80,7 @@
           <th scope="col" class="px-6 py-4">Slot Date</th>
           <th scope="col" class="px-6 py-4">Slot Time</th>
           <th scope="col" class="px-6 py-4">Consultation Status</th>
-          <th scope="col" class="px-6 py-4">Payment Status</th>
+          <th scope="col" class="px-6 py-4"> Payment Status</th>
         </tr>
       </thead>
       <tbody>
@@ -125,12 +125,12 @@
           >
             {{ appointment.slotId.time | date : "shortTime" }}
           </th>
-          <th
+          <!-- <th
             scope="row"
             class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
           >
             {{ appointment.consultation_status }}
-          </th>
+          </th> -->
           <td class="px-6 py-4">
             <div *ngIf="appointment.consultation_status === 'pending'">
               <th
@@ -148,7 +148,7 @@
                 {{ appointment.consultation_status }}
               </th>
             </div>
-            <div *ngIf="appointment.consultation_status === 'not_consulted'">
+            <div *ngIf="appointment.consultation_status === 'cancelled'">
               <th
                 scope="row"
                 class="text-center font-medium text-green-600 dark:text-red-500"
@@ -158,7 +158,7 @@
             </div>
           </td>
           <td class="px-6 py-4">
-            <div *ngIf="appointment.payment_status === 'true'">
+            <div *ngIf="appointment.payment_status === true">
               <th
                 scope="row"
                 class="text-center font-medium text-green-600 dark:text-green-500"
@@ -166,7 +166,7 @@
                 Done
               </th>
             </div>
-            <div *ngIf="appointment.payment_status === 'false'">
+            <div *ngIf="appointment.payment_status === false">
               <th
                 scope="row"
                 class="text-center font-medium text-green-600 dark:text-red-500"
@@ -176,16 +176,7 @@
             </div>
           </td>
 
-          <!-- <td class="px-6 py-4">
-                    <div *ngIf="appointment.blocked==='true'">
-                        <th scope="row" class="text-center font-medium text-red-600 dark:text-red-500">Blocked</th>
-                        <button  (click)="changeStatus(appointment)" class="font-small text-black-500 dark:text-black-500 hover:underline">want to unblock?</button>
-                    </div>
-                    <div *ngIf="appointment.blocked==='false'">
-                        <th scope="row" class="text-center font-medium text-green-600 dark:text-green-500">Not Blocked</th>
-                        <button  (click)="changeStatus(appointment)" class="font-small text-black-500 dark:text-black-500 hover:underline">want to block?</button>
-                    </div>
-                </td> -->
+         
         </tr>
       </tbody>
     </table>

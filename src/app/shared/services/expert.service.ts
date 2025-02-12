@@ -220,4 +220,10 @@ export class ExpertService {
     );
   }
 
+  get_prescription_details(data: any): Observable<any> {
+    const httpParams = new HttpParams({ fromObject: data })
+    return this.http.get<any>(`${this.apiUrl}/expert/get_prescription_details`, { params: httpParams })
+  }
+  
+  
 }

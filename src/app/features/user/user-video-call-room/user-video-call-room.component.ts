@@ -1,0 +1,65 @@
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
+@Component({
+  selector: 'app-user-video-call-room',
+  imports: [],
+  templateUrl: './user-video-call-room.component.html',
+  styleUrl: './user-video-call-room.component.css',
+})
+export class UserVideoCallRoomComponent implements OnInit, AfterViewInit {
+  roomID!: any;
+  constructor(private route: ActivatedRoute) {}
+
+  @ViewChild('root')
+  root!: ElementRef;
+  ngOnInit(): void {
+    this.roomID = this.route.snapshot.paramMap.get('id');
+  }
+
+  ngAfterViewInit(): void {
+    // generate Kit Token
+    const appID = 5242034;
+    const serverSecret = 'dabffda2b8ed32572693255fffe6a1df';
+    const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+      appID,
+      serverSecret,
+      this.roomID,
+      Date.now().toString(),
+      Date.now().toString()
+    );
+    // const kitToken =  ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, this.roomID,  randomID(5),  randomID(5));
+
+    //generate link
+    const videoCallLink =
+      window.location.protocol +
+      '//' +
+      window.location.host +
+      window.location.pathname +
+      '?roomID=' +
+      this.roomID;
+
+    // Create instance object from Kit Token.
+    const zp = ZegoUIKitPrebuilt.create(kitToken);
+    // Start a call.
+    zp.joinRoom({
+      container: this.root.nativeElement,
+      sharedLinks: [
+        {
+          name: 'Personal link',
+          url: videoCallLink,
+        },
+      ],
+      scenario: {
+        mode: ZegoUIKitPrebuilt.GroupCall, 
+      },
+    });
+    
+  }
+}

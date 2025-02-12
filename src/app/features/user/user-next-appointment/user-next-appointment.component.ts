@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../shared/services/user.service';
 import { Router } from '@angular/router';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { Subscription } from 'rxjs';
 
 
 @AutoUnsubscribe
@@ -14,12 +15,14 @@ import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
   templateUrl: './user-next-appointment.component.html',
   styleUrl: './user-next-appointment.component.css'
 })
-export class UserNextAppointmentComponent {
+export class UserNextAppointmentComponent implements OnInit{
   roomId!:any
   slotDetails!:any
   link!:any
   disable=false
   noAppointmnet=false
+
+  upcomingAppointmentSubscription!:Subscription
   constructor(
     private userService:UserService,
     private router:Router,
@@ -27,11 +30,16 @@ export class UserNextAppointmentComponent {
   ){}
 
   ngOnInit(): void {
+   this.upcomingAppointment()
+  }
+
+
+  upcomingAppointment(){
     const userId=localStorage.getItem('userId')
-    if(userId)
-      this.userService.upcoming_appointment({_id:userId}).subscribe({
+    
+     this.upcomingAppointmentSubscription= this.userService.upcoming_appointment({_id:userId}).subscribe({
         next:(Response)=>{
-          console.log('response:',Response);
+          // console.log('response:',Response);
           
           if(Object.entries(Response).length === 0){
             this.slotDetails=0
@@ -43,8 +51,8 @@ export class UserNextAppointmentComponent {
           this.messageService.showErrorToastr(error.error.message)
         }
       })
+    
   }
-
 
   //change this with iso date formta and check, change dateofbooking to time
   checkAppointmentTime() {
@@ -81,4 +89,5 @@ export class UserNextAppointmentComponent {
   expert_listing(){
     this.router.navigate(['/user/expert_listing'])
   }
+  
 }

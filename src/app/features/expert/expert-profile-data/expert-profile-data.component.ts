@@ -19,6 +19,7 @@ import {
 } from '../../../shared/regexp/regexp';
 import { CommonModule } from '@angular/common';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { Subscription } from 'rxjs';
 @AutoUnsubscribe
 @Component({
   selector: 'app-expert-profile-data',
@@ -38,6 +39,7 @@ export class ExpertProfileDataComponent implements OnInit {
   editProfileForm!: FormGroup;
   email_form!: FormGroup;
 
+  expertDetailsSubscription!: Subscription;
   constructor(
     private commonService: CommonService,
     private expertService: ExpertService,
@@ -177,9 +179,9 @@ export class ExpertProfileDataComponent implements OnInit {
   }
 
   submit_profile_details() {
-    console.log('edit profile submitted');
+    // console.log('edit profile submitted');
     if (this.editProfileForm.invalid) {
-      console.log('Form is invalid');
+      // console.log('Form is invalid');
       this.markFormGroupTouched(this.editProfileForm);
       return;
     } else {
@@ -228,9 +230,9 @@ export class ExpertProfileDataComponent implements OnInit {
   }
 
   submit_email() {
-    console.log('edit profile submitted');
+    // console.log('edit profile submitted');
     if (this.email_form.invalid) {
-      console.log('Form is invalid');
+      // console.log('Form is invalid');
       this.markFormGroupTouched(this.email_form);
       return;
     } else {
@@ -309,25 +311,27 @@ export class ExpertProfileDataComponent implements OnInit {
 
   getExpertDetails() {
     this.expertId = this.commonService.getExpertIdFromLocalStorage();
-    this.expertService.getExpertDetails({ _id: this.expertId }).subscribe({
-      next: (Response) => {
-        this.expertDetails = Response;
-        this.url = Response.profile_picture;
-        this.editProfileForm.patchValue({
-          firstName: this.expertDetails.firstName,
-          lastName: this.expertDetails.lastName,
-          contactno: this.expertDetails.contactno.toString(),
-          current_working_address: this.expertDetails.current_working_address,
-          experience: this.expertDetails.experience,
-          consultation_fee: this.expertDetails.consultation_fee.toString(),
-        });
+    this.expertDetailsSubscription = this.expertService
+      .getExpertDetails({ _id: this.expertId })
+      .subscribe({
+        next: (Response) => {
+          this.expertDetails = Response;
+          this.url = Response.profile_picture;
+          this.editProfileForm.patchValue({
+            firstName: this.expertDetails.firstName,
+            lastName: this.expertDetails.lastName,
+            contactno: this.expertDetails.contactno.toString(),
+            current_working_address: this.expertDetails.current_working_address,
+            experience: this.expertDetails.experience,
+            consultation_fee: this.expertDetails.consultation_fee.toString(),
+          });
 
-        this.email_form.patchValue({ email: this.expertDetails.email });
-      },
-      error: (error) => {
-        this.showMessage.showErrorToastr(error.error.message);
-      },
-    });
+          this.email_form.patchValue({ email: this.expertDetails.email });
+        },
+        error: (error) => {
+          this.showMessage.showErrorToastr(error.error.message);
+        },
+      });
   }
 
   changeEdit() {

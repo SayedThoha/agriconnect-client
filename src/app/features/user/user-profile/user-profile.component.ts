@@ -21,6 +21,7 @@ import { UserSidebarComponent } from '../user-sidebar/user-sidebar.component';
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css',
 })
+
 export class UserProfileComponent{
   
 }

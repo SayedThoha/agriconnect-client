@@ -20,6 +20,8 @@ export class HeaderComponent implements OnInit {
   expert!: boolean;
   nobody!: boolean;
 
+  activeTab: string = '';
+
   constructor(
     private router: Router,
     private commonService: CommonService,
@@ -32,10 +34,22 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     this.checkuser();
 
+    const storedTab = localStorage.getItem('activeTab');
+    if (storedTab) {
+      this.activeTab = storedTab;
+    }
+
     this.authService.authState$.subscribe((isLoggedIn) => {
       // console.log('Google authState updated:', isLoggedIn);
       this.checkuser();
     });
+
+    
+  }
+
+  setActiveTab(tab: string) {
+    this.activeTab = tab;
+    localStorage.setItem('activeTab', tab);
   }
 
   checkuser() {
@@ -60,53 +74,64 @@ export class HeaderComponent implements OnInit {
   }
 
   home() {
+    this.setActiveTab('home');
     this.router.navigate(['/home']);
   }
 
   expertSignIn() {
+    this.setActiveTab('expertLogin');
     localStorage.setItem('auth', 'expert');
-    console.log(this.commonService.getAuthFromLocalStorage());
+    // console.log(this.commonService.getAuthFromLocalStorage());
     this.router.navigate(['/expert/expertLogin']);
   }
 
   userLogin() {
+    this.setActiveTab('userLogin');
     localStorage.setItem('auth', 'user');
-    console.log(this.commonService.getAuthFromLocalStorage());
+    // console.log(this.commonService.getAuthFromLocalStorage());
     this.router.navigate(['/user/login']);
   }
 
   userHome() {
+    this.setActiveTab('userHome');
     console.log(this.commonService.getAuthFromLocalStorage());
     this.router.navigate(['/user/userHome']);
   }
 
   userProfile() {
+    this.setActiveTab('userProfile');
     this.router.navigate(['/user/user_profile']);
   }
 
   userChat() {
+    this.setActiveTab('userChat');
     this.router.navigate(['/user/userchat']);
   }
 
   expertsListing() {
+    this.setActiveTab('expertListing');
     this.router.navigate(['/user/expert_listing']);
   }
 
   expertProfile() {
+    this.setActiveTab('expertProfile');
     this.router.navigate(['/expert/expert_profile']);
   }
 
   expertChat() {
+    this.setActiveTab('expertChat');
     this.router.navigate(['/expert/expert_chat']);
   }
   expertHome() {
+    this.setActiveTab('expertHome');
     this.router.navigate(['/expert/expertHome']);
   }
   bookings() {
-    this.router.navigate(['expert/bookings']);
+    this.setActiveTab('bookings');
+    this.router.navigate(['/expert/bookings']);
   }
   user_bookings() {
-    this.router.navigate(['user/bookings']);
+    this.router.navigate(['/user/bookings']);
   }
 
   userLogout() {
@@ -124,6 +149,10 @@ export class HeaderComponent implements OnInit {
       this.router.navigate(['/home']);
       localStorage.removeItem('auth');
     }
+
+    this.activeTab = '';
+    localStorage.removeItem('activeTab');
     this.cdr.detectChanges();
   }
+  
 }

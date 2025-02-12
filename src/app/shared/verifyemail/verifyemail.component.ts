@@ -3,6 +3,7 @@ import { HeaderComponent } from '../header/header.component';
 import {
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -17,7 +18,7 @@ import { AutoUnsubscribe } from '../../core/decorators/auto-usub.decorator';
 @AutoUnsubscribe
 @Component({
   selector: 'app-verifyemail',
-  imports: [HeaderComponent, ReactiveFormsModule, CommonModule],
+  imports: [HeaderComponent, ReactiveFormsModule, CommonModule,FormsModule],
   templateUrl: './verifyemail.component.html',
   styleUrl: './verifyemail.component.css',
 })

@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { DatePickerModule } from 'primeng/datepicker';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { Subscription } from 'rxjs';
 
 @AutoUnsubscribe
 @Component({
@@ -43,6 +44,7 @@ export class UserExpertProfileComponent {
   showModal: boolean = false;
   selectedSlot: any;
 
+  expertDetailsSubscription!:Subscription
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -72,9 +74,9 @@ export class UserExpertProfileComponent {
 
   getExpertDetails(data: any) {
     
-    this.userService.getExpertDetails({ _id: data }).subscribe({
+    this.expertDetailsSubscription= this.userService.getExpertDetails({ _id: data }).subscribe({
       next: (Response) => {
-        console.log(Response)
+        // console.log(Response)
         this.expert = Response;
       },
       error: (error) => {
@@ -112,7 +114,7 @@ export class UserExpertProfileComponent {
   }
 
   onCancelSlot() {
-    console.log('Slot confirmation cancelled');
+    // console.log('Slot confirmation cancelled');
     this.showModal = false;
   }
 
@@ -127,6 +129,7 @@ export class UserExpertProfileComponent {
   }
 
   chat() {
+
     this.router.navigate(['/user/userchat']);
   }
 

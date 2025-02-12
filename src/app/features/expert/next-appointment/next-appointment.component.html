@@ -9,18 +9,18 @@
       <p class="text-lg">
         <strong>User Name:</strong>
         {{
-          upcoming_appointment.userId.firstName +
+          upcoming_appointment?.userId.firstName +
             " " +
-            upcoming_appointment.userId.lastName
+            upcoming_appointment?.userId.lastName
         }}
       </p>
       <p class="text-lg">
         <strong>Date:</strong>
-        {{ upcoming_appointment.slotId.time | date : "dd/MM/YY" }}
+        {{ upcoming_appointment?.slotId.time | date : "dd/MM/YY" }}
       </p>
       <p class="text-lg">
         <strong>Time:</strong>
-        {{ upcoming_appointment.slotId.time | date : "shortTime" }}
+        {{ upcoming_appointment?.slotId.time | date : "shortTime" }}
       </p>
     </ng-template>
   </div>
@@ -68,7 +68,7 @@
         type="submit"
         class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded"
       >
-        Submit and share to patient through roomId
+        Submit and share to farmer through roomId
       </button>
     </form>
   </div>

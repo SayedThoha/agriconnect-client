@@ -25,7 +25,7 @@ export class AdminLoginComponent implements OnInit {
 
   ngOnInit(){
     this.admin_login()
-    console.log(this.commonService.getAuthFromLocalStorage())
+    // console.log(this.commonService.getAuthFromLocalStorage())
   }
 
   admin_login(){
@@ -60,7 +60,7 @@ export class AdminLoginComponent implements OnInit {
 
   //form submission
   onSubmit(){
-    console.log('email:',this.loginForm.value.email)
+    // console.log('email:',this.loginForm.value.email)
     if(this.loginForm.invalid){
       if(this.emailError()){
         this.showMessage.showWarningToastr(this.emailError())

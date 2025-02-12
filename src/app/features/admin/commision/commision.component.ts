@@ -39,12 +39,12 @@ export class CommisionComponent implements OnInit {
         const parsedDetails = JSON.parse(adminDetails); // Parse the JSON string
         this.payOut = parsedDetails.payOut; // Extract only the payOut value
       } catch (error) {
-        console.error("Error parsing admin details:", error);
+        // console.error("Error parsing admin details:", error);
         this.payOut = undefined; // Handle parsing error gracefully
       }
     }
 
-    console.log(this.payOut)
+    // console.log(this.payOut)
     this.initialiseForms();
   }
 

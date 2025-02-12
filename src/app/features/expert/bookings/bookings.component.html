@@ -1,6 +1,6 @@
 <app-header></app-header>
 <div class="container p-8 bg-gray-200 min-h-screen">
-  <ng-container *ngIf="payments_to_display.length !== 0; else no_appointments">
+  <ng-container *ngIf="payments_to_display?.length !== 0; else no_appointments">
     <div class="p-4">
       <h2 class="text-4xl font-semibold uppercase leading-relaxed">
         Upcoming Appointments

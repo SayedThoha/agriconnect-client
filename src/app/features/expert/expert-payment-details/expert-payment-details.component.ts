@@ -8,7 +8,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { debounceTime } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 
@@ -25,6 +25,9 @@ export class ExpertPaymentDetailsComponent implements OnInit {
   expertId!: any;
   searchForm!: FormGroup;
   paymentForm!: FormGroup;
+
+  bookingDetailsSubscription!:Subscription
+
   constructor(
     private messageService: MessageToasterService,
     private formBuilder: FormBuilder,
@@ -43,7 +46,7 @@ export class ExpertPaymentDetailsComponent implements OnInit {
   }
 
   getAppointmentDetails() {
-    this.expertService
+  this.bookingDetailsSubscription= this.expertService
       .get_booking_details_of_expert({
         expertId: localStorage.getItem('expertId'),
       })

@@ -25,7 +25,7 @@ export class PdfViewerComponent implements OnInit {
           const decodedUrl = decodeURIComponent(unsafeUrl);
           this.pdfUrl =
             this._sanitizer.bypassSecurityTrustResourceUrl(decodedUrl);
-          console.log('pdfurl:', decodedUrl); // Log the URL to check its value
+          // console.log('pdfurl:', decodedUrl); // Log the URL to check its value
         } catch (error) {
           console.error('Error setting PDF URL:', error);
         }

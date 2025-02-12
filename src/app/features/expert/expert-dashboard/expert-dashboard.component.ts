@@ -6,6 +6,7 @@ import { ChartModule } from 'primeng/chart';
 import { ExpertService } from '../../../shared/services/expert.service';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { Subscription } from 'rxjs';
 @AutoUnsubscribe
 @Component({
   selector: 'app-expert-dashboard',
@@ -34,6 +35,7 @@ export class ExpertDashboardComponent implements OnInit {
   graph_data_based_on: string = 'weekly';
   total_upcoming_booking_count!:number
 
+  slotDetailsSubscription!:Subscription
   constructor(
     private expertService: ExpertService,
     private messageService: MessageToasterService
@@ -50,7 +52,7 @@ export class ExpertDashboardComponent implements OnInit {
   get_Slot_Details() {
     // console.log('  client side');
     const expertId = localStorage.getItem('expertId');
-    this.expertService
+   this.slotDetailsSubscription= this.expertService
       .get_expert_dashboard_details({ expertId: expertId })
       .subscribe({
         next: (Response) => {
@@ -294,4 +296,5 @@ export class ExpertDashboardComponent implements OnInit {
     // console.log(monthlyData);
     return monthlyData;
   }
+  
 }

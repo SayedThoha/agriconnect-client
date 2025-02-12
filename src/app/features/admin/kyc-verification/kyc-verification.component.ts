@@ -6,6 +6,7 @@ import { AdminServiceService } from '../services/admin-service.service';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { CapitaliseFirstPipe } from '../../../shared/pipes/capitalise-first.pipe';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -23,6 +24,7 @@ export class KycVerificationComponent implements OnInit {
 
   kyc_verification_form!:FormGroup
   
+  kycVerificationSubscription!:Subscription
   constructor(
     private _router:Router,
     private _adminService:AdminServiceService,
@@ -41,11 +43,11 @@ export class KycVerificationComponent implements OnInit {
 
   get_expert_kyc_details_from_id(_id:any){
     
-    this._adminService.get_expert_kyc_details_from_id({expertId:_id}).subscribe({
+    this.kycVerificationSubscription= this._adminService.get_expert_kyc_details_from_id({expertId:_id}).subscribe({
       next:(Response)=>{
-        console.log('expert details:',Response);
+        // console.log('expert details:',Response);
         this.expert_kyc_details=Response
-        console.log(this.expert_kyc_details);
+        // console.log(this.expert_kyc_details);
         // this.initialize_form();
         this.setFormData();
       },
@@ -84,7 +86,7 @@ export class KycVerificationComponent implements OnInit {
   file_download(name: string, index: Number = -1) {
     const pdf_name = name;
     let pdfUrl = this.expert_kyc_details.expertId[pdf_name];
-    this._router.navigate(['admin/adminHome/pdf_viewer'], { queryParams: { url: encodeURIComponent(pdfUrl) } });
+    this._router.navigate(['/admin/adminHome/pdf_viewer'], { queryParams: { url: encodeURIComponent(pdfUrl) } });
   }
   
   
@@ -107,7 +109,7 @@ export class KycVerificationComponent implements OnInit {
       next:(Response)=>{
         if(Response.message==='KYC verification done'){
           this._messagService.showSuccessToastr(Response.message)
-          this._router.navigate(['admin/adminHome/expert_listing'])
+          this._router.navigate(['/admin/adminHome/expert_listing'])
         }else{
           this._messagService.showWarningToastr(Response.message)
         }
@@ -119,7 +121,7 @@ export class KycVerificationComponent implements OnInit {
   }
 
   previous_page(){
-    this._router.navigate(['admin/adminHome/expert_listing'])
+    this._router.navigate(['/admin/adminHome/expert_listing'])
   }
 
 

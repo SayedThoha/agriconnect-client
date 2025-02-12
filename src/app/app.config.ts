@@ -36,6 +36,10 @@ import { GoogleLoginProvider } from '@abacritt/angularx-social-login';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
+
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+
+const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 import {
   getAnalytics,
   provideAnalytics,
@@ -87,13 +91,12 @@ export const appConfig: ApplicationConfig = {
     provideToastr(),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     provideOAuthClient(),
-    provideFirebaseApp(() =>
-      initializeApp(firebaseConfig)
-    ),
+    provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideAuth(() => getAuth()),
     provideAnalytics(() => getAnalytics()),
     ScreenTrackingService,
     UserTrackingService,
     provideFirestore(() => getFirestore()),
+    importProvidersFrom(SocketIoModule.forRoot(config)),
   ],
 };

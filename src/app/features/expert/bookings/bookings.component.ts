@@ -8,7 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ExpertService } from '../../../shared/services/expert.service';
-import { debounceTime } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { CommonModule } from '@angular/common';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
@@ -24,6 +24,7 @@ export class BookingsComponent implements OnInit {
   payments_to_display!: any;
   expertId!: string | null;
   searchForm!: FormGroup;
+  appoinmentDetailsSubscription!: Subscription;
   constructor(
     private messageService: MessageToasterService,
     private formBuilder: FormBuilder,
@@ -40,7 +41,7 @@ export class BookingsComponent implements OnInit {
   }
 
   getAppointmentDetails() {
-    this.expertService
+    this.appoinmentDetailsSubscription = this.expertService
       .get_bookings_of_expert({ expertId: localStorage.getItem('expertId') })
       .subscribe({
         next: (Response) => {
@@ -53,15 +54,17 @@ export class BookingsComponent implements OnInit {
         },
       });
   }
+
   initialiseForms(): void {
     this.searchForm = this.formBuilder.group({
       searchData: ['', Validators.required],
     });
   }
+
   setupSearchSubscription() {
     this.searchForm
       .get('searchData')
-      ?.valueChanges.pipe(debounceTime(300)) // Adjust debounce time as needed
+      ?.valueChanges.pipe(debounceTime(300)) 
       .subscribe((value) => {
         this.filterExperts(value);
       });

@@ -9,7 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { userdata } from '../models/userModel';
-import { debounceTime } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
@@ -30,6 +30,8 @@ export class UserListComponent implements OnInit {
   searchForm!: FormGroup;
   statusForm!: FormGroup;
 
+  userListSubscription!:Subscription
+
   constructor(
     private _adminService: AdminServiceService,
     private _messageService: MessageToasterService,
@@ -41,7 +43,7 @@ export class UserListComponent implements OnInit {
     this.initializeForm();
     this.setupSearchSubscription();
     this.statusForm.get('status')?.valueChanges.subscribe((value) => {
-      console.log('Status changed to:', value);
+      // console.log('Status changed to:', value);
       if (value) this.getAllUsers();
     });
   }
@@ -103,7 +105,7 @@ export class UserListComponent implements OnInit {
   }
 
   getAllUsers() {
-    this._adminService.getUsers().subscribe({
+  this.userListSubscription=  this._adminService.getUsers().subscribe({
       next: (Response) => {
         this.users = Response;
         this.users_to_display = this.users;

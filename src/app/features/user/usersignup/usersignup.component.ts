@@ -74,7 +74,7 @@ export class UsersignupComponent implements OnInit {
   }
 
   onsubmit() {
-    console.log('onsubmit entered', this.user_registration_form);
+    // console.log('onsubmit entered', this.user_registration_form);
     const password = this.user_registration_form.get('password')?.value;
     if (this.user_registration_form.invalid) {
       if (this.firstnameError()) {

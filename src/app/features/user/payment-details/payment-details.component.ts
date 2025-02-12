@@ -9,7 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { UserService } from '../../../shared/services/user.service';
-import { debounceTime } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 @AutoUnsubscribe
 @Component({
@@ -24,6 +24,8 @@ export class PaymentDetailsComponent {
   userId!: any;
   searchForm!: FormGroup;
   paymentForm!: FormGroup;
+
+  bookingDetailsSubscription!:Subscription
   constructor(
     private messageService: MessageToasterService,
     private formBuilder: FormBuilder,
@@ -42,7 +44,7 @@ export class PaymentDetailsComponent {
   }
 
   getAppointmentDetails() {
-    this.userService
+    this.bookingDetailsSubscription=this.userService
       .get_booking_details_of_user({ userId: localStorage.getItem('userId') })
       .subscribe({
         next: (Response) => {

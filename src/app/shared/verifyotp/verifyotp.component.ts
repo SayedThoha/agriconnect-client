@@ -94,7 +94,7 @@ export class VerifyotpComponent implements OnInit {
       return;
     } else {
       let otpdata;
-      console.log(this.role);
+      // console.log(this.role);
 
       if (this.role === 'user_new_email' || this.role === 'expert_new_email') {
         otpdata = {
@@ -109,7 +109,7 @@ export class VerifyotpComponent implements OnInit {
           otp: this.otpForm.value.otp as string,
         };
       }
-      console.log('otpdata:', otpdata);
+      // console.log('otpdata:', otpdata);
       if (this.commonservice.getAuthFromLocalStorage() === 'expert') {
         this.expertService.verifyOtp(otpdata).subscribe({
           next: (response) => {
@@ -136,7 +136,7 @@ export class VerifyotpComponent implements OnInit {
             }
           },
           error: (error) => {
-            console.log(error.error.message);
+            // console.log(error.error.message);
             this.showMessage.showErrorToastr(error.error.message);
           },
         });
@@ -144,7 +144,7 @@ export class VerifyotpComponent implements OnInit {
       } else if (this.commonservice.getAuthFromLocalStorage() === 'user') {
         this.userService.verifyOtp(otpdata).subscribe({
           next: (response) => {
-            console.log('role for otp:', this.role);
+            // console.log('role for otp:', this.role);
             if (this.role === 'userRegistration') {
               //if it is user registration verification
               this.showMessage.showSuccessToastr(response.message);

@@ -12,8 +12,9 @@ import { expertData, specialisation } from '../../admin/models/expertModel';
 import { UserService } from '../../../shared/services/user.service';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { Router } from '@angular/router';
-import { debounceTime } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+
 @AutoUnsubscribe
 @Component({
   selector: 'app-expert-listing',
@@ -27,6 +28,7 @@ export class ExpertListingComponent {
   displayed_expert: expertData[] = [];
   searchForm!: FormGroup;
 
+  expertListingSubscription!:Subscription
   constructor(
     private userService: UserService,
     private messageService: MessageToasterService,
@@ -83,15 +85,15 @@ export class ExpertListingComponent {
   }
 
   getExpertDetails() {
-    this.userService.getExperts().subscribe({
+    this.expertListingSubscription= this.userService.getExperts().subscribe({
       next: (Response) => {
-        console.log(Response)
+        // console.log(Response)
         this.experts = Response;
 
         this.displayed_expert = this.experts;
         this.displayed_expert.forEach((data) => {
-          console.log(data);
-          console.log('profile pic', data.profile_picture);
+          // console.log(data);
+          // console.log('profile pic', data.profile_picture);
         });
       },
       error: (error) => {

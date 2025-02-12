@@ -2,3 +2,9 @@
     /* background-color: #acb4c9; */
     background-color: #abbe99;
   }
+
+  .active {
+    color: #abbe99 !important; /* Change text color */
+    font-weight: bold; /* Make it bold */
+    border-bottom: 2px solid #abbe99; /* Add a bottom border */
+  }

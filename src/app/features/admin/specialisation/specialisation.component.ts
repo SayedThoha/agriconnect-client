@@ -11,6 +11,7 @@ import { AdminServiceService } from '../services/admin-service.service';
 import { CommonModule } from '@angular/common';
 import { specialisation } from '../models/expertModel';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { Subscription } from 'rxjs';
 @AutoUnsubscribe
 @Component({
   selector: 'app-specialisation',
@@ -28,6 +29,7 @@ export class SpecialisationComponent implements OnInit {
   specialisationForm!: FormGroup;
   editspecialisationForm!: FormGroup;
 
+  specialisationSubscription!:Subscription
   constructor(
     private adminService: AdminServiceService,
     private messageService: MessageToasterService,
@@ -65,7 +67,7 @@ export class SpecialisationComponent implements OnInit {
   }
 
   getSpecialisation() {
-    this.adminService.getSpecialisation().subscribe({
+  this.specialisationSubscription=  this.adminService.getSpecialisation().subscribe({
       next: (Response) => {
         this.specialisation = Response;
       },

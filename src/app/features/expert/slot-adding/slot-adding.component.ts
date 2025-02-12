@@ -8,6 +8,7 @@ import { TableModule } from 'primeng/table';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { CalendarModule } from 'primeng/calendar';
 import { DatePickerModule } from 'primeng/datepicker';
+
 @Component({
   selector: 'app-slot-adding',
   imports: [
@@ -149,8 +150,8 @@ export class SlotAddingComponent implements OnInit {
   }
 
   remove_slot(slot: any, i: number) {
-    console.log('date in display while removing slot:', this.date);
-    console.log('slot date while removing:', slot.time);
+    // console.log('date in display while removing slot:', this.date);
+    // console.log('slot date while removing:', slot.time);
     this.expertService.removeSlot({ _id: slot._id }).subscribe({
       next: (Response) => {
         this.messageservice.showSuccessToastr(Response.message);

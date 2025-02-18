@@ -7,9 +7,11 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
+import { HeaderComponent } from '../../../shared/header/header.component';
+import { UserSidebarComponent } from '../user-sidebar/user-sidebar.component';
 @Component({
   selector: 'app-user-video-call-room',
-  imports: [],
+  imports: [HeaderComponent,UserSidebarComponent],
   templateUrl: './user-video-call-room.component.html',
   styleUrl: './user-video-call-room.component.css',
 })
@@ -34,7 +36,6 @@ export class UserVideoCallRoomComponent implements OnInit, AfterViewInit {
       Date.now().toString(),
       Date.now().toString()
     );
-    // const kitToken =  ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, this.roomID,  randomID(5),  randomID(5));
 
     //generate link
     const videoCallLink =
@@ -57,9 +58,8 @@ export class UserVideoCallRoomComponent implements OnInit, AfterViewInit {
         },
       ],
       scenario: {
-        mode: ZegoUIKitPrebuilt.GroupCall, 
+        mode: ZegoUIKitPrebuilt.GroupCall,
       },
     });
-    
   }
 }

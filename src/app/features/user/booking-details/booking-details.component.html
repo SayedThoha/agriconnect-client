@@ -69,9 +69,7 @@
                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                     {{appointment?.slotId.time|date:'shortTime'}}
                 </th>
-                <!-- <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    {{appointment.consultation_status}}
-                </th> -->
+                
                 <td class="px-6 py-4">
                     <div *ngIf="appointment.consultation_status==='pending'">
                         <th scope="row" class="text-center font-medium text-red-600 dark:text-orange-500">{{appointment.consultation_status}}</th>
@@ -102,16 +100,7 @@
                     </div>
                 </td>
                 
-                <!-- <td class="px-6 py-4">
-                    <div *ngIf="appointment.blocked==='true'">
-                        <th scope="row" class="text-center font-medium text-red-600 dark:text-red-500">Blocked</th>
-                        <button  (click)="changeStatus(appointment)" class="font-small text-black-500 dark:text-black-500 hover:underline">want to unblock?</button>
-                    </div>
-                    <div *ngIf="appointment.blocked==='false'">
-                        <th scope="row" class="text-center font-medium text-green-600 dark:text-green-500">Not Blocked</th>
-                        <button  (click)="changeStatus(appointment)" class="font-small text-black-500 dark:text-black-500 hover:underline">want to block?</button>
-                    </div>
-                </td> -->
+               
             </tr>
         </tbody>
     </table>

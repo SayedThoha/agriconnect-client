@@ -49,12 +49,12 @@ export class expertEffects {
     this.actions$.pipe(
       ofType(loginExpert),
       exhaustMap((action) => {
-        console.log('expert login effects');
+        // console.log('expert login effects');
         return this.expertService.expertLogin(action.data).pipe(
           map((data) => {
             const expertData = data;
             if (expertData.email) {
-              console.log('expertdata:', expertData);
+              // console.log('expertdata:', expertData);
               localStorage.setItem('email', expertData.email);
               localStorage.setItem('role', 'expertVerification');
               this.router.navigate(['/expert/verifyOtp']);
@@ -80,11 +80,11 @@ export class expertEffects {
                 expertData.refreshToken
               );
               localStorage.setItem('expertId', expertData.accessedUser._id);
-              console.log('expertId in effects:', expertData.accessedUser._id);
-              console.log(
-                'expertId in effects:',
-                localStorage.getItem('expertId')
-              );
+              // console.log('expertId in effects:', expertData.accessedUser._id);
+              // console.log(
+              //   'expertId in effects:',
+              //   localStorage.getItem('expertId')
+              // );
 
               this.showMessage.showSuccessToastr(expertData.message);
               this.router.navigate(['/expert/expertHome']); //page after login
@@ -112,6 +112,7 @@ export class expertEffects {
             }
             this.showMessage.showErrorToastr(error.error.message);
 
+            
             return of(error.message);
             // return of({ type: '[Expert] Login Failed', error: error.error.message });
           })
@@ -130,6 +131,7 @@ export class expertEffects {
           this.showMessage.showErrorToastr(
             'Session expired. Please log in again.'
           );
+
           this.router.navigate(['/home']);
           return of(
             refreshExpertTokenFailure({
@@ -159,6 +161,7 @@ export class expertEffects {
             this.showMessage.showErrorToastr(
               'Session expired. Please log in again.'
             );
+
             localStorage.clear();
             this.router.navigate(['/home']);
             return of(refreshExpertTokenFailure({ error: error.message }));

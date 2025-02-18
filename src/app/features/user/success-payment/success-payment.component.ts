@@ -21,7 +21,7 @@ export class SuccessPaymentComponent implements OnInit {
 
   ngOnInit(): void {
     this.expertId = this.route.snapshot.paramMap.get('id');
-    console.log(this.expertId)
+    
   }
 
   toExpertProfile(){

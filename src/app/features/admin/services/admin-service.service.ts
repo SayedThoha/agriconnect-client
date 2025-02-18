@@ -39,7 +39,7 @@ export class AdminServiceService {
 
   //change the status of a expert
   expertBlock(data: Object): Observable<HttpResponseModel> {
-    console.log('expert block service:', data);
+    // console.log('expert block service:', data);
     return this._http.post<HttpResponseModel>(
       `${this.api}/admin/expertBlock`,
       data
@@ -61,18 +61,18 @@ export class AdminServiceService {
 
   //get a single user
   userDetails(data: Object): Observable<userdata> {
-    console.log('userDetails service:', data);
+    // console.log('userDetails service:', data);
     return this._http.post<userdata>(`${this.api}/admin/userDetails`, data);
   }
 
   //userlist-search
   searchUser(data: Object): Observable<userdata[]> {
-    console.log('search user service:', data);
+    // console.log('search user service:', data);
     return this._http.post<userdata[]>(`${this.api}/admin/searchUser`, data);
   }
 
   searchExpert(data: Object): Observable<expertData[]> {
-    console.log('search user service:', data);
+    // console.log('search user service:', data);
     return this._http.post<expertData[]>(
       `${this.api}/admin/searchExpert`,
       data
@@ -80,7 +80,7 @@ export class AdminServiceService {
   }
   //get specialisation
   getSpecialisation(): Observable<specialisation[]> {
-    console.log('get specialisation Service');
+    // console.log('get specialisation Service');
     return this._http.get<specialisation[]>(
       `${this.api}/admin/getSpecialisation`
     );
@@ -88,7 +88,7 @@ export class AdminServiceService {
 
   //add specialization
   addSpecialisation(data: Object): Observable<HttpResponseModel> {
-    console.log('add specialisation Service:', data);
+    // console.log('add specialisation Service:', data);
     return this._http.post<HttpResponseModel>(
       `${this.api}/admin/addSpecialisation`,
       data
@@ -97,7 +97,7 @@ export class AdminServiceService {
 
   //edit specialization
   editSpecialisation(data: specialisation): Observable<HttpResponseModel> {
-    console.log('edit specialisation Service');
+    // console.log('edit specialisation Service');
     return this._http.post<HttpResponseModel>(
       `${this.api}/admin/editSpecialisation`,
       data
@@ -106,7 +106,7 @@ export class AdminServiceService {
 
   //delete specialization
   deleteSpecialisation(data: any): Observable<HttpResponseModel> {
-    console.log('delete specialisation Service');
+    // console.log('delete specialisation Service');
     const httpParams = new HttpParams({ fromObject: data });
     return this._http.delete<HttpResponseModel>(
       `${this.api}/admin/deleteSpecialisation`,
@@ -116,7 +116,7 @@ export class AdminServiceService {
 
   //edit payOut
   editpayOut(data: Object): Observable<HttpResponseModel> {
-    console.log('delete specialisation Service');
+    // console.log('delete specialisation Service');
     return this._http.post<HttpResponseModel>(
       `${this.api}/admin/editpayOut`,
       data
@@ -125,7 +125,7 @@ export class AdminServiceService {
 
   //kyc data fetching
   kycdata(): Observable<kyc_verification[]> {
-    console.log('kyc details');
+    // console.log('kyc details');
     return this._http.get<kyc_verification[]>(
       `${this.api}/admin/kycDataCollection`
     );
@@ -133,7 +133,7 @@ export class AdminServiceService {
 
   //get a expert details
   get_expert_kyc_details_from_id(data: any): Observable<expertData> {
-    console.log('expert detail Service');
+    // console.log('expert detail Service');
     const httpParams = new HttpParams({ fromObject: data });
     return this._http.get<expertData>(
       `${this.api}/admin/get_kyc_details_of_expert`,
@@ -142,7 +142,7 @@ export class AdminServiceService {
   }
 
   submit_kyc_details(data: any): Observable<HttpResponseModel> {
-    console.log('expert detail Service');
+    // console.log('expert detail Service');
     return this._http.post<HttpResponseModel>(
       `${this.api}/admin/submit_kyc_details`,
       data
@@ -150,7 +150,7 @@ export class AdminServiceService {
   }
 
   download_kyc_documents(data: any): Observable<HttpResponseModel> {
-    console.log('download_kyc_documents Service');
+    // console.log('download_kyc_documents Service');
     const httpParams = new HttpParams({ fromObject: data });
     return this._http.get<HttpResponseModel>(
       `${this.api}/admin/download_kyc_documents`,
@@ -164,7 +164,7 @@ export class AdminServiceService {
   }
 
   get_admin_dashboard_details(data: any): Observable<any> {
-    console.log('service call of get_booking_details_of_expert');
+    // console.log('service call of get_booking_details_of_expert');
     const httpParams = new HttpParams({ fromObject: data });
     return this._http.get<any>(
       `${this.api}/admin/get_admin_dashboard_details`,

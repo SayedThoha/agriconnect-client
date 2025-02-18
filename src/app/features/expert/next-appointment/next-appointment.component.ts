@@ -44,14 +44,14 @@ export class NextAppointmentComponent implements OnInit {
         .upcomingAppointment({ expertId: expertId })
         .subscribe({
           next: (Response) => {
-            console.log('next appointment', Response);
+            // console.log('next appointment', Response);
             if (Object.entries(Response).length === 0) {
               this.upcoming_appointment = 0;
             } else {
               this.upcoming_appointment = Response;
               this.checkAppointmentTime();
             }
-            console.log(Response);
+            // console.log(Response);
           },
           error: (error) => {
             this.messageService.showErrorToastr(error.error.message);

@@ -7,7 +7,7 @@ import { isPlatformBrowser } from '@angular/common';
 
 
 export const expertLoggedInGuard: CanActivateFn = (route, state) => {
-  console.log(route, state);
+  // console.log(route, state);
   const expertAuth = inject(AuthService);
   const router = inject(Router);
 
@@ -22,7 +22,8 @@ export const expertLoggedInGuard: CanActivateFn = (route, state) => {
 
 //check user LoggedOut or not
 export const expertLoggedOutGuard: CanActivateFn = (route, state) => {
-  console.log(route, state);
+  // console.log(route, state);
+  
   const expertAuth = inject(AuthService);
   const router = inject(Router);
 

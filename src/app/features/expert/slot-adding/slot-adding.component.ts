@@ -72,7 +72,7 @@ export class SlotAddingComponent implements OnInit {
   onDateChange(event: any) {
     this.date = event;
     this.generateISO8601Dates(this.date);
-    console.log('onDateChange', event); //example of event: Sun Aug 11 2024 21:04:54 GMT+0530 (India Standard Time)
+    // console.log('onDateChange', event);
     this.removeExistingSlots();
   }
 
@@ -85,7 +85,7 @@ export class SlotAddingComponent implements OnInit {
     
       this.expertService.addSlots(data).subscribe({
         next: (Response) => {
-          console.log('API Response:', Response);
+          // console.log('API Response:', Response);
         
           this.messageservice.showSuccessToastr('slot added');
           
@@ -189,7 +189,7 @@ export class SlotAddingComponent implements OnInit {
     this.slots.sort((a: any, b: any) => {
       return new Date(a.time).getTime() - new Date(b.time).getTime();
     });
-    console.log('slots length:', this.slots.length);
+    // console.log('slots length:', this.slots.length);
   }
 
   defaultSlots() {

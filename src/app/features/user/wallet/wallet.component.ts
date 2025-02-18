@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { UserService } from '../../../shared/services/user.service';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @AutoUnsubscribe
 @Component({
   selector: 'app-wallet',
-  imports: [],
+  imports: [CommonModule,FormsModule],
   templateUrl: './wallet.component.html',
   styleUrl: './wallet.component.css',
 })

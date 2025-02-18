@@ -46,7 +46,7 @@ export class TokenService {
 
     const refreshToken = localStorage.getItem('userRefreshToken');
     if (!refreshToken) {
-      this.showMessage.showErrorToastr('Session expired. Please log in again.');
+      // this.showMessage.showErrorToastr('Session expired. Please log in again.');
       this.router.navigate(['/home']);
       this.store.dispatch(
         refreshUserTokenFailure({ error: 'No refresh token found' })
@@ -66,7 +66,7 @@ export class TokenService {
       catchError((error) => {
         this.refreshingUserToken = false;
         this.showMessage.showErrorToastr(
-          'Session expired. Please log in again.'
+          'Session expired.Please log in again.'
         );
         localStorage.clear();
         this.router.navigate(['/home']);
@@ -87,7 +87,7 @@ export class TokenService {
 
     const refreshToken = localStorage.getItem('expertRefreshToken');
     if (!refreshToken) {
-      this.showMessage.showErrorToastr('Session expired. Please log in again.');
+      // this.showMessage.showErrorToastr('Session expired. Please log in again.');
       this.router.navigate(['/home']);
       this.store.dispatch(
         refreshExpertTokenFailure({ error: 'No refresh token found' })
@@ -119,6 +119,4 @@ export class TokenService {
       switchMap(() => this.expertTokenSubject.asObservable())
     );
   }
-  
 }
-

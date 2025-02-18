@@ -10,7 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class PdfViewerComponent implements OnInit {
   pdfUrl!: SafeResourceUrl;
-  // pdfUrl!: string;
+  
   constructor(
     private _route: ActivatedRoute,
     private _sanitizer: DomSanitizer

@@ -9,9 +9,17 @@ import { AuthGoogleService } from '../services/googleauth.service';
 import { logoutUser } from '../../core/store/user/user.actions';
 import { logoutExpert } from '../../core/store/expert/expert.actions';
 
+import { ExpertNotificationComponent } from '../../features/expert/expert-notification/expert-notification.component';
+import { NotificationComponent } from '../../features/user/notification/notification.component';
+
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, ButtonModule],
+  imports: [
+    CommonModule,
+    ButtonModule,
+    NotificationComponent,
+    ExpertNotificationComponent,
+  ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })
@@ -43,8 +51,6 @@ export class HeaderComponent implements OnInit {
       // console.log('Google authState updated:', isLoggedIn);
       this.checkuser();
     });
-
-    
   }
 
   setActiveTab(tab: string) {
@@ -94,7 +100,7 @@ export class HeaderComponent implements OnInit {
 
   userHome() {
     this.setActiveTab('userHome');
-    console.log(this.commonService.getAuthFromLocalStorage());
+    // console.log(this.commonService.getAuthFromLocalStorage());
     this.router.navigate(['/user/userHome']);
   }
 
@@ -137,15 +143,15 @@ export class HeaderComponent implements OnInit {
   userLogout() {
     if (this.authService.checkUserLoggedIn()) {
       this.authGoogleService.logout();
-      this.store.dispatch(logoutUser())
+      this.store.dispatch(logoutUser());
       localStorage.removeItem('userToken');
-      localStorage.removeItem('userRefreshToken')
+      localStorage.removeItem('userRefreshToken');
       this.router.navigate(['/home']);
       localStorage.removeItem('auth');
     } else if (this.authService.checkExpertLoggedIn()) {
-      this.store.dispatch(logoutExpert())
+      this.store.dispatch(logoutExpert());
       localStorage.removeItem('expertToken');
-      localStorage.removeItem('expertRefreshToken')
+      localStorage.removeItem('expertRefreshToken');
       this.router.navigate(['/home']);
       localStorage.removeItem('auth');
     }
@@ -154,5 +160,4 @@ export class HeaderComponent implements OnInit {
     localStorage.removeItem('activeTab');
     this.cdr.detectChanges();
   }
-  
 }

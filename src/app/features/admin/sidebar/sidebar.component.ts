@@ -19,6 +19,6 @@ export class SidebarComponent {
   logout() {
     this.store.dispatch(logoutadmin());
     localStorage.removeItem('adminToken');
-    this._router.navigate(['admin/login']);
+    this._router.navigate(['/admin/login']);
   }
 }

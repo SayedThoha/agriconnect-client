@@ -78,7 +78,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
               return next(clonedReq);
             }),
             catchError(() => {
-              showMessage.showErrorToastr('Session expired. Please log in again.');
+              // showMessage.showErrorToastr('Session expired. Please log in again.');
               localStorage.clear();
               router.navigate(['/home']);
               return throwError(() => error);
@@ -96,7 +96,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
               return next(clonedReq);
             }),
             catchError(() => {
-              showMessage.showErrorToastr('Session expired. Please log in again.');
+              // showMessage.showErrorToastr('Session expired. Please log in again.');
               localStorage.clear();
               router.navigate(['/home']);
               return throwError(() => error);

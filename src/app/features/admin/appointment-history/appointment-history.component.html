@@ -156,6 +156,14 @@
                 {{ appointment.consultation_status }}
               </th>
             </div>
+            <div *ngIf="appointment.consultation_status === 'not_consulted'">
+              <th
+                scope="row"
+                class="text-center font-medium text-red-600 dark:text-orange-500"
+              >
+                {{ appointment.consultation_status }}
+              </th>
+            </div>
           </td>
           <td class="px-6 py-4">
             <div *ngIf="appointment.payment_status === true">

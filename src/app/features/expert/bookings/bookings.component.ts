@@ -45,7 +45,8 @@ export class BookingsComponent implements OnInit {
       .get_bookings_of_expert({ expertId: localStorage.getItem('expertId') })
       .subscribe({
         next: (Response) => {
-          console.log('response:', Response);
+          // console.log('response:', Response);
+          
           this.payments = Response;
           this.payments_to_display = this.payments;
         },

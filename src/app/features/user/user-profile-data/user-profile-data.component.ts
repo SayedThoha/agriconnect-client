@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { UserService } from '../../../shared/services/user.service';
 import {
   FormBuilder,
@@ -15,7 +15,14 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom, Subscription } from 'rxjs';
+import {
+  catchError,
+  firstValueFrom,
+  Subscription,
+  switchMap,
+  throwError,
+} from 'rxjs';
+import { UploadService } from '../../../shared/services/upload.service';
 
 @Component({
   selector: 'app-user-profile-data',
@@ -36,17 +43,16 @@ export class UserProfileDataComponent implements OnInit {
   edit_profile_picture!: FormGroup;
   name_form!: FormGroup;
   email_form!: FormGroup;
-  profile_form!: FormGroup;
-  uploadForm!: FormGroup;
 
   profileDataSubscription!: Subscription;
+
   constructor(
     private userService: UserService,
     private showMessage: MessageToasterService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private imageuploadService: ImageUploadService,
-    private http: HttpClient
+    private uploadService: UploadService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -55,9 +61,6 @@ export class UserProfileDataComponent implements OnInit {
     this.name_form.get('firstName')?.disable();
     this.name_form.get('lastName')?.disable();
     this.email_form.get('email')?.disable();
-    this.uploadForm = this.formBuilder.group({
-      profile: ['']
-    });
   }
 
   selectedFile: File | null = null;
@@ -65,7 +68,6 @@ export class UserProfileDataComponent implements OnInit {
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
-    // this.uploadForm.get('profile').setValue(file);
     if (file) {
       this.selectedFile = file;
       this.uploadImage();
@@ -79,16 +81,12 @@ export class UserProfileDataComponent implements OnInit {
 
   uploadImage() {
     if (this.selectedFile) {
-      console.log('upload file in ts,before service call');
-      console.log(this.selectedFile);
-      console.log("I AM HERE");
-      // this.imageuploadService
-        // .uploadProfilePic(this.selectedFile, 'user-profile-picture')
-      this.imageuploadService
-        .uploadProfilePic(this.selectedFile, 'user-profile-picture')
+      // console.log('upload file in ts,before service call');
+      this.uploadService
+        .uploadImage(this.selectedFile, 'AgriConnect')
         .subscribe({
           next: (imageUrl) => {
-            console.log('Image uploaded successfully:', imageUrl);
+            // console.log('Image uploaded successfully:', imageUrl);
             this.url = imageUrl;
             this.upload_image_to_server();
           },
@@ -105,6 +103,7 @@ export class UserProfileDataComponent implements OnInit {
     this.userService.edit_user_profile_picture(data).subscribe({
       next: (Response) => {
         this.showMessage.showSuccessToastr(Response.message);
+        this.cdr.detectChanges();
       },
       error: (error) => {
         this.showMessage.showErrorToastr(error.error.message);
@@ -123,10 +122,6 @@ export class UserProfileDataComponent implements OnInit {
 
   private initializeForms(): void {
     this.edit_profile_picture = this.formBuilder.group({
-      profile_picture: [null, Validators.required],
-    });
-
-    this.profile_form = this.formBuilder.group({
       profile_picture: [null, Validators.required],
     });
 

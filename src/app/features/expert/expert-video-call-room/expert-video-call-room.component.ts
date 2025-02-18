@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -12,15 +13,22 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SidebarComponent } from '../sidebar/sidebar.component';
+import { HeaderComponent } from '../../../shared/header/header.component';
 
 @Component({
   selector: 'app-expert-video-call-room',
-  imports: [CommonModule,FormsModule,ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    SidebarComponent,
+    HeaderComponent,
+  ],
   templateUrl: './expert-video-call-room.component.html',
   styleUrl: './expert-video-call-room.component.css',
 })
 export class ExpertVideoCallRoomComponent implements OnInit, AfterViewInit {
-
   roomID!: any;
   appointmentId!: any;
   consultation_status = 'consulted';
@@ -36,7 +44,6 @@ export class ExpertVideoCallRoomComponent implements OnInit, AfterViewInit {
   root!: ElementRef;
 
   ngOnInit(): void {
-    
     this.appointmentId = this.route.snapshot.paramMap.get('appointmentId');
     this.roomID = this.route.snapshot.paramMap.get('id');
   }

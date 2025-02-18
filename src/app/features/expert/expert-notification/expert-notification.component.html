@@ -1,0 +1,104 @@
+<div class="notification-container relative">
+  <!-- Notification bell button -->
+  <button
+    type="button"
+    (click)="toggleNotifications()"
+    (keydown.enter)="toggleNotifications()"
+    class="notification-bell relative"
+    aria-label="Toggle notifications"
+  >
+    <span class="bell-icon">🔔</span>
+    <span *ngIf="unreadCount > 0" class="notification-badge">
+      {{ unreadCount }}
+    </span>
+  </button>
+
+  <!-- Notification panel (modal) -->
+  <div
+    *ngIf="showNotifications"
+    class="notification-panel fixed inset-0"
+    (click)="closeNotifications()"
+    (keydown.escape)="closeNotifications()"
+    role="dialog"
+    aria-label="Notifications panel"
+    tabindex="0"
+  >
+    <!-- Panel content with stop propagation to prevent closing when clicking inside -->
+    <div
+      class="notification-content bg-white"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+      role="document"
+      tabindex="0"
+    >
+      <div class="notification-header">
+        <h3>Notifications</h3>
+        <button
+          type="button"
+          class="close-button"
+          (click)="closeNotifications()"
+          (keydown.enter)="closeNotifications()"
+          aria-label="Close notifications"
+        >
+          ×
+        </button>
+      </div>
+
+      <!-- Notification list -->
+      <div class="notification-list" role="list">
+        <ng-container *ngIf="notifications.length > 0; else noNotifications">
+          <div
+            *ngFor="let notification of notifications"
+            class="notification-item"
+            [class.unread]="!notification.isReadByExpert"
+            role="listitem"
+          >
+            <div class="notification-content">
+              <span
+                *ngIf="!notification.isReadByExpert"
+                class="unread-indicator"
+                aria-hidden="true"
+                >●</span
+              >
+              <p>{{ formatNotificationTime(notification.message) }}</p>
+              <small class="notification-time">
+                {{ notification.createdAt | date : "short" }}
+              </small>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Empty state -->
+        <ng-template #noNotifications>
+          <div class="empty-state">
+            <p>No notifications yet</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="notification-actions" *ngIf="unreadCount > 0">
+        <button
+          type="button"
+          class="mark-read-button"
+          (click)="markAsRead()"
+          (keydown.enter)="markAsRead()"
+        >
+          Mark all as read
+        </button>
+      </div>
+      <div class="notification-actions" *ngIf="notifications.length > 0">
+        <!-- "Clear All" Button - Only shown when there are notifications -->
+        <button
+          type="button"
+          class="clear-button"
+          (click)="clearNotifications()"
+          (keydown.enter)="clearNotifications()"
+          [disabled]="notifications.length === 0"
+        >
+          Clear All
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -37,7 +37,7 @@ import { getuserstate } from './user.selectors';
 import { UserInfo } from '../../models/userModel';
 import { Store } from '@ngrx/store';
 import { AuthGoogleService } from '../../../shared/services/googleauth.service';
-
+import { Socket } from 'ngx-socket-io';
 // Define the AppState interface
 interface AppState {
   user: UserInfo;
@@ -52,7 +52,8 @@ export class UserEffects {
     private showMessage: MessageToasterService,
     private router: Router,
     private authService: AuthService,
-    private gauthService:AuthGoogleService
+    private gauthService: AuthGoogleService,
+    private socket: Socket
   ) {}
 
   _loginUser = createEffect(() =>
@@ -60,18 +61,17 @@ export class UserEffects {
       ofType(loginUser),
       exhaustMap((action) => {
         // console.log('login effects')
-        console.log('Effect triggered with action:', action);
+        // console.log('Effect triggered with action:', action);
         return this.userService.userLogin(action.data).pipe(
           map((data) => {
             const userdata = data;
             if (userdata.email) {
-              console.log('userdata:', userdata);
+              // console.log('userdata:', userdata);
               localStorage.setItem('email', userdata.email);
               localStorage.setItem('role', 'userVerification');
               this.router.navigate(['/user/verifyOtp']);
-              
+
               return;
-              
             } else if (userdata.accessedUser?.blocked) {
               localStorage.clear(); // Clear any stored data
               this.showMessage.showErrorToastr(
@@ -82,19 +82,20 @@ export class UserEffects {
             } else if (
               userdata &&
               userdata.accessToken &&
-              userdata.refreshToken&&
+              userdata.refreshToken &&
               userdata.accessedUser
             ) {
-              console.log(
-                'response from backend: userdata while login:',
-                userdata
-              );
+              // console.log(
+              //   'response from backend: userdata while login:',
+              //   userdata
+              // );
               localStorage.setItem('userToken', userdata.accessToken);
-              localStorage.setItem('userRefreshToken',userdata.refreshToken)
+              localStorage.setItem('userRefreshToken', userdata.refreshToken);
               localStorage.setItem('userId', userdata.accessedUser._id);
-              console.log('userId:', localStorage.getItem('userId'));
+              // console.log('userId:', localStorage.getItem('userId'));
               this.showMessage.showSuccessToastr(userdata.message);
-              this.router.navigate(['/user/userHome']); //page after login-
+              this.router.navigate(['/user/userHome']);
+
               return loginUserSuccess({ data: userdata.accessedUser });
             } else {
               // return { type: '[Login] No Action' };
@@ -102,7 +103,6 @@ export class UserEffects {
             }
           }),
           catchError((error) => {
-            
             console.log('error.error.message:', error.error.message);
 
             // Handle blocked user error from backend
@@ -127,50 +127,58 @@ export class UserEffects {
     )
   );
 
-  
- // Refresh token effect for user
- _refreshUserToken = createEffect(() =>
-  this.actions$.pipe(
-    ofType(refreshUserToken),
-    switchMap(() => {
-      const refreshToken = localStorage.getItem('userRefreshToken');
+  // Refresh token effect for user
+  _refreshUserToken = createEffect(() =>
+    this.actions$.pipe(
+      ofType(refreshUserToken),
+      switchMap(() => {
+        const refreshToken = localStorage.getItem('userRefreshToken');
 
-      if (!refreshToken) {
-        this.showMessage.showErrorToastr('Session expired. Please log in again.');
-        this.router.navigate(['/home']);
-        return of(refreshUserTokenFailure({ error: 'No refresh token found for user' }));
-      }
-
-      return this.userService.refreshUserToken(refreshToken).pipe(
-        map((data) => {
-          if (data.accessToken && data.refreshToken) {
-            localStorage.setItem('userToken', data.accessToken);
-            localStorage.setItem('userRefreshToken', data.refreshToken);
-            return refreshUserTokenSuccess({ accessToken: data.accessToken });
-          } else {
-            this.showMessage.showErrorToastr('Failed to refresh user token.');
-            return refreshUserTokenFailure({ error: 'Invalid user refresh token response' });
-          }
-        }),
-        catchError((error) => {
-          this.showMessage.showErrorToastr('Session expired. Please log in again.');
-          localStorage.clear();
+        if (!refreshToken) {
+          this.showMessage.showErrorToastr(
+            'Session expired. Please log in again.'
+          );
           this.router.navigate(['/home']);
-          return of(refreshUserTokenFailure({ error: error.message }));
-        })
-      );
-    })
-  )
-);
+          return of(
+            refreshUserTokenFailure({
+              error: 'No refresh token found for user',
+            })
+          );
+        }
+
+        return this.userService.refreshUserToken(refreshToken).pipe(
+          map((data) => {
+            if (data.accessToken && data.refreshToken) {
+              localStorage.setItem('userToken', data.accessToken);
+              localStorage.setItem('userRefreshToken', data.refreshToken);
+              return refreshUserTokenSuccess({ accessToken: data.accessToken });
+            } else {
+              this.showMessage.showErrorToastr('Failed to refresh user token.');
+              return refreshUserTokenFailure({
+                error: 'Invalid user refresh token response',
+              });
+            }
+          }),
+          catchError((error) => {
+            this.showMessage.showErrorToastr(
+              'Session expired. Please log in again.'
+            );
+            localStorage.clear();
+            this.router.navigate(['/home']);
+            return of(refreshUserTokenFailure({ error: error.message }));
+          })
+        );
+      })
+    )
+  );
 
   refreshTokenPeriodically = createEffect(() =>
-    interval(4 * 60 * 1000).pipe( // Every 4 minutes
+    interval(4 * 60 * 1000).pipe(
+      // Every 4 minutes
       filter(() => !!localStorage.getItem('userRefreshToken')), // Only proceed if refreshToken exists
       switchMap(() => of(refreshUserToken())) // Trigger the refreshToken action
     )
   );
-  
-  
 
   checkUserBlock = createEffect(() =>
     interval(60000).pipe(
@@ -185,11 +193,6 @@ export class UserEffects {
                 'Your account has been blocked. Please contact support.'
               );
               this.router.navigate(['/home']);
-              // Return multiple actions
-              // return [
-              //   userBlocked({ message: 'User account is blocked' }),
-              //   logoutUser()
-              // ];
             }
             return [{ type: '[User] Status Check Success' }];
           }),
@@ -201,9 +204,4 @@ export class UserEffects {
       )
     )
   );
-
-
-  
-  
-
 }

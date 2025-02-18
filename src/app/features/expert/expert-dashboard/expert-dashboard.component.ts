@@ -56,7 +56,7 @@ export class ExpertDashboardComponent implements OnInit {
       .get_expert_dashboard_details({ expertId: expertId })
       .subscribe({
         next: (Response) => {
-          console.log("dashboard details",Response)
+          // console.log("dashboard details",Response)
           this.booked_Slots = Response;
           this.get_dashboard_display_contents();
           this.graph_details(this.graph_data_based_on);

@@ -186,7 +186,7 @@ export class UserChatComponent implements OnInit, OnDestroy {
       if (message && message.trim().length === 0) {
         return;
       }
-      console.log(message);
+      // console.log(message);
       let data = {
         content: message,
         chatId: this.chatId,

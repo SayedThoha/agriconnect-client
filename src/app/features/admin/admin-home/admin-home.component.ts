@@ -17,7 +17,7 @@ constructor(private router:Router) {
 }
   ngOnInit(): void {
     if (this.router.url === '/adminHome') {
-    this.router.navigate(['adminHome/dashboard']);
+    this.router.navigate(['/adminHome/dashboard']);
     }
   }
 }

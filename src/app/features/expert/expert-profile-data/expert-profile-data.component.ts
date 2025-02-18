@@ -20,6 +20,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { Subscription } from 'rxjs';
+import { UploadService } from '../../../shared/services/upload.service';
+
 @AutoUnsubscribe
 @Component({
   selector: 'app-expert-profile-data',
@@ -46,7 +48,8 @@ export class ExpertProfileDataComponent implements OnInit {
     private formBuilder: FormBuilder,
     private showMessage: MessageToasterService,
     private imageuploadService: ImageUploadService,
-    private router: Router
+    private router: Router,
+    private uploadService: UploadService
   ) {}
 
   ngOnInit(): void {
@@ -79,24 +82,19 @@ export class ExpertProfileDataComponent implements OnInit {
 
   uploadImage() {
     if (this.selectedFile) {
-      this.imageuploadService
-        .uploadFile(this.selectedFile, 'AgriConnect')
-        .subscribe(
-          (imageUrl) => {
-            // Assume response.secure_url is the image URL returned by Cloudinary
-            // const imageUrl = response.secure_url;
-            console.log('Image uploaded successfully:', imageUrl);
-
+      this.uploadService
+        .uploadImage(this.selectedFile, 'AgriConnect')
+        .subscribe({
+          next: (imageUrl) => {
             // Apply transformation to crop or pad image to 200x200
             const transformedUrl = this.applyTransformation(imageUrl, 200, 200);
-            console.log('Transformed Image URL:', transformedUrl);
 
             // Save the transformed URL
             this.url = transformedUrl;
             this.upload_image_to_server();
           },
-          (error) => console.error('Error uploading image:', error)
-        );
+          error: (error) => console.error('Error uploading image:', error),
+        });
     }
   }
 

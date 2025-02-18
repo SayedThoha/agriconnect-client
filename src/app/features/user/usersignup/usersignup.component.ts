@@ -99,7 +99,7 @@ export class UsersignupComponent implements OnInit {
         this.showMessage.showErrorToastr('Passwords do not match');
         return;
       }
-      console.log('form submitted');
+      // console.log('form submitted');
       const data = {
         firstName: this.user_registration_form.get('firstname')?.value,
         lastName: this.user_registration_form.get('lastname')?.value,
@@ -108,7 +108,7 @@ export class UsersignupComponent implements OnInit {
       };
       this.userService.userRegister(data).subscribe({
         next: (response) => {
-          console.log('Server response:', response);
+          // console.log('Server response:', response);
           localStorage.setItem(
             'email',
             this.user_registration_form.get('email')?.value

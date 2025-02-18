@@ -5,10 +5,11 @@ import { Store } from '@ngrx/store';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { CommonService } from '../../../shared/services/common.service';
 import { adminlogin } from '../store/admin.action';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-admin-login',
-  imports: [AdminHeaderComponent,ReactiveFormsModule,FormsModule],
+  imports: [AdminHeaderComponent,ReactiveFormsModule,FormsModule,CommonModule],
   templateUrl: './admin-login.component.html',
   styleUrl: './admin-login.component.css'
 })

@@ -95,7 +95,7 @@ export class ExpertPaymentDetailsComponent implements OnInit {
   }
 
   paymentFormSubmit() {
-    console.log('payment form submit');
+    // console.log('payment form submit');
     if (this.paymentForm.valid) {
       const selectedStatus = this.paymentForm.value.status;
       if (selectedStatus === 'all') {

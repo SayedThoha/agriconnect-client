@@ -24,7 +24,7 @@ export class PaymentHistoryComponent {
   searchForm!: FormGroup;
   paymentForm!: FormGroup;
 
-  paymentHistorySubscription!:Subscription
+  paymentHistorySubscription!: Subscription;
   constructor(
     private adminService: AdminServiceService,
     private messageService: MessageToasterService,
@@ -42,15 +42,17 @@ export class PaymentHistoryComponent {
   }
 
   getAppointmentDetails() {
-  this.paymentHistorySubscription=  this.adminService.getAppointment().subscribe({
-      next: (Response) => {
-        this.payments = Response;
-        this.payments_to_display = this.payments;
-      },
-      error: (error) => {
-        this.messageService.showErrorToastr(error.error.message);
-      },
-    });
+    this.paymentHistorySubscription = this.adminService
+      .getAppointment()
+      .subscribe({
+        next: (Response) => {
+          this.payments = Response;
+          this.payments_to_display = this.payments;
+        },
+        error: (error) => {
+          this.messageService.showErrorToastr(error.error.message);
+        },
+      });
   }
 
   initialiseForms(): void {
@@ -65,7 +67,7 @@ export class PaymentHistoryComponent {
   setupSearchSubscription() {
     this.searchForm
       .get('searchData')
-      ?.valueChanges.pipe(debounceTime(300)) 
+      ?.valueChanges.pipe(debounceTime(300))
       .subscribe((value) => {
         this.filterExperts(value);
       });

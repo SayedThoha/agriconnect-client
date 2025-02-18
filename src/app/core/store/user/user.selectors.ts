@@ -3,7 +3,7 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
 import { UserInfo } from "../../models/userModel";
 
-// export const getuserstate=createFeatureSelector<UserInfo>('user')
+
 
 // Define the shape of the user feature state
 export interface UserState {

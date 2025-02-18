@@ -4,9 +4,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'customDate',
 })
 export class CustomDatePipe implements PipeTransform {
-  // transform(value: unknown, ...args: unknown[]): unknown {
-  //   return null;
-  // }
+  
 
   transform(value: string): string {
     const date = new Date(value);

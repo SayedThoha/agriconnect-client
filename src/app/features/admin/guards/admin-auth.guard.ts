@@ -19,7 +19,7 @@ export const adminLoggedInGuard: CanActivateFn = (route, state) => {
 
       if (isLoggedIn) {
         // If logged in, navigate to the admin home page
-        router.navigate(['admin/adminHome']);
+        router.navigate(['/admin/adminHome']);
         return false;
       } else {
         // If not logged in, allow access to the login page
@@ -43,7 +43,7 @@ export const adminLoggedOutGuard: CanActivateFn = (route, state) => {
 
       if (isLoggedIn) {
         // If logged in, redirect to the admin home page
-        router.navigate(['admin/adminHome']);
+        router.navigate(['/admin/adminHome']);
         return false;
       } else {
         // If not logged in, allow access to the requested page

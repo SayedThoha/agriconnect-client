@@ -99,7 +99,7 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
       .expert_accessed_chats({ expertId: this.expertId })
       .subscribe({
         next: (Response) => {
-          console.log('fetched chats:', Response);
+          // console.log('fetched chats:', Response);
           this.chats = Response;
         },
       });

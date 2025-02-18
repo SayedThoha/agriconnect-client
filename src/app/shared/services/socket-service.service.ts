@@ -41,4 +41,21 @@ export class SocketServiceService {
     // console.log('data from expert:', data);
     this.socket.emit('newMessage', data);
   }
+
+
+ 
+ // Listen for incoming messages
+ onNotification(): Observable<any> {
+  return new Observable((observer) => {
+    this.socket.on('notification', (message) => {
+      observer.next(message);
+    });
+  });
+}
+
+// Emit an event when notifications are read
+markNotificationsAsRead() {
+  this.socket.emit('notificationsRead');
+}
+
 }

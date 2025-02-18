@@ -16,6 +16,7 @@ export class UserHomeComponent implements OnInit {
   constructor(private _router:Router){}
 
   ngOnInit(): void {
+    
     const time = new Date().getHours();
       if (time < 10) {
         this.greeting = "Good morning";

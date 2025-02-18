@@ -91,7 +91,7 @@ export class AppointmentHistoryComponent implements OnInit {
 
     if (this.consultationForm.valid) {
       const selectedStatus = this.consultationForm.value.status;
-      console.log('status:', selectedStatus);
+      // console.log('status:', selectedStatus);
       if (selectedStatus === 'all') {
         this.appointments_to_display = this.appointments;
       } else if (selectedStatus === 'pending') {

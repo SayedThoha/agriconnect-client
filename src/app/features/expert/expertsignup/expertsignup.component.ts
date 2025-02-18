@@ -112,7 +112,7 @@ export class ExpertsignupComponent implements OnInit {
 
   onFileSelected(event: Event, controlName: string): void {
     const inputFile = event.target as HTMLInputElement;
-    console.log(`${controlName} files:`, inputFile.files);
+    // console.log(`${controlName} files:`, inputFile.files);
     if (inputFile.files && inputFile.files.length > 0) {
       if (controlName === 'profile_picture') {
         // const file=Array.from(inputFile.files).filter(file => file.type === '.jpg, .jpeg, .png');
@@ -122,7 +122,7 @@ export class ExpertsignupComponent implements OnInit {
             file.type === 'image/jpg' ||
             file.type === 'image/png'
         );
-        console.log('Profile picture file:', file);
+        // console.log('Profile picture file:', file);
         if (file) {
           this.registration_form.patchValue({
             profile_picture: file,
@@ -137,7 +137,7 @@ export class ExpertsignupComponent implements OnInit {
         const file = Array.from(inputFile.files).filter(
           (file) => file.type === 'application/pdf'
         );
-        console.log(`${controlName} PDF files:`, file);
+        // console.log(`${controlName} PDF files:`, file);
         // Check if the selected file is a PDF
         if (file.length > 0) {
           if (controlName === 'identity_proof') {
@@ -167,18 +167,18 @@ export class ExpertsignupComponent implements OnInit {
   
 
   onsubmit() {
-    console.log('Form values:', this.registration_form.value);
-    console.log('Files to upload:', {
-      profile_picture: this.registration_form.get('profile_picture')?.value,
-      identity_proof: this.registration_form.get('identity_proof')?.value,
-      expert_licence: this.registration_form.get('expert_licence')?.value,
-      qualification_certificate: this.registration_form.get(
-        'qualification_certificate'
-      )?.value,
-      experience_certificate: this.registration_form.get(
-        'experience_certificate'
-      )?.value,
-    });
+    // console.log('Form values:', this.registration_form.value);
+    // console.log('Files to upload:', {
+    //   profile_picture: this.registration_form.get('profile_picture')?.value,
+    //   identity_proof: this.registration_form.get('identity_proof')?.value,
+    //   expert_licence: this.registration_form.get('expert_licence')?.value,
+    //   qualification_certificate: this.registration_form.get(
+    //     'qualification_certificate'
+    //   )?.value,
+    //   experience_certificate: this.registration_form.get(
+    //     'experience_certificate'
+    //   )?.value,
+    // });
     const password = this.registration_form.value.password;
     if (this.registration_form.invalid) {
       this.markFormGroupTouched(this.registration_form);
@@ -216,7 +216,7 @@ export class ExpertsignupComponent implements OnInit {
           firstValueFrom(profileUpload$)
          
           .then(response => {
-            console.log('Profile picture uploaded:', response.fileUrl);
+            // console.log('Profile picture uploaded:', response.fileUrl);
             this.registration_form.patchValue({
               profile_picture: response.fileUrl
             });
@@ -233,7 +233,7 @@ export class ExpertsignupComponent implements OnInit {
           firstValueFrom(identityproofUpload$)
          
           .then(response => {
-            console.log('Identity proof uploaded:', response.fileUrl);
+            // console.log('Identity proof uploaded:', response.fileUrl);
             this.registration_form.patchValue({
               identity_proof: response.fileUrl
             });
@@ -250,7 +250,7 @@ export class ExpertsignupComponent implements OnInit {
           firstValueFrom(expertLicenseUpload$)
          
           .then(response => {
-            console.log('Expert license uploaded:', response.fileUrl);
+            // console.log('Expert license uploaded:', response.fileUrl);
             this.registration_form.patchValue({
               expert_licence: response.fileUrl
             });
@@ -267,7 +267,7 @@ export class ExpertsignupComponent implements OnInit {
             firstValueFrom(qualificationCertificateUpload$)
            
             .then(response => {
-              console.log('Qualification certificate uploaded:', response.fileUrl);
+              // console.log('Qualification certificate uploaded:', response.fileUrl);
               const existingFiles = this.registration_form.get('qualification_certificate')?.value || [];
               existingFiles.push(response.fileUrl);
               this.registration_form.patchValue({
@@ -288,7 +288,7 @@ export class ExpertsignupComponent implements OnInit {
             firstValueFrom(experienceCertificateUpload$)
             
             .then(response => {
-              console.log('Experience certificate uploaded:', response.fileUrl);
+              // console.log('Experience certificate uploaded:', response.fileUrl);
               const existingFiles = this.registration_form.get('experience_certificate')?.value || [];
               existingFiles.push(response.fileUrl);
               this.registration_form.patchValue({
@@ -301,7 +301,7 @@ export class ExpertsignupComponent implements OnInit {
 
       Promise.all(uploadPromises)
         .then(() => {
-          console.log('All uploads completed.');
+          // console.log('All uploads completed.');
           Object.keys(this.registration_form.controls).forEach((key) => {
             const control = this.registration_form.get(key);
            
@@ -318,12 +318,12 @@ export class ExpertsignupComponent implements OnInit {
             
 
           });
-          console.log('formdata:', formData);
+          // console.log('formdata:', formData);
 
           // Call the expert service
           this.expertService.expertRegister(formData).subscribe({
             next: (Response) => {
-              console.log(Response);
+              // console.log(Response);
 
               localStorage.setItem(
                 'email',

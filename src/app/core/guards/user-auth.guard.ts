@@ -5,7 +5,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../../shared/services/auth.service';
 
 export const userLoggedInGuard: CanActivateFn = (route, state) => {
-  console.log(route, state);
+  // console.log(route, state);
 
   const userAuth = inject(AuthService);
   const router = inject(Router);
@@ -22,7 +22,7 @@ export const userLoggedInGuard: CanActivateFn = (route, state) => {
 
 //check user LoggedOut or not
 export const userLoggedOutGuard: CanActivateFn = (route, state) => {
-  console.log(route, state);
+  // console.log(route, state);
   const userAuth = inject(AuthService);
   const router = inject(Router);
 

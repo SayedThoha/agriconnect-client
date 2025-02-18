@@ -131,7 +131,7 @@ export class ExpertBookingDetailsComponent implements OnInit {
 
 
   openPrescriptionModal(prescription_id: string | null) {
-    console.log('Opening prescription modal with ID:', prescription_id);
+    // console.log('Opening prescription modal with ID:', prescription_id);
     this.prescription_id = prescription_id;
     if (this.prescriptionModal) {
       this.prescriptionModal.prescription_id = prescription_id;

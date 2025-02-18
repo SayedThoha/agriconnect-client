@@ -31,9 +31,9 @@ export class ExpertService {
   //Expert registration
   expertRegister(data: FormData): Observable<HttpResponseModel> {
     // Log FormData entries
-    for (const [key, value] of data.entries()) {
-      console.log(`${key}:`, value);
-    }
+    // for (const [key, value] of data.entries()) {
+    //   console.log(`${key}:`, value);
+    // }
     return this.http
       .post<HttpResponseModel>(`${this.apiUrl}/expert/registration`, data)
       .pipe(
@@ -108,16 +108,15 @@ export class ExpertService {
     );
   }
 
-  edit_expert_profile_picture(data:object): Observable<HttpResponseModel> {
+  edit_expert_profile_picture(data: object): Observable<HttpResponseModel> {
     return this.http.post<HttpResponseModel>(
       `${this.apiUrl}/expert/edit_expert_profile_picture`,
       data
     );
   }
 
-
   opt_for_new_email(data: object): Observable<HttpResponseModel> {
-    console.log('edit opt_for_new_email service');
+    // console.log('edit opt_for_new_email service');
     return this.http.post<HttpResponseModel>(
       `${this.apiUrl}/expert/opt_for_new_email`,
       data
@@ -178,9 +177,11 @@ export class ExpertService {
     );
   }
 
-  upcomingAppointment(data:any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data })
-    return this.http.get<any>(`${this.apiUrl}/expert/upcoming_appointment`, { params: httpParams })
+  upcomingAppointment(data: any): Observable<any> {
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<any>(`${this.apiUrl}/expert/upcoming_appointment`, {
+      params: httpParams,
+    });
   }
 
   updateUpcomingSlot(data: any): Observable<any> {
@@ -221,9 +222,29 @@ export class ExpertService {
   }
 
   get_prescription_details(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data })
-    return this.http.get<any>(`${this.apiUrl}/expert/get_prescription_details`, { params: httpParams })
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<any>(
+      `${this.apiUrl}/expert/get_prescription_details`,
+      { params: httpParams }
+    );
   }
-  
-  
+
+  getAllNotifications(data: any): Observable<any[]> {
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<any[]>(`${this.apiUrl}/expert/notifications`, {
+      params: httpParams,
+    });
+  }
+
+  markNotificationsAsRead(expertId: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/expert/notifications/mark-as-read`, {
+      expertId,
+    });
+  }
+
+  clearAllNotifications(expertId: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/expert/notifications/clear`, {
+      expertId,
+    });
+  }
 }

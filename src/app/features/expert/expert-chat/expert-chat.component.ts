@@ -25,7 +25,13 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-expert-chat',
-  imports: [HeaderComponent, CommonModule, FormsModule, ReactiveFormsModule,CapitaliseFirstPipe],
+  imports: [
+    HeaderComponent,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CapitaliseFirstPipe,
+  ],
   templateUrl: './expert-chat.component.html',
   styleUrl: './expert-chat.component.css',
 })
@@ -99,7 +105,7 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
       .expert_accessed_chats({ expertId: this.expertId })
       .subscribe({
         next: (Response) => {
-          // console.log('fetched chats:', Response);
+          console.log('fetched chats:', Response);
           this.chats = Response;
         },
       });

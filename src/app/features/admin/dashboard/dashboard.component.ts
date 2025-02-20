@@ -74,8 +74,9 @@ export class DashboardComponent implements OnInit {
   get_dashboard_display_contents() {
     this.total_revenue = this.booked_Slots.reduce((acc: number, data: any) => {
       if (
-        data.consultation_status === 'consulted' ||
-        data.consultation_status === 'not_consulted'
+        data.consultation_status === 'consulted' 
+        // ||
+        // data.consultation_status === 'not_consulted'
       ) {
         return acc + data.slotId.adminPaymentAmount;
       }

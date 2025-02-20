@@ -60,7 +60,7 @@
                 aria-hidden="true"
                 >●</span
               >
-              <p>{{ formatNotificationTime(notification.message) }}</p>
+              <p>{{ notification.message }}</p>
               <small class="notification-time">
                 {{ notification.createdAt | date : "short" }}
               </small>

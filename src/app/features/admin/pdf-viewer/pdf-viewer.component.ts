@@ -22,7 +22,11 @@ export class PdfViewerComponent implements OnInit {
       const unsafeUrl = params['url'];
       if (unsafeUrl) {
         try {
-          const decodedUrl = decodeURIComponent(unsafeUrl);
+          let decodedUrl = decodeURIComponent(unsafeUrl);
+           // Ensure the URL is HTTPS
+        if (decodedUrl.startsWith('http://')) {
+          decodedUrl = decodedUrl.replace('http://', 'https://');
+        }
           this.pdfUrl =
             this._sanitizer.bypassSecurityTrustResourceUrl(decodedUrl);
           // console.log('pdfurl:', decodedUrl); // Log the URL to check its value

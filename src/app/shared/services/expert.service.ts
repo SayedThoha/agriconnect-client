@@ -36,14 +36,14 @@ export class ExpertService {
     // }
     return this.http
       .post<HttpResponseModel>(`${this.apiUrl}/expert/registration`, data)
-      .pipe(
-        catchError((error) => {
-          console.error('Registration failed:', error.error);
-          return throwError(
-            () => new Error('Registration failed. Please try again.')
-          );
-        })
-      );
+      // .pipe(
+      //   catchError((error) => {
+      //     console.error('Registration failed:', error.error);
+      //     return throwError(
+      //       () => new Error('Registration failed. Please try again.')
+      //     );
+      //   })
+      // );
   }
 
   getSpecialisation(): Observable<specialisation> {

@@ -333,7 +333,7 @@ export class ExpertsignupComponent implements OnInit {
           // Call the expert service
           this.expertService.expertRegister(formData).subscribe({
             next: (Response) => {
-              // console.log(Response);
+              // console.log("response:",Response);
 
               localStorage.setItem(
                 'email',
@@ -344,13 +344,13 @@ export class ExpertsignupComponent implements OnInit {
               this.showMessage.showSuccessToastr('Registered successfully');
             },
             error: (error) => {
-              console.log(error.message);
+              console.log("Error:",error.message);
               this.showMessage.showErrorToastr(error.message);
             },
           });
         })
         .catch((error) => {
-          console.log(error);
+          console.log("error in catch:",error);
 
           this.showMessage.showErrorToastr('Error uploading files');
         });

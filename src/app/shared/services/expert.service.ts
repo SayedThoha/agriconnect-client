@@ -34,16 +34,18 @@ export class ExpertService {
     // for (const [key, value] of data.entries()) {
     //   console.log(`${key}:`, value);
     // }
-    return this.http
-      .post<HttpResponseModel>(`${this.apiUrl}/expert/registration`, data)
-      // .pipe(
-      //   catchError((error) => {
-      //     console.error('Registration failed:', error.error);
-      //     return throwError(
-      //       () => new Error('Registration failed. Please try again.')
-      //     );
-      //   })
-      // );
+    return this.http.post<HttpResponseModel>(
+      `${this.apiUrl}/expert/registration`,
+      data
+    );
+    // .pipe(
+    //   catchError((error) => {
+    //     console.error('Registration failed:', error.error);
+    //     return throwError(
+    //       () => new Error('Registration failed. Please try again.')
+    //     );
+    //   })
+    // );
   }
 
   getSpecialisation(): Observable<specialisation> {

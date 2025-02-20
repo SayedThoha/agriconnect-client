@@ -20,6 +20,7 @@ import { CommonModule } from '@angular/common';
 import { ImageUploadService } from '../../../shared/services/image-upload.service';
 import { firstValueFrom } from 'rxjs';
 import { HeaderComponent } from '../../../shared/header/header.component';
+import { UploadService } from '../../../shared/services/upload.service';
 
 @Component({
   selector: 'app-expertsignup',
@@ -33,7 +34,7 @@ export class ExpertsignupComponent implements OnInit {
     private router: Router,
     private showMessage: MessageToasterService,
     private expertService: ExpertService,
-    private imageuploadService: ImageUploadService
+    private uploadService: UploadService
   ) {}
 
   registration_form!: FormGroup;
@@ -164,8 +165,6 @@ export class ExpertsignupComponent implements OnInit {
     }
   }
 
-  
-
   onsubmit() {
     // console.log('Form values:', this.registration_form.value);
     // console.log('Files to upload:', {
@@ -208,51 +207,51 @@ export class ExpertsignupComponent implements OnInit {
       )?.value;
 
       if (profile_picture) {
-        const profileUpload$ = this.imageuploadService.uploadFile(
+        const profileUpload$ = this.uploadService.uploadImage(
           profile_picture,
-          'expert-profile-images'
+          'AgriConnect'
         );
+
         uploadPromises.push(
-          firstValueFrom(profileUpload$)
-         
-          .then(response => {
-            // console.log('Profile picture uploaded:', response.fileUrl);
+          firstValueFrom(profileUpload$).then((imageUrl: string) => {
+            // console.log('Image uploaded successfully:', imageUrl);
+            // Apply transformation to crop or pad image to 200x200
+            const transformedUrl = this.applyTransformation(imageUrl, 200, 200);
+            // console.log('Transformed Image URL:', transformedUrl);
             this.registration_form.patchValue({
-              profile_picture: response.fileUrl
+              profile_picture: transformedUrl,
             });
           })
         );
       }
 
       if (identity_proof) {
-        const identityproofUpload$ = this.imageuploadService.uploadFile(
+        const identityproofUpload$ = this.uploadService.uploadImage(
           identity_proof,
-          'identity_proof'
+          'AgriConnect'
         );
+
         uploadPromises.push(
-          firstValueFrom(identityproofUpload$)
-         
-          .then(response => {
-            // console.log('Identity proof uploaded:', response.fileUrl);
+          firstValueFrom(identityproofUpload$).then((fileUrl: string) => {
+            // console.log('Identity proof uploaded successfully:', fileUrl);
             this.registration_form.patchValue({
-              identity_proof: response.fileUrl
+              identity_proof: fileUrl,
             });
           })
         );
       }
 
       if (expert_licence) {
-        const expertLicenseUpload$ = this.imageuploadService.uploadFile(
+        const expertLicenseUpload$ = this.uploadService.uploadImage(
           expert_licence,
-          'expert_licence'
+          'AgriConnect'
         );
+
         uploadPromises.push(
-          firstValueFrom(expertLicenseUpload$)
-         
-          .then(response => {
-            // console.log('Expert license uploaded:', response.fileUrl);
+          firstValueFrom(expertLicenseUpload$).then((fileUrl: string) => {
+            // console.log('expert license uploaded successfully:', fileUrl);
             this.registration_form.patchValue({
-              expert_licence: response.fileUrl
+              expert_licence: fileUrl,
             });
           })
         );
@@ -261,40 +260,52 @@ export class ExpertsignupComponent implements OnInit {
       if (qualification_certificate) {
         qualification_certificate.forEach((file: File) => {
           const qualificationCertificateUpload$ =
-            this.imageuploadService.uploadFile(file, 'qualification_certificate');
+            this.uploadService.uploadImage(file, 'AgriConnect');
           // .toPromise();
           uploadPromises.push(
-            firstValueFrom(qualificationCertificateUpload$)
-           
-            .then(response => {
-              // console.log('Qualification certificate uploaded:', response.fileUrl);
-              const existingFiles = this.registration_form.get('qualification_certificate')?.value || [];
-              existingFiles.push(response.fileUrl);
-              this.registration_form.patchValue({
-                qualification_certificate: existingFiles
-              });
-            })
+            firstValueFrom(qualificationCertificateUpload$).then(
+              (fileUrl: unknown) => {
+                // console.log(
+                //   'Qualification certificate uploaded successfully:',
+                //   fileUrl
+                // );
+                const existingFiles =
+                  this.registration_form.get('qualification_certificate')
+                    ?.value || [];
+                existingFiles.push(fileUrl);
+                this.registration_form.patchValue({
+                  qualification_certificate: existingFiles,
+                });
+              }
+            )
           );
         });
       }
 
       if (experience_certificate) {
         experience_certificate.forEach((file: File) => {
-          const experienceCertificateUpload$ =
-            this.imageuploadService.uploadFile(file, 'experience_certificate');
+          const experienceCertificateUpload$ = this.uploadService.uploadImage(
+            file,
+            'AgriConnect'
+          );
           // .toPromise();
 
           uploadPromises.push(
-            firstValueFrom(experienceCertificateUpload$)
-            
-            .then(response => {
-              // console.log('Experience certificate uploaded:', response.fileUrl);
-              const existingFiles = this.registration_form.get('experience_certificate')?.value || [];
-              existingFiles.push(response.fileUrl);
-              this.registration_form.patchValue({
-                experience_certificate: existingFiles
-              });
-            })
+            firstValueFrom(experienceCertificateUpload$).then(
+              (fileUrl: unknown) => {
+                // console.log(
+                //   'Experience certificate uploaded successfully:',
+                //   fileUrl
+                // );
+                const existingFiles =
+                  this.registration_form.get('experience_certificate')?.value ||
+                  [];
+                existingFiles.push(fileUrl);
+                this.registration_form.patchValue({
+                  experience_certificate: existingFiles,
+                });
+              }
+            )
           );
         });
       }
@@ -304,19 +315,18 @@ export class ExpertsignupComponent implements OnInit {
           // console.log('All uploads completed.');
           Object.keys(this.registration_form.controls).forEach((key) => {
             const control = this.registration_form.get(key);
-           
-            if (control?.value) {
-              if (Array.isArray(control.value)) {
-                // Handle arrays (qualification and experience certificates)
-                control.value.forEach((value: string) => {
-                  formData.append(key, value);
-                });
+            if (control) {
+              if (
+                key === 'qualification_certificate' ||
+                key === 'experience_certificate'
+              ) {
+                control.value.forEach((file: File) =>
+                  formData.append(key, file)
+                );
               } else {
                 formData.append(key, control.value);
               }
             }
-            
-
           });
           // console.log('formdata:', formData);
 
@@ -334,15 +344,14 @@ export class ExpertsignupComponent implements OnInit {
               this.showMessage.showSuccessToastr('Registered successfully');
             },
             error: (error) => {
-              // console.log(error.message);
-              console.error('Registration failed:', error);
+              console.log(error.message);
               this.showMessage.showErrorToastr(error.message);
             },
           });
         })
         .catch((error) => {
-          // console.log(error);
-          console.error('File upload failed:', error);
+          console.log(error);
+
           this.showMessage.showErrorToastr('Error uploading files');
         });
     }

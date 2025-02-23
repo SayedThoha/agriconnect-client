@@ -66,7 +66,7 @@ export class UserService {
   }
 
   updatePassword(data: UpdatePasswordRequest): Observable<HttpResponseModel> {
-    return this.http.post<HttpResponseModel>(
+    return this.http.patch<HttpResponseModel>(
       `${this.apiUrl}/user/updatePassword`,
       data
     );

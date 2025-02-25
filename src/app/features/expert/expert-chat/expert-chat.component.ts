@@ -14,7 +14,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { ChatServiceService } from '../../../shared/services/chat-service.service';
 import { SocketServiceService } from '../../../shared/services/socket-service.service';
@@ -51,7 +51,8 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
   chats!: any;
   messages!: any;
   chatForm!: FormGroup;
-
+  searchForm!: FormGroup;
+  filteredChats!:any
   constructor(
     private chatService: ChatServiceService,
     private messageService: MessageToasterService,
@@ -66,6 +67,7 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
     this.intialiseForms();
     this.expertId = localStorage.getItem('expertId');
     this.fetch_all_chats();
+    this.setupSearchSubscription();
     if (this.chatId) {
       this.socket.emit('joinChat', this.chatId);
     }
@@ -74,6 +76,9 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
   }
 
   intialiseForms(): void {
+   this.searchForm = this.formBuilder.group({
+      searchData: ['', Validators.required],
+    });
     //chatform
     this.chatForm = this.formBuilder.group({
       message: ['', Validators.required],
@@ -105,10 +110,34 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
       .expert_accessed_chats({ expertId: this.expertId })
       .subscribe({
         next: (Response) => {
-          console.log('fetched chats:', Response);
+          // console.log('fetched chats:', Response);
           this.chats = Response;
+          this.filteredChats=this.chats
         },
       });
+  }
+
+ setupSearchSubscription() {
+    this.searchForm
+      .get('searchData')
+      ?.valueChanges.pipe(debounceTime(300)) // Adjust debounce time as needed
+      .subscribe((value) => {
+        this.filterChats(value);
+      });
+  }
+ 
+  filterChats(searchTerm: string | null) {
+    if (searchTerm) {
+      const regex = new RegExp(searchTerm, 'i');
+      this.filteredChats = this.chats.filter(
+        (chats: any) =>
+          regex.test(chats.user.firstName) ||
+          regex.test(chats.user.lastName) 
+
+      );
+    } else {
+      this.filteredChats = this.chats;
+    }
   }
 
   //call a particular user

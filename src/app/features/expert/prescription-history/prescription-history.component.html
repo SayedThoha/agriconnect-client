@@ -1,1 +1,94 @@
-<p>prescription-history works!</p>
+<div class="max-w-8xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">
+    Prescription History
+  </h2>
+  <label for="table-search" class="sr-only">Search</label>
+  <div class="py-4">
+    <form [formGroup]="searchForm">
+      <div class="relative grid grid-cols-2 divide-x">
+        <div
+          class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none"
+        >
+          <svg
+            class="w-4 h-4 text-gray-500 dark:text-gray-400"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 20 20"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+            />
+          </svg>
+        </div>
+        <div>
+          <input
+            type="text"
+            formControlName="searchData"
+            id="table-search"
+            placeholder="Search"
+            required
+            class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-50 bg-gray-50 focus:ring-gray-500 focus:border-gray-500 dark:bg-gray-500 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          />
+        </div>
+      </div>
+    </form>
+  </div>
+  <div *ngIf="isLoading" class="text-center text-gray-500 text-lg">
+    Loading...
+  </div>
+
+  <div *ngIf="groupedPrescriptions.length > 0" class="overflow-x-auto">
+    <ng-container *ngFor="let group of groupedPrescriptions">
+      <!-- Farmer Name as Section Header -->
+      <div class="border p-4 text-center font-bold bg-gray-200">
+        <span class="text-gray-600 font-semibold">Farmer:</span>
+        {{ group?.name | capitaliseFirst }}
+        <button
+          (click)="downloadFarmerHistory(group)"
+          class="ml-4 bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm"
+        >
+          Download {{ group?.name }}'s History
+        </button>
+      </div>
+
+      <!-- Table Starts Here -->
+      <table class="min-w-full border border-gray-300 rounded-lg shadow-md">
+        <thead>
+          <tr class="bg-gray-700 text-white uppercase text-sm text-left">
+            <th class="border p-4 text-center">Date and Time</th>
+            <th class="border p-4 text-center">Issue</th>
+            <th class="border p-4 text-center">Prescription</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let prescription of group?.prescriptions"
+            class="border-b hover:bg-gray-100 transition"
+          >
+            <td class="border p-4 text-center font-medium text-gray-600">
+              {{ prescription?.createdAt | date : "short" }}
+            </td>
+            <td class="border p-4 text-center font-medium text-gray-700">
+              {{ prescription?.issue }}
+            </td>
+            <td class="border p-4 text-center font-medium text-gray-700">
+              {{ prescription?.prescription }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+  </div>
+
+  <div
+    *ngIf="!isLoading && groupedPrescriptions.length === 0"
+    class="text-center text-gray-500 mt-6 text-lg"
+  >
+    No prescriptions found.
+  </div>
+</div>

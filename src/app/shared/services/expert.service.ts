@@ -231,6 +231,12 @@ export class ExpertService {
     );
   }
 
+  getPrescriptionHistory(data: any): Observable<any> {
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<any[]>(`${this.apiUrl}/expert/prescriptions`);
+  }
+
+
   getAllNotifications(data: any): Observable<any[]> {
     const httpParams = new HttpParams({ fromObject: data });
     return this.http.get<any[]>(`${this.apiUrl}/expert/notifications`, {

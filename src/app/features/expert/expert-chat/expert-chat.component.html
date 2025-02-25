@@ -5,7 +5,7 @@
       <!-- Sidebar for Messages -->
       <div class="w-1/3 bg-white shadow-md h-full flex flex-col">
         <div class="p-4">
-          <form class="relative">
+          <form class="relative" [formGroup]="searchForm">
             <button class="absolute left-2 -translate-y-1/2 top-1/2 p-1">
               <svg
                 width="17"
@@ -20,6 +20,7 @@
               </svg>
             </button>
             <input
+            formControlName="searchData"
               class="w-full rounded-full px-8 py-3 border-2 border-transparent focus:outline-none focus:border-gray-300 placeholder-gray-400 transition-all duration-300 shadow-md"
               placeholder="Search your user"
               required=""
@@ -50,7 +51,7 @@
           <div class="space-y-4">
             <!-- Dynamic user listing -->
             <div
-              *ngFor="let chat of chats"
+              *ngFor="let chat of filteredChats"
               class="flex items-center p-2 bg-gray-100 rounded-md cursor-pointer"
               (click)="selectExpert(chat)"
               (keydown.enter)="selectExpert(chat)"

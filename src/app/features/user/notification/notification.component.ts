@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { SocketServiceService } from '../../../shared/services/socket-service.service';
 import { UserService } from '../../../shared/services/user.service';
-
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-notification',
@@ -21,23 +21,19 @@ export class NotificationComponent implements OnInit, OnDestroy {
   constructor(
     private socketService: SocketServiceService,
     private cdr: ChangeDetectorRef,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    // console.log('Initializing NotificationComponent...');
-
     const userId = localStorage.getItem('userId');
     if (userId) {
-      // console.log('Registering user for notifications:', userId);
       this.socketService.register(userId);
     } else {
-      // console.warn('User ID not found! Skipping registration.');
     }
     this.notificationSubscription = this.socketService
       .onNotification()
       .subscribe((message) => {
-        // console.log('New notification received:', message);
         if (!message) {
           console.error('Received an empty notification!');
           return;
@@ -97,39 +93,55 @@ export class NotificationComponent implements OnInit, OnDestroy {
     const userId = localStorage.getItem('userId');
     if (userId) {
       this.userService.clearAllNotifications(userId as string).subscribe(() => {
-        this.notifications = []; // Clear notifications from UI
-        this.unreadCount = 0; // Reset unread count
-        this.cdr.detectChanges(); // Trigger change detection
+        this.notifications = [];
+        this.unreadCount = 0;
+        this.cdr.detectChanges();
       });
     }
   }
 
-  formatNotificationTime(message: string): string {
-    // Extract the date from the message (assuming consistent format)
-    const dateMatch = message.match(/\w{3} \w{3} \d{1,2} \d{4} \d{2}:\d{2}:\d{2}/);
-    
-    if (dateMatch) {
-      const date = new Date(dateMatch[0]); // Convert to Date object
-      
-      // Format to 12-hour format
-      const formattedTime = date.toLocaleString("en-US", {
-        weekday: "short",
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-        timeZone: "Asia/Kolkata",
+  formatNotificationMessage(notification: any): string {
+    let message = notification.message;
 
+    // Extract date from message
+    const dateMatch = message.match(
+      /\w{3} \w{3} \d{1,2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4}/
+    );
+
+    if (dateMatch) {
+      const originalDateString = dateMatch[0];
+      const date = new Date(originalDateString);
+
+      const formattedDate = date.toLocaleString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Kolkata',
       });
-  
-      // Replace in message
-      return message.replace(dateMatch[0], formattedTime);
+
+      // Replace the original date in the message with the formatted date
+      message = message.replace(originalDateString, formattedDate);
     }
-  
-    
+
+    // Add Expert Name if Available
+    if (notification.expertId?.firstName) {
+      message = message.replace(
+        'Your slot booking',
+        `Your session with Expert: ${notification.expertId.firstName} ${notification.expertId.lastName} is confirmed`
+      );
+    }
+
     return message;
+  }
+
+  redirectToProfile() {
+    this.router.navigate(['/user/user_profile/user_next_appointment']);
+    this.showNotifications = false;
+    this.markAsRead();
   }
 
   ngOnDestroy(): void {

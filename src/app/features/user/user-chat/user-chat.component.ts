@@ -20,7 +20,7 @@ import { ChatServiceService } from '../../../shared/services/chat-service.servic
 import { SocketServiceService } from '../../../shared/services/socket-service.service';
 import { environment } from '../../../../environments/environment';
 import { io } from 'socket.io-client';
-import { Subscription } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { expertData } from '../../admin/models/expertModel';
 import { UserService } from '../../../shared/services/user.service';
 import { Router } from '@angular/router';
@@ -62,6 +62,8 @@ export class UserChatComponent implements OnInit, OnDestroy {
   chatContainer!: ElementRef;
 
   userChatSubscription!:Subscription
+  searchForm!: FormGroup;
+  filteredChats!:any
   constructor(
     private formBuilder: FormBuilder,
     private messageService: MessageToasterService,
@@ -74,23 +76,28 @@ export class UserChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // this.expertId =
+    
 
     this.getExpertDetails();
-   
+    this.initialiseForms();
     this.userId = localStorage.getItem('userId');
-    // this.accessedchat(this.expertId);
+  
     this.userFetchAllChat();
+    this.setupSearchSubscription();
     if (this.chatId) {
       this.socket.emit('joinChat', this.chatId);
     }
     this.scrollToBottom();
 
     this.messageSubscription();
-    this.initialiseForms();
+    
   }
 
   initialiseForms(): void {
+    this.searchForm = this.formBuilder.group({
+      searchData: ['', Validators.required],
+    });
+
     this.chatForm = this.formBuilder.group({
       message: ['', Validators.required],
     });
@@ -120,10 +127,7 @@ export class UserChatComponent implements OnInit, OnDestroy {
         this.experts = Response;
 
         this.displayed_expert = this.experts;
-        this.displayed_expert.forEach((data) => {
-          // console.log(data);
-          // console.log('profile pic', data.profile_picture);
-        });
+       
       },
       error: (error) => {
         console.error(error);
@@ -158,6 +162,29 @@ export class UserChatComponent implements OnInit, OnDestroy {
       },
     });
   }
+
+  setupSearchSubscription() {
+      this.searchForm
+        .get('searchData')
+        ?.valueChanges.pipe(debounceTime(300)) // Adjust debounce time as needed
+        .subscribe((value) => {
+          this.filterExperts(value);
+        });
+    }
+
+    filterExperts(searchTerm: string | null) {
+      console.log(searchTerm)
+      if (searchTerm) {
+        const regex = new RegExp(searchTerm, 'i');
+        this.displayed_expert = this.experts.filter(
+          (experts: any) =>
+            regex.test(experts.firstName) ||
+            regex.test(experts.lastName) 
+        );
+      } else {
+        this.displayed_expert = this.experts;
+      }
+    }
 
   selectExpert(chat: any): void {
     this.socketService.register(this.userId);

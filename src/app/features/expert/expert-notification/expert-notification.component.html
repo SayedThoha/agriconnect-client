@@ -53,14 +53,20 @@
             [class.unread]="!notification.isReadByExpert"
             role="listitem"
           >
-            <div class="notification-content">
+            <div
+              class="notification-content"
+              (click)="redirectToProfile(); $event.stopPropagation()"
+              (keydown.enter)="redirectToProfile(); $event.stopPropagation()"
+              (keydown.space)="redirectToProfile(); $event.stopPropagation()"
+              tabindex="0"
+            >
               <span
                 *ngIf="!notification.isReadByExpert"
                 class="unread-indicator"
                 aria-hidden="true"
                 >●</span
               >
-              <p>{{ notification.message }}</p>
+              <p>{{ formatNotificationMessage(notification) }}</p>
               <small class="notification-time">
                 {{ notification.createdAt | date : "short" }}
               </small>

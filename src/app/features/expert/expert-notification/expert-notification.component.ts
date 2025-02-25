@@ -4,6 +4,7 @@ import { ExpertService } from '../../../shared/services/expert.service';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-expert-notification',
@@ -20,7 +21,8 @@ export class ExpertNotificationComponent implements OnInit, OnDestroy {
   constructor(
     private socketService: SocketServiceService,
     private cdr: ChangeDetectorRef,
-    private expertService: ExpertService
+    private expertService: ExpertService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -105,33 +107,55 @@ export class ExpertNotificationComponent implements OnInit, OnDestroy {
     }
   }
 
-  formatNotificationTime(message: string): string {
-    // Extract the date from the message (assuming consistent format)
-    const dateMatch = message.match(/\w{3} \w{3} \d{1,2} \d{4} \d{2}:\d{2}:\d{2}/);
-    
-    if (dateMatch) {
-      const date = new Date(dateMatch[0]); // Convert to Date object
-      
-      // Format to 12-hour format
-      const formattedTime = date.toLocaleString("en-US", {
-        weekday: "short",
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-        timeZone: "Asia/Kolkata",
+ 
 
-      });
-  
-      // Replace in message
-      return message.replace(dateMatch[0], formattedTime);
-    }
-  
+
+  formatNotificationMessage(notification: any): string {
+    let message = notification.message;
+
     
+
+  // Extract date from message
+  const dateMatch = message.match(/\w{3} \w{3} \d{1,2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4}/);
+  
+  if (dateMatch) {
+    const originalDateString = dateMatch[0];
+    const date = new Date(originalDateString);
+
+    const formattedDate = date.toLocaleString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'Asia/Kolkata',
+    });
+
+    // Replace the original date in the message with the formatted date
+    message = message.replace(originalDateString, formattedDate);
+  }
+
+    // Add Expert Name if Available
+    if (notification.userId?.firstName) {
+      message = message.replace(
+        'Your slot booking',
+        `Your session with User: ${notification.userId.firstName} ${notification.userId.lastName} is confirmed`
+      );
+    }
+
     return message;
   }
+
+  redirectToProfile() {
+    
+    this.router.navigate(['/expert/expert_profile/next_appointment']);
+    this.showNotifications = false;
+    this.markAsRead();
+    
+  }
+  
   ngOnDestroy(): void {
     if (this.notificationSubscription) {
       this.notificationSubscription.unsubscribe();

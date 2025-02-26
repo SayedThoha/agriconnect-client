@@ -39,7 +39,8 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
-const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
+// const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
+const config: SocketIoConfig = { url: environment.apiUrl, options: {} };
 import {
   getAnalytics,
   provideAnalytics,
@@ -52,10 +53,11 @@ import {
   provideAppCheck,
 } from '@angular/fire/app-check';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { environment } from '../environments/environment';
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: 'AIzaSyDTdj8lanYgoE3Rve70hnAnhggjz5piqzY',
+  apiKey: 'AIzaSyCh53c6v1p-h_J_eqagtap_led9LP-XSuA',
   authDomain: 'agriconnect-6517e.firebaseapp.com',
   projectId: 'agriconnect-6517e',
   storageBucket: 'agriconnect-6517e.firebasestorage.app',

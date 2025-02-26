@@ -112,7 +112,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
       const originalDateString = dateMatch[0];
       const date = new Date(originalDateString);
 
-      const formattedDate = date.toLocaleString('en-US', {
+      const formattedDate = date.toLocaleString('en-IN', {
         weekday: 'short',
         month: 'short',
         day: 'numeric',

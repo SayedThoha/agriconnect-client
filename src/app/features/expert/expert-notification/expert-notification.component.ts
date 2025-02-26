@@ -142,7 +142,7 @@ export class ExpertNotificationComponent implements OnInit, OnDestroy {
     if (notification.userId?.firstName) {
       message = message.replace(
         'Your slot booking',
-        `Your session with User:" ${notification.userId.firstName} ${notification.userId.lastName}"`
+        `Your session with User: "${notification.userId.firstName} ${notification.userId.lastName}"`
       );
     }
 

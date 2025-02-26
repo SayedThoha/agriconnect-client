@@ -123,6 +123,8 @@ export class NotificationComponent implements OnInit, OnDestroy {
         timeZone: 'Asia/Kolkata',
       });
 
+      console.log(formattedDate);
+
       // Replace the original date in the message with the formatted date
       message = message.replace(originalDateString, formattedDate);
     }

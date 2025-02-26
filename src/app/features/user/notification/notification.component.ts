@@ -136,7 +136,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
     if (notification.expertId?.firstName) {
       message = message.replace(
         'Your slot booking',
-        `Your session with Expert: ${notification.expertId.firstName} ${notification.expertId.lastName} is confirmed`
+        `Your session with Expert: ${notification.expertId.firstName} ${notification.expertId.lastName}`
       );
     }
 

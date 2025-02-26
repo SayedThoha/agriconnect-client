@@ -113,7 +113,9 @@ export class ExpertNotificationComponent implements OnInit, OnDestroy {
   formatNotificationMessage(notification: any): string {
     let message = notification.message;
 
-    
+    // Remove "(Coordinated Universal Time)" if present
+    message = message.replace(/\(Coordinated Universal Time\)/g, ''); 
+    message = message.replace(/\(UTC\)/g, '');
 
   // Extract date from message
   const dateMatch = message.match(/\w{3} \w{3} \d{1,2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4}/);
@@ -122,7 +124,7 @@ export class ExpertNotificationComponent implements OnInit, OnDestroy {
     const originalDateString = dateMatch[0];
     const date = new Date(originalDateString);
 
-    const formattedDate = date.toLocaleString('en-US', {
+    const formattedDate = date.toLocaleString('en-IN', {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
@@ -141,7 +143,7 @@ export class ExpertNotificationComponent implements OnInit, OnDestroy {
     if (notification.userId?.firstName) {
       message = message.replace(
         'Your slot booking',
-        `Your session with User: ${notification.userId.firstName} ${notification.userId.lastName} is confirmed`
+        `Your session with User: ${notification.userId.firstName} ${notification.userId.lastName}`
       );
     }
 

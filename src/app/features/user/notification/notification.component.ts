@@ -103,6 +103,9 @@ export class NotificationComponent implements OnInit, OnDestroy {
   formatNotificationMessage(notification: any): string {
     let message = notification.message;
 
+     // Remove "(Coordinated Universal Time)" if present
+     message = message.replace(/\(Coordinated Universal Time\)/g, ''); 
+     message = message.replace(/\(UTC\)/g, '');
     // Extract date from message
     const dateMatch = message.match(
       /\w{3} \w{3} \d{1,2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4}/
@@ -123,7 +126,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
         timeZone: 'Asia/Kolkata',
       });
 
-      console.log(formattedDate);
+      
 
       // Replace the original date in the message with the formatted date
       message = message.replace(originalDateString, formattedDate);

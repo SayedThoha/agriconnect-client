@@ -151,13 +151,14 @@ export class ExpertNotificationComponent implements OnInit, OnDestroy {
   }
 
   redirectToProfile() {
-    
+    this.router.navigateByUrl('/expert/expert_profile', { skipLocationChange: true }).then(() => {
     this.router.navigate(['/expert/expert_profile/next_appointment']);
+    })
     this.showNotifications = false;
     this.markAsRead();
     
   }
-  // /expert/expert_profile/next_appointment
+  
   
   ngOnDestroy(): void {
     if (this.notificationSubscription) {

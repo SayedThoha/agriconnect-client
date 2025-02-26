@@ -39,8 +39,8 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
-// const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
-const config: SocketIoConfig = { url: environment.apiUrl, options: {} };
+const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
+// const config: SocketIoConfig = { url: environment.apiUrl, options: {} };
 import {
   getAnalytics,
   provideAnalytics,

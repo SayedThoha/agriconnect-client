@@ -107,37 +107,36 @@ export class ExpertNotificationComponent implements OnInit, OnDestroy {
     }
   }
 
- 
-
-
   formatNotificationMessage(notification: any): string {
     let message = notification.message;
 
     // Remove "(Coordinated Universal Time)" if present
-    message = message.replace(/\(Coordinated Universal Time\)/g, ''); 
+    message = message.replace(/\(Coordinated Universal Time\)/g, '');
     message = message.replace(/\(UTC\)/g, '');
 
-  // Extract date from message
-  const dateMatch = message.match(/\w{3} \w{3} \d{1,2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4}/);
-  
-  if (dateMatch) {
-    const originalDateString = dateMatch[0];
-    const date = new Date(originalDateString);
+    // Extract date from message
+    const dateMatch = message.match(
+      /\w{3} \w{3} \d{1,2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4}/
+    );
 
-    const formattedDate = date.toLocaleString('en-IN', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-      timeZone: 'Asia/Kolkata',
-    });
+    if (dateMatch) {
+      const originalDateString = dateMatch[0];
+      const date = new Date(originalDateString);
 
-    // Replace the original date in the message with the formatted date
-    message = message.replace(originalDateString, formattedDate);
-  }
+      const formattedDate = date.toLocaleString('en-IN', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Kolkata',
+      });
+
+      // Replace the original date in the message with the formatted date
+      message = message.replace(originalDateString, formattedDate);
+    }
 
     // Add Expert Name if Available
     if (notification.userId?.firstName) {
@@ -151,15 +150,12 @@ export class ExpertNotificationComponent implements OnInit, OnDestroy {
   }
 
   redirectToProfile() {
-    this.router.navigateByUrl('/expert/expert_profile', { skipLocationChange: true }).then(() => {
     this.router.navigate(['/expert/expert_profile/next_appointment']);
-    })
+
     this.showNotifications = false;
     this.markAsRead();
-    
   }
-  
-  
+
   ngOnDestroy(): void {
     if (this.notificationSubscription) {
       this.notificationSubscription.unsubscribe();

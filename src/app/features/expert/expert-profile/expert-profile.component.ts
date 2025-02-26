@@ -15,7 +15,9 @@ export class ExpertProfileComponent implements OnInit {
   constructor(private router:Router){}
 
   ngOnInit(): void {
+    if (this.router.url === '/expert/expert_profile') {
       this.router.navigate(['/expert/expert_profile/expertDashboard'])
+    }
   }
   
 }

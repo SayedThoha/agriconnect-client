@@ -1,8 +1,8 @@
 .login-button {
     display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    height: 10vh; /* Full viewport height */
+    justify-content: center; 
+    align-items: center; 
+  
   }
   
   .login-button button {
@@ -11,11 +11,11 @@
     justify-content: center;
     gap: 8px;
     padding: 10px 16px;
-    border: 2px solid #abbe99; /* Blue outline */
+    border: 2px solid #c1ceb5; 
     background-color: white;
-    color: #abbe99; /* Matching text color */
+    color: #abbe99; 
     cursor: pointer;
-    font-size: 18px;
+    font-size: 16px;
     border-radius: 5px; /* Rounded corners */
     outline: none;
     transition: all 0.3s ease-in-out;
@@ -27,7 +27,7 @@
   }
   
   .google-icon {
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
   }
   

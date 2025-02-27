@@ -150,7 +150,7 @@
                 want to unblock?
               </button>
             </div>
-            <div *ngIf="!expert.blocked">
+            <div *ngIf="!expert.blocked" class="text-center">
               <th
                 scope="row"
                 class="flex justify-center font-medium text-green-600 dark:text-green-500"
@@ -159,7 +159,7 @@
               </th>
               <button
                 (click)="changeStatus(expert)"
-                class="w-32 justify-center font-small text-black-500 dark:text-black-500 hover:underline"
+                class="w-32 block mx-auto font-small text-black-500 dark:text-black-500 hover:underline"
               >
                 want to block?
               </button>

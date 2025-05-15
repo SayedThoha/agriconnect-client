@@ -86,7 +86,7 @@ export class ExpertProfileDataComponent implements OnInit {
         .uploadImage(this.selectedFile, 'AgriConnect')
         .subscribe({
           next: (imageUrl) => {
-            // Apply transformation to crop or pad image to 200x200
+            
             const transformedUrl = this.applyTransformation(imageUrl, 200, 200);
 
             // Save the transformed URL
@@ -99,13 +99,13 @@ export class ExpertProfileDataComponent implements OnInit {
   }
 
   applyTransformation(imageUrl: string, width: number, height: number): string {
-    // Find the index of the upload path to inject the transformation
-    const uploadIndex = imageUrl.indexOf('/upload/') + 8; // 8 is the length of '/upload/'
+    
+    const uploadIndex = imageUrl.indexOf('/upload/') + 8; 
 
-    // Create the transformation string to crop the image
+    
     const transformation = `c_fill,g_auto,w_${width},h_${height}`;
 
-    // Insert the transformation into the URL
+    
     const transformedUrl = `${imageUrl.slice(
       0,
       uploadIndex
@@ -177,9 +177,9 @@ export class ExpertProfileDataComponent implements OnInit {
   }
 
   submit_profile_details() {
-    // console.log('edit profile submitted');
+    
     if (this.editProfileForm.invalid) {
-      // console.log('Form is invalid');
+      
       this.markFormGroupTouched(this.editProfileForm);
       return;
     } else {
@@ -228,9 +228,9 @@ export class ExpertProfileDataComponent implements OnInit {
   }
 
   submit_email() {
-    // console.log('edit profile submitted');
+  
     if (this.email_form.invalid) {
-      // console.log('Form is invalid');
+      
       this.markFormGroupTouched(this.email_form);
       return;
     } else {

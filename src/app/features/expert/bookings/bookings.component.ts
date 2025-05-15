@@ -45,8 +45,6 @@ export class BookingsComponent implements OnInit {
       .get_bookings_of_expert({ expertId: localStorage.getItem('expertId') })
       .subscribe({
         next: (Response) => {
-          // console.log('response:', Response);
-          
           this.payments = Response;
           this.payments_to_display = this.payments;
         },
@@ -65,7 +63,7 @@ export class BookingsComponent implements OnInit {
   setupSearchSubscription() {
     this.searchForm
       .get('searchData')
-      ?.valueChanges.pipe(debounceTime(300)) 
+      ?.valueChanges.pipe(debounceTime(300))
       .subscribe((value) => {
         this.filterExperts(value);
       });

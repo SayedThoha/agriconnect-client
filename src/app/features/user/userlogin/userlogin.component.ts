@@ -92,20 +92,19 @@ export class UserloginComponent implements OnInit {
   onSubmit() {
     if (this.loginForm.invalid) {
       this.markFormGroupTouched(this.loginForm);
-      // console.log('Form is invalid:', this.loginForm.value);
+      
       return;
     } else {
       const data = {
         email: this.loginForm.value.email,
         password: this.loginForm.value.password,
       };
-      // console.log('Form submitted data:', data);
-      // console.log('auth:', this.auth);
+      
       if (this.auth === 'expert') {
         this.store.dispatch(loginExpert({ data }));
-        // console.log('Dispatching loginExpert action');
+        
       } else if (this.auth === 'user') {
-        // console.log('Form data:', this.loginForm.value);
+        
         this.store.dispatch(loginUser({ data }));
       }
     }

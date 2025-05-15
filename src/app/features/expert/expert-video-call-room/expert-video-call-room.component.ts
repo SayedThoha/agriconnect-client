@@ -49,9 +49,8 @@ export class ExpertVideoCallRoomComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // generate Kit Token
-    const appID = 1306784341;
-    const serverSecret = 'd5103205597e4a1d479bfdefed94dd19';
+    const appID = 2057592511;
+    const serverSecret = '69a50a9c5524f236e2453c9025d37802';
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
       appID,
       serverSecret,
@@ -60,7 +59,6 @@ export class ExpertVideoCallRoomComponent implements OnInit, AfterViewInit {
       Date.now().toString()
     );
 
-    //generate link
     const videoCallLink =
       window.location.protocol +
       '//' +
@@ -69,9 +67,8 @@ export class ExpertVideoCallRoomComponent implements OnInit, AfterViewInit {
       '?roomID=' +
       this.roomID;
 
-    // Create instance object from Kit Token.
     const zp = ZegoUIKitPrebuilt.create(kitToken);
-    // Start a call.
+
     zp.joinRoom({
       container: this.root.nativeElement,
       sharedLinks: [

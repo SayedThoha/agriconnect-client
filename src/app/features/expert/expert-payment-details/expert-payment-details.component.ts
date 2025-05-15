@@ -74,7 +74,7 @@ export class ExpertPaymentDetailsComponent implements OnInit {
   setupSearchSubscription() {
     this.searchForm
       .get('searchData')
-      ?.valueChanges.pipe(debounceTime(300)) // Adjust debounce time as needed
+      ?.valueChanges.pipe(debounceTime(300)) 
       .subscribe((value) => {
         this.filterExperts(value);
       });
@@ -95,7 +95,7 @@ export class ExpertPaymentDetailsComponent implements OnInit {
   }
 
   paymentFormSubmit() {
-    // console.log('payment form submit');
+    
     if (this.paymentForm.valid) {
       const selectedStatus = this.paymentForm.value.status;
       if (selectedStatus === 'all') {

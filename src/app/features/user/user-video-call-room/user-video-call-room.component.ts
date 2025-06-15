@@ -26,8 +26,8 @@ export class UserVideoCallRoomComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const appID = 2057592511;
-    const serverSecret = '69a50a9c5524f236e2453c9025d37802';
+    const appID = 964045791;
+    const serverSecret = 'ec5dcd209c3562f7fdb2edb22d386767';
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
       appID,
       serverSecret,

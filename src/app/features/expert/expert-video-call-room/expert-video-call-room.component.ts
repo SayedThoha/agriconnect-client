@@ -49,8 +49,8 @@ export class ExpertVideoCallRoomComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const appID = 964045791;
-    const serverSecret = 'ec5dcd209c3562f7fdb2edb22d386767';
+    const appID = 81955247;
+    const serverSecret = '5c7063a4640154acc0779bcc6a1a2200';
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
       appID,
       serverSecret,

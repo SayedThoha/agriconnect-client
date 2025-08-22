@@ -29,7 +29,7 @@ import { Subscription } from 'rxjs';
 @AutoUnsubscribe
 export class KycVerificationComponent implements OnInit {
   expert_kyc_details!: any;
-  expert_id!: any;
+  expert_id!: string | null;
 
   kyc_verification_form!: FormGroup;
 
@@ -44,18 +44,16 @@ export class KycVerificationComponent implements OnInit {
   ngOnInit(): void {
     this.expert_id = localStorage.getItem('expert_id_for_kyc_details');
     this.initializeForm();
-    this.get_expert_kyc_details_from_id(this.expert_id);
+    this.get_expert_kyc_details_from_id(this.expert_id as string);
   }
 
-  get_expert_kyc_details_from_id(_id: any) {
+  get_expert_kyc_details_from_id(_id: string) {
     this.kycVerificationSubscription = this._adminService
       .get_expert_kyc_details_from_id({ expertId: _id })
       .subscribe({
         next: (Response) => {
-          // console.log('expert details:',Response);
           this.expert_kyc_details = Response;
-          // console.log(this.expert_kyc_details);
-          // this.initialize_form();
+          console.log('expert kyc details', this.expert_kyc_details);
           this.setFormData();
         },
         error: (error) => {

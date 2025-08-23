@@ -1,5 +1,3 @@
-//user.effects.ts
-
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { UserService } from '../../../shared/services/user.service';
@@ -30,7 +28,6 @@ import {
   withLatestFrom,
 } from 'rxjs';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
-
 import { Router } from '@angular/router';
 import { AuthService } from '../../../shared/services/auth.service';
 import { getuserstate } from './user.selectors';
@@ -38,7 +35,7 @@ import { UserInfo } from '../../models/userModel';
 import { Store } from '@ngrx/store';
 import { AuthGoogleService } from '../../../shared/services/googleauth.service';
 import { Socket } from 'ngx-socket-io';
-// Define the AppState interface
+
 interface AppState {
   user: UserInfo;
 }
@@ -60,20 +57,17 @@ export class UserEffects {
     this.actions$.pipe(
       ofType(loginUser),
       exhaustMap((action) => {
-        // console.log('login effects')
-        // console.log('Effect triggered with action:', action);
         return this.userService.userLogin(action.data).pipe(
           map((data) => {
             const userdata = data;
             if (userdata.email) {
-              // console.log('userdata:', userdata);
               localStorage.setItem('email', userdata.email);
               localStorage.setItem('role', 'userVerification');
               this.router.navigate(['/user/verifyOtp']);
 
               return;
             } else if (userdata.accessedUser?.blocked) {
-              localStorage.clear(); // Clear any stored data
+              localStorage.clear();
               this.showMessage.showErrorToastr(
                 'Your account has been blocked. Please contact support.'
               );
@@ -85,27 +79,20 @@ export class UserEffects {
               userdata.refreshToken &&
               userdata.accessedUser
             ) {
-              // console.log(
-              //   'response from backend: userdata while login:',
-              //   userdata
-              // );
               localStorage.setItem('userToken', userdata.accessToken);
               localStorage.setItem('userRefreshToken', userdata.refreshToken);
               localStorage.setItem('userId', userdata.accessedUser._id);
-              // console.log('userId:', localStorage.getItem('userId'));
               this.showMessage.showSuccessToastr(userdata.message);
               this.router.navigate(['/user/userHome']);
 
               return loginUserSuccess({ data: userdata.accessedUser });
             } else {
-              // return { type: '[Login] No Action' };
               return;
             }
           }),
           catchError((error) => {
             console.log('error.error.message:', error.error.message);
 
-            // Handle blocked user error from backend
             if (
               error.status === 403 &&
               error.error.message === 'User is blocked'
@@ -119,15 +106,12 @@ export class UserEffects {
             }
             this.showMessage.showErrorToastr(error.error.message);
             return of(error.message);
-            // return of(loginUserFailure({ error: error.message }));
-            // return of({ type: '[Login] Error', payload: error.message });
           })
         );
       })
     )
   );
 
-  // Refresh token effect for user
   _refreshUserToken = createEffect(() =>
     this.actions$.pipe(
       ofType(refreshUserToken),
@@ -174,9 +158,8 @@ export class UserEffects {
 
   refreshTokenPeriodically = createEffect(() =>
     interval(4 * 60 * 1000).pipe(
-      // Every 4 minutes
-      filter(() => !!localStorage.getItem('userRefreshToken')), // Only proceed if refreshToken exists
-      switchMap(() => of(refreshUserToken())) // Trigger the refreshToken action
+      filter(() => !!localStorage.getItem('userRefreshToken')),
+      switchMap(() => of(refreshUserToken()))
     )
   );
 

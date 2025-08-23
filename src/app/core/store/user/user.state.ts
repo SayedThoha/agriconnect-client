@@ -1,5 +1,3 @@
-// user.state.ts
-
 import { UserModel } from "../../models/userModel";
 
 export const userstate:UserModel={

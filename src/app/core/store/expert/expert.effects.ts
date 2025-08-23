@@ -1,4 +1,3 @@
-//expert.effects.ts
 import { ExpertService } from '../../../shared/services/expert.service';
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -49,20 +48,17 @@ export class expertEffects {
     this.actions$.pipe(
       ofType(loginExpert),
       exhaustMap((action) => {
-        // console.log('expert login effects');
         return this.expertService.expertLogin(action.data).pipe(
           map((data) => {
             const expertData = data;
             if (expertData.email) {
-              // console.log('expertdata:', expertData);
               localStorage.setItem('email', expertData.email);
               localStorage.setItem('role', 'expertVerification');
               this.router.navigate(['/expert/verifyOtp']);
 
               return;
-              // return { type: '[Expert] Email Login Handled' };
             } else if (expertData.accessedUser?.blocked) {
-              localStorage.clear(); // Clear any stored data
+              localStorage.clear();
               this.showMessage.showErrorToastr(
                 'Your account has been blocked. Please contact support.'
               );
@@ -80,25 +76,18 @@ export class expertEffects {
                 expertData.refreshToken
               );
               localStorage.setItem('expertId', expertData.accessedUser._id);
-              // console.log('expertId in effects:', expertData.accessedUser._id);
-              // console.log(
-              //   'expertId in effects:',
-              //   localStorage.getItem('expertId')
-              // );
 
               this.showMessage.showSuccessToastr(expertData.message);
-              this.router.navigate(['/expert/expertHome']); //page after login
+              this.router.navigate(['/expert/expertHome']);
               return loginExpertSuccess({ data: expertData.accessedUser });
             } else {
               return;
-              // return { type: '[Expert] Unknown Login Outcome' };
             }
           }),
 
           catchError((error) => {
             console.log('error.error.message:', error.error.message);
 
-            // Handle blocked expert error from backend
             if (
               error.status === 403 &&
               error.error.message === 'Expert is blocked'
@@ -112,9 +101,7 @@ export class expertEffects {
             }
             this.showMessage.showErrorToastr(error.error.message);
 
-            
             return of(error.message);
-            // return of({ type: '[Expert] Login Failed', error: error.error.message });
           })
         );
       })
@@ -123,7 +110,7 @@ export class expertEffects {
 
   _refreshExpertToken = createEffect(() =>
     this.actions$.pipe(
-      ofType(refreshExpertToken), // Triggered when refreshToken action is dispatched
+      ofType(refreshExpertToken),
       switchMap(() => {
         const refreshToken = localStorage.getItem('expertRefreshToken');
 
@@ -173,9 +160,8 @@ export class expertEffects {
 
   refreshTokenPeriodically = createEffect(() =>
     interval(4 * 60 * 1000).pipe(
-      // Every 4 minutes
-      filter(() => !!localStorage.getItem('expertRefreshToken')), // Only proceed if refreshToken exists
-      switchMap(() => of(refreshExpertToken())) // Trigger the refreshToken action
+      filter(() => !!localStorage.getItem('expertRefreshToken')),
+      switchMap(() => of(refreshExpertToken()))
     )
   );
 
@@ -194,12 +180,6 @@ export class expertEffects {
                 'Your account has been blocked. Please contact support.'
               );
               this.router.navigate(['/home']);
-
-              // Return multiple actions
-              // return  [
-              //   expertBlocked({ message: ' account is blocked' }),
-              //   logoutExpert(),
-              // ];
             }
             return [{ type: '[expert] Status Check Success' }];
           }),

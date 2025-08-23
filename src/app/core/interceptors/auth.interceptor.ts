@@ -15,15 +15,13 @@ import { MessageToasterService } from '../../shared/services/message-toaster.ser
 import { TokenService } from '../../shared/services/token.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // return next(req);
-
   const commonService = inject(CommonService);
   const router = inject(Router);
   const store = inject(Store);
   const showMessage = inject(MessageToasterService);
-  const tokenService=inject(TokenService)
+  const tokenService = inject(TokenService);
   const s3BucketUrl = 'https://agriconnect.s3.ap-south-1.amazonaws.com';
-  // Skip interceptor for Cloudinary requests
+
   if (
     req.url.includes('cloudinary.com') ||
     req.url.includes('googleapis.com') ||
@@ -38,7 +36,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const adminToken = commonService.getAdminTokenFromLocalStorage();
   let authRequest = req;
 
-  // Add appropriate headers based on the current route
   if (window.location.pathname.includes('/user') && userToken) {
     authRequest = req.clone({
       setHeaders: {
@@ -65,7 +62,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(authRequest).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
-        // If unauthorized (expired token), trigger the refresh
         if (window.location.pathname.includes('/user')) {
           return tokenService.refreshUserAccessToken().pipe(
             switchMap(() => {
@@ -78,7 +74,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
               return next(clonedReq);
             }),
             catchError(() => {
-              // showMessage.showErrorToastr('Session expired. Please log in again.');
               localStorage.clear();
               router.navigate(['/home']);
               return throwError(() => error);
@@ -96,7 +91,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
               return next(clonedReq);
             }),
             catchError(() => {
-              // showMessage.showErrorToastr('Session expired. Please log in again.');
               localStorage.clear();
               router.navigate(['/home']);
               return throwError(() => error);
@@ -105,7 +99,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
       if (error.status === 403) {
-        // Handle 403 Forbidden error
         if (window.location.pathname.includes('/user')) {
           localStorage.removeItem('userToken');
           localStorage.removeItem('userRefreshToken');

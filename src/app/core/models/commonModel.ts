@@ -1,21 +1,10 @@
-// import { ObjectId } from 'mongoose';
 
-// interface Slot {
-//   docId: ObjectId;
-//   time: Date;
-//   booked?: boolean;
-//   bookingAmount: number;
-//   adminPaymentAmount: number;
-//   cancelled?: boolean;
-//   created_time: Date;
-// }
 
 export interface HttpResponseModel {
   message: string;
   success:boolean;
   statusCode:number
   error: string;
-  // slot?: object;
   data?:object
 }
 

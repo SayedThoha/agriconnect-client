@@ -39,15 +39,11 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    // console.log('modal component loads');
-
     this.auth = this.commonService.getAuthFromLocalStorage();
     this.get_prescription();
-    
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // Ensure the modal opens only when prescription_id changes
     if (changes['prescription_id'] && this.prescription_id) {
       this.get_prescription();
       this.openModal();
@@ -57,7 +53,6 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
   get_prescription() {
     this.auth = this.commonService.getAuthFromLocalStorage();
     if (this.auth === 'user' && this.prescription_id) {
-      // console.log("prescription_id",this.prescription_id)
       this.userService
         .get_prescription_details({ _id: this.prescription_id })
         .subscribe({
@@ -75,7 +70,6 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
     }
 
     if (this.auth === 'expert' && this.prescription_id) {
-      // console.log("prescription_id",this.prescription_id)
       this.expertService
         .get_prescription_details({ _id: this.prescription_id })
         .subscribe({
@@ -107,7 +101,6 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
   }
 
   downloadPrescription() {
-
     const formatDate = (dateString: any) => {
       const date = new Date(dateString);
       return date.toLocaleDateString('en-US', {
@@ -121,16 +114,13 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
     const pdf = new jsPDF();
     const pageWidth = pdf.internal.pageSize.width;
 
-    // Header styling
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(24);
     pdf.text('Consultation Summary', pageWidth / 2, 20, { align: 'center' });
 
-    // Add a horizontal line
     pdf.setLineWidth(0.5);
     pdf.line(20, 25, pageWidth - 20, 25);
 
-    // Expert Information Section
     pdf.setFontSize(12);
     pdf.setFont('helvetica', 'bold');
     const expertSection = 40;
@@ -147,11 +137,9 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
       pdf.text(`Field of Expertise: ${this.specialisation}`, 20, expertSection);
     }
 
-    // Add another separator
     pdf.setLineWidth(0.3);
     pdf.line(20, expertSection + 20, pageWidth - 20, expertSection + 20);
 
-    // Query/Issue Section
     const issueSection = expertSection + 40;
     pdf.setFont('helvetica', 'bold');
     pdf.text('Consultation Topic:', 20, issueSection);
@@ -161,7 +149,6 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
       align: 'left',
     });
 
-    // Recommendation Section
     const recommendationSection = issueSection + 40;
     pdf.setFont('helvetica', 'bold');
     pdf.text('Expert Recommendation:', 20, recommendationSection);
@@ -171,7 +158,6 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
       align: 'left',
     });
 
-    // Footer with date and signature
     const footer = pdf.internal.pageSize.height - 30;
     pdf.setFontSize(10);
     pdf.text(
@@ -181,7 +167,6 @@ export class PrescriptionModalComponent implements OnInit, OnChanges {
     );
     pdf.text("Expert's Signature: _________________", pageWidth - 90, footer);
 
-    // Save the PDF
     pdf.save('consultation_summary.pdf');
   }
 }

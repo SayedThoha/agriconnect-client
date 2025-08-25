@@ -1,8 +1,7 @@
-import { HttpClient, HttpEventType, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, map, Observable, switchMap, throwError } from 'rxjs';
+import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +11,6 @@ export class ImageUploadService {
   constructor(private http: HttpClient) {}
 
   uploadFile(file: File, folder: string): Observable<any> {
-   
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', folder);
@@ -30,6 +28,4 @@ export class ImageUploadService {
       })
     );
   }
-
-  
 }

@@ -40,20 +40,16 @@ import { Router } from '@angular/router';
 export class UserChatComponent implements OnInit, OnDestroy {
   private socketServiceSubscription: Subscription | undefined;
   socket!: any;
-
   showScrollUpButton = false;
   expertId!: any;
   userId!: any;
   chats!: any;
   messages!: any;
   chatId!: any;
-
-  //specific chats
   selectedExpert!: any;
   profile_picture!: any;
   selectedChatMessages: any[] = [];
-  lastSeen: string = '';
-
+  lastSeen = '';
   experts: expertData[] = [];
   displayed_expert: expertData[] = [];
 
@@ -61,27 +57,25 @@ export class UserChatComponent implements OnInit, OnDestroy {
   @ViewChild('chatContainer')
   chatContainer!: ElementRef;
 
-  userChatSubscription!:Subscription
+  userChatSubscription!: Subscription;
   searchForm!: FormGroup;
-  filteredChats!:any
+  filteredChats!: any;
   constructor(
     private formBuilder: FormBuilder,
     private messageService: MessageToasterService,
     private chatService: ChatServiceService,
     private socketService: SocketServiceService,
     private userService: UserService,
-    private router:Router
+    private router: Router
   ) {
     this.socket = io(environment.apiUrl);
   }
 
   ngOnInit() {
-    
-
     this.getExpertDetails();
     this.initialiseForms();
     this.userId = localStorage.getItem('userId');
-  
+
     this.userFetchAllChat();
     this.setupSearchSubscription();
     if (this.chatId) {
@@ -90,7 +84,6 @@ export class UserChatComponent implements OnInit, OnDestroy {
     this.scrollToBottom();
 
     this.messageSubscription();
-    
   }
 
   initialiseForms(): void {
@@ -108,7 +101,6 @@ export class UserChatComponent implements OnInit, OnDestroy {
       .onMessage()
       .subscribe((res: any) => {
         if (res.chat === this.chatId) {
-          // console.log('newMEssage recieved in userside by socketIO:', res);
           this.messages.unshift(res);
           this.chats.filter((chat: any) => {
             if (chat._id === this.chatId) {
@@ -121,13 +113,11 @@ export class UserChatComponent implements OnInit, OnDestroy {
   }
 
   getExpertDetails() {
-    this.userChatSubscription= this.userService.getExperts().subscribe({
+    this.userChatSubscription = this.userService.getExperts().subscribe({
       next: (Response) => {
-        // console.log(Response);
         this.experts = Response;
 
         this.displayed_expert = this.experts;
-       
       },
       error: (error) => {
         console.error(error);
@@ -143,7 +133,6 @@ export class UserChatComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (Response) => {
           this.selectExpert(Response);
-          
         },
         error: (error) => {
           this.messageService.showErrorToastr(error.error.message);
@@ -157,34 +146,32 @@ export class UserChatComponent implements OnInit, OnDestroy {
         this.chats = Response;
       },
       error: (error) => {
-        console.log('error:', error);
+        console.error('error:', error);
         this.messageService.showErrorToastr(error.error.message);
       },
     });
   }
 
   setupSearchSubscription() {
-      this.searchForm
-        .get('searchData')
-        ?.valueChanges.pipe(debounceTime(300)) // Adjust debounce time as needed
-        .subscribe((value) => {
-          this.filterExperts(value);
-        });
-    }
+    this.searchForm
+      .get('searchData')
+      ?.valueChanges.pipe(debounceTime(300))
+      .subscribe((value) => {
+        this.filterExperts(value);
+      });
+  }
 
-    filterExperts(searchTerm: string | null) {
-      console.log(searchTerm)
-      if (searchTerm) {
-        const regex = new RegExp(searchTerm, 'i');
-        this.displayed_expert = this.experts.filter(
-          (experts: any) =>
-            regex.test(experts.firstName) ||
-            regex.test(experts.lastName) 
-        );
-      } else {
-        this.displayed_expert = this.experts;
-      }
+  filterExperts(searchTerm: string | null) {
+    if (searchTerm) {
+      const regex = new RegExp(searchTerm, 'i');
+      this.displayed_expert = this.experts.filter(
+        (experts: any) =>
+          regex.test(experts.firstName) || regex.test(experts.lastName)
+      );
+    } else {
+      this.displayed_expert = this.experts;
     }
+  }
 
   selectExpert(chat: any): void {
     this.socketService.register(this.userId);
@@ -192,7 +179,7 @@ export class UserChatComponent implements OnInit, OnDestroy {
     this.fetchAllMessages(chat._id);
     this.selectedExpert = `${chat.expert.firstName} ${chat.expert.lastName}`;
     this.profile_picture = chat.expert.profile_picture;
-    this.selectedChatMessages = this.messages; // Assuming `messages` is an array of messages for the selected chat
+    this.selectedChatMessages = this.messages;
     this.lastSeen = chat.updatedAt;
   }
 
@@ -213,8 +200,8 @@ export class UserChatComponent implements OnInit, OnDestroy {
       if (message && message.trim().length === 0) {
         return;
       }
-      // console.log(message);
-      let data = {
+
+      const data = {
         content: message,
         chatId: this.chatId,
         userId: this.userId,
@@ -230,7 +217,9 @@ export class UserChatComponent implements OnInit, OnDestroy {
     try {
       this.chatContainer.nativeElement.scrollTop =
         this.chatContainer.nativeElement.scrollHeight;
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   onScroll(event: { target: any }): void {
@@ -242,13 +231,15 @@ export class UserChatComponent implements OnInit, OnDestroy {
   scrollToTop(): void {
     try {
       this.chatContainer.nativeElement.scrollTop = 0;
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   ngOnDestroy(): void {
     if (this.socket) {
       this.socket.on('disconnect', () => {
-        console.log('Socket disconnected');
+        console.warn('Socket disconnected');
       });
     }
     if (this.socketServiceSubscription) {
@@ -256,9 +247,7 @@ export class UserChatComponent implements OnInit, OnDestroy {
     }
   }
 
-  
-  goToHome(){
-    this.router.navigate(['/user/userHome'])
+  goToHome() {
+    this.router.navigate(['/user/userHome']);
   }
-
 }

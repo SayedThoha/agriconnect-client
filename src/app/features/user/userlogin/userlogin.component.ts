@@ -7,7 +7,7 @@ import { CommonService } from '../../../shared/services/common.service';
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
 import { passwordPattern } from '../../../shared/regexp/regexp';
-import { googleLogin, loginUser } from '../../../core/store/user/user.actions';
+import { loginUser } from '../../../core/store/user/user.actions';
 import { loginExpert } from '../../../core/store/expert/expert.actions';
 import { ButtonModule } from 'primeng/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,14 +15,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import {
-  SocialAuthService,
   GoogleSigninButtonModule,
   SocialUser,
-  GoogleLoginProvider,
 } from '@abacritt/angularx-social-login';
-import { UserService } from '../../../shared/services/user.service';
 import { AuthGoogleService } from '../../../shared/services/googleauth.service';
-import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'app-userlogin',
@@ -52,14 +48,12 @@ export class UserloginComponent implements OnInit {
     private formbuilder: FormBuilder,
     private router: Router,
     private store: Store,
-    private commonService: CommonService,
-    
+    private commonService: CommonService
   ) {}
 
   ngOnInit() {
     this.user_login();
     this.auth = this.commonService.getAuthFromLocalStorage();
-    // console.log(this.auth);
   }
 
   user_login() {
@@ -92,19 +86,17 @@ export class UserloginComponent implements OnInit {
   onSubmit() {
     if (this.loginForm.invalid) {
       this.markFormGroupTouched(this.loginForm);
-      
+
       return;
     } else {
       const data = {
         email: this.loginForm.value.email,
         password: this.loginForm.value.password,
       };
-      
+
       if (this.auth === 'expert') {
         this.store.dispatch(loginExpert({ data }));
-        
       } else if (this.auth === 'user') {
-        
         this.store.dispatch(loginUser({ data }));
       }
     }
@@ -121,5 +113,4 @@ export class UserloginComponent implements OnInit {
   signInWithGoogle() {
     this.gauthService.login();
   }
-  
 }

@@ -6,12 +6,11 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-
   constructor(private commonService: CommonService) {}
-  
+
   private userLoggedIn$ = new BehaviorSubject<boolean>(false);
-  
-  authState$ = this.userLoggedIn$.asObservable()
+
+  authState$ = this.userLoggedIn$.asObservable();
 
   setLoginState(isLoggedIn: boolean) {
     this.userLoggedIn$.next(isLoggedIn);
@@ -23,11 +22,7 @@ export class AuthService {
   }
 
   checkExpertLoggedIn(): boolean {
-    // const expertLoggedIn = this.commonService.getExpertIdFromLocalStorage();
     const expertLoggedIn = this.commonService.getExpertTokenFromLocalStorage();
     return !!expertLoggedIn;
   }
-
-
-  
 }

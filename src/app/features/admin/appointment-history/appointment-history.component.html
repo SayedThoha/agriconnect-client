@@ -80,7 +80,7 @@
           <th scope="col" class="px-6 py-4">Slot Date</th>
           <th scope="col" class="px-6 py-4">Slot Time</th>
           <th scope="col" class="px-6 py-4">Consultation Status</th>
-          <th scope="col" class="px-6 py-4"> Payment Status</th>
+          <th scope="col" class="px-6 py-4">Payment Status</th>
         </tr>
       </thead>
       <tbody>
@@ -125,12 +125,7 @@
           >
             {{ appointment.slotId.time | date : "shortTime" }}
           </th>
-          <!-- <th
-            scope="row"
-            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-          >
-            {{ appointment.consultation_status }}
-          </th> -->
+
           <td class="px-6 py-4">
             <div *ngIf="appointment.consultation_status === 'pending'">
               <th
@@ -183,8 +178,6 @@
               </th>
             </div>
           </td>
-
-         
         </tr>
       </tbody>
     </table>

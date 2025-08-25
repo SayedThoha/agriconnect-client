@@ -27,7 +27,6 @@ export class VerifyotpComponent implements OnInit {
   timerInterval!: ReturnType<typeof setInterval>;
   counter = 59;
   email!: string;
-  
   new_email!: string | null;
   role!: string;
   otpForm!: FormGroup;
@@ -94,7 +93,7 @@ export class VerifyotpComponent implements OnInit {
       return;
     } else {
       let otpdata;
-      // console.log(this.role);
+      
 
       if (this.role === 'user_new_email' || this.role === 'expert_new_email') {
         otpdata = {
@@ -109,24 +108,24 @@ export class VerifyotpComponent implements OnInit {
           otp: this.otpForm.value.otp as string,
         };
       }
-      // console.log('otpdata:', otpdata);
+      
       if (this.commonservice.getAuthFromLocalStorage() === 'expert') {
         this.expertService.verifyOtp(otpdata).subscribe({
           next: (response) => {
             if (this.role === 'expertRegistration') {
-              //if it is user registration verification
+              
               this.showMessage.showSuccessToastr(response.message);
               this.router.navigate(['/expert/registrationCompleted']);
               localStorage.removeItem('email');
             } else if (this.role === 'userForgetPassword') {
-              //if it is password verification
+              
               this.showMessage.showSuccessToastr(response.message);
               this.router.navigate(['/expert/new_password']);
             } else if (
               this.role === 'expertVerification' ||
               this.role === 'expert_new_email'
             ) {
-              //if it is userverification or updating new email
+          
               this.showMessage.showSuccessToastr(response.message);
               localStorage.removeItem('expertToken');
               localStorage.removeItem('email');
@@ -136,7 +135,7 @@ export class VerifyotpComponent implements OnInit {
             }
           },
           error: (error) => {
-            // console.log(error.error.message);
+            
             this.showMessage.showErrorToastr(error.error.message);
           },
         });
@@ -144,21 +143,21 @@ export class VerifyotpComponent implements OnInit {
       } else if (this.commonservice.getAuthFromLocalStorage() === 'user') {
         this.userService.verifyOtp(otpdata).subscribe({
           next: (response) => {
-            // console.log('role for otp:', this.role);
+            
             if (this.role === 'userRegistration') {
-              //if it is user registration verification
+              
               this.showMessage.showSuccessToastr(response.message);
               this.router.navigate(['/user/registrationCompleted']);
               localStorage.removeItem('email');
             } else if (this.role === 'userForgetPassword') {
-              //if it is password verification
+              
               this.showMessage.showSuccessToastr(response.message);
               this.router.navigate(['/user/new_password']);
             } else if (
               this.role === 'userVerification' ||
               this.role === 'user_new_email'
             ) {
-              //if it is userverification or updating new email
+              
               this.showMessage.showSuccessToastr(response.message);
               localStorage.removeItem('userToken');
               localStorage.removeItem('email');
@@ -168,7 +167,7 @@ export class VerifyotpComponent implements OnInit {
             }
           },
           error: (error) => {
-            // console.log(error.error.message)
+            
             this.showMessage.showErrorToastr(error.error.message);
           },
         });

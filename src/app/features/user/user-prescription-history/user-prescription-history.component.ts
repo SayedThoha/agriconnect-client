@@ -33,5 +33,7 @@ export class UserPrescriptionHistoryComponent implements OnInit {
       });
   }
 
-  showDetails(prescription: any) {}
+  showDetails(prescription: any) {
+    console.warn(prescription)
+  }
 }

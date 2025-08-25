@@ -9,19 +9,11 @@ import {
 } from '@angular/forms';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { Router } from '@angular/router';
-import { ImageUploadService } from '../../../shared/services/image-upload.service';
 import { namePattern } from '../../../shared/regexp/regexp';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
-import { HttpClient } from '@angular/common/http';
-import {
-  catchError,
-  firstValueFrom,
-  Subscription,
-  switchMap,
-  throwError,
-} from 'rxjs';
+import { Subscription } from 'rxjs';
 import { UploadService } from '../../../shared/services/upload.service';
 
 @Component({
@@ -34,8 +26,8 @@ import { UploadService } from '../../../shared/services/upload.service';
 export class UserProfileDataComponent implements OnInit {
   user_profile_data: any = { firstName: '', lastName: '' };
   userId!: any;
-  email_edit: boolean = false;
-  name_edit: boolean = false;
+  email_edit = false;
+  name_edit = false;
   url: any = null;
   imagePath!: any;
   profile_pic_event!: Event;
@@ -81,12 +73,10 @@ export class UserProfileDataComponent implements OnInit {
 
   uploadImage() {
     if (this.selectedFile) {
-      // console.log('upload file in ts,before service call');
       this.uploadService
         .uploadImage(this.selectedFile, 'AgriConnect')
         .subscribe({
           next: (imageUrl) => {
-            // console.log('Image uploaded successfully:', imageUrl);
             this.url = imageUrl;
             this.upload_image_to_server();
           },
@@ -150,8 +140,6 @@ export class UserProfileDataComponent implements OnInit {
   }
 
   close_name() {
-    // console.log('close_name called', this.name_edit)
-
     this.name_form.patchValue({
       firstName: this.user_profile_data.firstName,
       lastName: this.user_profile_data.lastName,
@@ -180,9 +168,7 @@ export class UserProfileDataComponent implements OnInit {
   }
 
   submit_name() {
-    // console.log('edit profile submitted');
     if (this.name_form.invalid) {
-      // console.log('Form is invalid');
       this.markFormGroupTouched(this.name_form);
       return;
     } else {
@@ -201,14 +187,13 @@ export class UserProfileDataComponent implements OnInit {
       };
       this.userService.editUserProfile_name(data).subscribe({
         next: (response) => {
-          // console.log('Success response:', response);
           this.showMessage.showSuccessToastr(response.message);
           this.user_profile_data.firstName = data.firstName;
           this.user_profile_data.lastName = data.lastName;
           this.close_name();
         },
         error: (error) => {
-          console.log('Error response:', error);
+          console.error('Error response:', error);
           this.showMessage.showErrorToastr(error.error.message);
           this.close_name();
         },
@@ -217,9 +202,7 @@ export class UserProfileDataComponent implements OnInit {
   }
 
   submit_email() {
-    // console.log('edit profile submitted');
     if (this.email_form.invalid) {
-      // console.log('Form is invalid');
       this.markFormGroupTouched(this.email_form);
       return;
     } else {
@@ -261,13 +244,10 @@ export class UserProfileDataComponent implements OnInit {
 
   profileData() {
     this.userId = localStorage.getItem('userId');
-    // console.log("this.userid",this.userId)
-
     this.profileDataSubscription = this.userService
       .getuserDetails({ _id: this.userId })
       .subscribe({
         next: (response) => {
-          // console.log(response)
           this.user_profile_data = response;
           this.url = this.user_profile_data.profile_picture;
           this.name_form.patchValue({
@@ -279,6 +259,7 @@ export class UserProfileDataComponent implements OnInit {
           });
         },
         error: (error) => {
+          console.error(error);
           this.showMessage.showErrorToastr('Error in fetching profile data');
         },
       });

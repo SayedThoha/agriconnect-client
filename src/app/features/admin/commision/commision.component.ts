@@ -31,20 +31,16 @@ export class CommisionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    
-
-    const adminDetails= localStorage.getItem('admindetails');
+    const adminDetails = localStorage.getItem('admindetails');
     if (adminDetails) {
       try {
-        const parsedDetails = JSON.parse(adminDetails); // Parse the JSON string
-        this.payOut = parsedDetails.payOut; // Extract only the payOut value
+        const parsedDetails = JSON.parse(adminDetails);
+        this.payOut = parsedDetails.payOut;
       } catch (error) {
-        // console.error("Error parsing admin details:", error);
-        this.payOut = undefined; // Handle parsing error gracefully
+        this.payOut = undefined;
       }
     }
 
-    // console.log(this.payOut)
     this.initialiseForms();
   }
 

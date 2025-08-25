@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'customDate',
 })
 export class CustomDatePipe implements PipeTransform {
-  
-
   transform(value: string): string {
     const date = new Date(value);
 
@@ -14,7 +13,6 @@ export class CustomDatePipe implements PipeTransform {
     const month = date.toLocaleString('en-US', { month: 'long' });
     const year = date.getFullYear();
 
-    // Get the ordinal suffix for the day
     const daySuffix = (day: number) => {
       if (day > 3 && day < 21) return 'th';
       switch (day % 10) {
@@ -29,6 +27,5 @@ export class CustomDatePipe implements PipeTransform {
       }
     };
     return `${day}/${month}/${year}`;
-    // return `${dayOfWeek}, ${day}${daySuffix(day)} ${month} ${year}`;
   }
 }

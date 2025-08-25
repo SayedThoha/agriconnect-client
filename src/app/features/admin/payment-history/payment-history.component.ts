@@ -11,6 +11,7 @@ import {
 import { debounceTime, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { AppointMent } from '../models/appointmentModel';
 @AutoUnsubscribe
 @Component({
   selector: 'app-payment-history',
@@ -19,8 +20,8 @@ import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
   styleUrl: './payment-history.component.css',
 })
 export class PaymentHistoryComponent {
-  payments!: any;
-  payments_to_display!: any;
+  payments!: AppointMent[];
+  payments_to_display!: AppointMent[];
   searchForm!: FormGroup;
   paymentForm!: FormGroup;
 
@@ -88,7 +89,6 @@ export class PaymentHistoryComponent {
   }
 
   paymentFormSubmit() {
-    // console.log('payment form submit');
     if (this.paymentForm.valid) {
       const selectedStatus = this.paymentForm.value.status;
       if (selectedStatus === 'all') {

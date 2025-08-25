@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { UserService } from '../../../shared/services/user.service';
@@ -30,21 +30,20 @@ import { Subscription } from 'rxjs';
   templateUrl: './user-expert-profile.component.html',
   styleUrl: './user-expert-profile.component.css',
 })
-export class UserExpertProfileComponent {
-  expertId!: any;
+export class UserExpertProfileComponent implements OnInit {
+  expertId!: string | null;
   expert!: expertData;
-  // expert: expertData = {} as expertData;
   slots: any[] = [];
   date!: Date;
   minDate!: Date;
   maxDate!: Date;
   slots_for_display: any[] = [];
-  userId!: any;
-  selectedTab: string = 'about';
-  showModal: boolean = false;
+  userId!: string | null;
+  selectedTab = 'about';
+  showModal = false;
   selectedSlot: any;
 
-  expertDetailsSubscription!:Subscription
+  expertDetailsSubscription!: Subscription;
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -58,9 +57,6 @@ export class UserExpertProfileComponent {
     this.expertId = this.route.snapshot.paramMap.get('id');
     this.getExpertDetails(this.expertId);
     this.getSlots(this.expertId);
-    
-
-     
   }
 
   getSlotsForDisplay(date: any) {
@@ -72,29 +68,28 @@ export class UserExpertProfileComponent {
     });
   }
 
-  getExpertDetails(data: any) {
-    
-    this.expertDetailsSubscription= this.userService.getExpertDetails({ _id: data }).subscribe({
-      next: (Response) => {
-        // console.log(Response)
-        this.expert = Response;
-      },
-      error: (error) => {
-        this.messageService.showErrorToastr(error.error.message);
-      },
-    });
+  getExpertDetails(data: string | null) {
+    this.expertDetailsSubscription = this.userService
+      .getExpertDetails({ _id: data })
+      .subscribe({
+        next: (Response) => {
+          this.expert = Response;
+        },
+        error: (error) => {
+          this.messageService.showErrorToastr(error.error.message);
+        },
+      });
   }
 
   getSlots(expertId: any) {
     this.userService.getSlots({ _id: expertId }).subscribe({
       next: (Response) => {
-        // console.log("Response get",Response)
-        this.slots = Response
+        this.slots = Response;
         if (this.slots.length > 0) {
           this.minDate = new Date(this.slots[0].time);
           this.maxDate = new Date(this.slots[this.slots.length - 1].time);
-          // this.date = new Date(); // Set the default date to today
-          this.getSlotsForDisplay(this.date); // Display slots for today by default
+
+          this.getSlotsForDisplay(this.date);
         }
       },
       error: (error) => {
@@ -114,7 +109,6 @@ export class UserExpertProfileComponent {
   }
 
   onCancelSlot() {
-    // console.log('Slot confirmation cancelled');
     this.showModal = false;
   }
 
@@ -122,19 +116,17 @@ export class UserExpertProfileComponent {
     this.userService
       .addSlot({ _id: id, expertId: this.expertId, userId: this.userId })
       .subscribe({
-        next: (Response) => {
+        next: () => {
           this.messageService.showSuccessToastr('booking Confirmed.');
         },
       });
   }
 
   chat() {
-
     this.router.navigate(['/user/userchat']);
   }
 
   selectTab(tab: string): void {
     this.selectedTab = tab;
   }
-
 }

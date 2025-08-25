@@ -1,25 +1,32 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AdminServiceService } from '../services/admin-service.service';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { debounceTime, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { AppointMent } from '../models/appointmentModel';
 
 @AutoUnsubscribe
 @Component({
   selector: 'app-appointment-history',
-  imports: [CommonModule,ReactiveFormsModule,FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './appointment-history.component.html',
   styleUrl: './appointment-history.component.css',
 })
 export class AppointmentHistoryComponent implements OnInit {
-  appointments!: any;
-  appointments_to_display!: any;
+  appointments!: AppointMent[];
+  appointments_to_display!: AppointMent[];
   searchForm!: FormGroup;
   consultationForm!: FormGroup;
 
-  appointMentSubscription!:Subscription
+  appointMentSubscription!: Subscription;
 
   constructor(
     private adminService: AdminServiceService,
@@ -32,23 +39,23 @@ export class AppointmentHistoryComponent implements OnInit {
     this.initialiseForms();
     this.getAppointmentDetails();
     this.consultationForm.get('status')?.valueChanges.subscribe((value) => {
-      // console.log('Status changed to:', value);
       if (value) this.consultationFormSubmit();
     });
     this.setupSearchSubscription();
   }
 
   getAppointmentDetails() {
-   this.appointMentSubscription= this.adminService.getAppointment().subscribe({
-      next: (Response) => {
-        this.appointments = Response;
-        // console.log(this.appointments)
-        this.appointments_to_display = this.appointments;
-      },
-      error: (error) => {
-        this.messageService.showErrorToastr(error.error.message);
-      },
-    });
+    this.appointMentSubscription = this.adminService
+      .getAppointment()
+      .subscribe({
+        next: (Response) => {
+          this.appointments = Response;
+          this.appointments_to_display = this.appointments;
+        },
+        error: (error) => {
+          this.messageService.showErrorToastr(error.error.message);
+        },
+      });
   }
 
   initialiseForms(): void {
@@ -64,7 +71,7 @@ export class AppointmentHistoryComponent implements OnInit {
   setupSearchSubscription() {
     this.searchForm
       .get('searchData')
-      ?.valueChanges.pipe(debounceTime(300)) // Adjust debounce time as needed
+      ?.valueChanges.pipe(debounceTime(300))
       .subscribe((value) => {
         this.filterExperts(value);
       });
@@ -87,11 +94,9 @@ export class AppointmentHistoryComponent implements OnInit {
   }
 
   consultationFormSubmit() {
-    // console.log('consultation form submit');
-
     if (this.consultationForm.valid) {
       const selectedStatus = this.consultationForm.value.status;
-      // console.log('status:', selectedStatus);
+
       if (selectedStatus === 'all') {
         this.appointments_to_display = this.appointments;
       } else if (selectedStatus === 'pending') {
@@ -99,25 +104,21 @@ export class AppointmentHistoryComponent implements OnInit {
           (item: { consultation_status: string }) =>
             item.consultation_status === 'pending'
         );
-        // console.log('appointments_to_display:', this.appointments_to_display);
       } else if (selectedStatus === 'consulted') {
         this.appointments_to_display = this.appointments.filter(
           (item: { consultation_status: string }) =>
             item.consultation_status === 'consulted'
         );
-        // console.log('appointments_to_display:', this.appointments_to_display);
       } else if (selectedStatus === 'not_consulted') {
         this.appointments_to_display = this.appointments.filter(
           (item: { consultation_status: string }) =>
             item.consultation_status === 'not_consulted'
         );
-        // console.log('appointments_to_display:', this.appointments_to_display);
       } else if (selectedStatus === 'cancelled') {
         this.appointments_to_display = this.appointments.filter(
           (item: { consultation_status: string }) =>
             item.consultation_status === 'cancelled'
         );
-        // console.log('appointments_to_display:', this.appointments_to_display);
       }
       this.cdr.detectChanges();
     }

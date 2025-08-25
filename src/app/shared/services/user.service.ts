@@ -14,7 +14,7 @@ import {
 } from '../../core/models/userModel';
 import {
   expertData,
-  specialisation,
+  Specialisation,
 } from '../../features/admin/models/expertModel';
 @Injectable({
   providedIn: 'root',
@@ -31,27 +31,21 @@ export class UserService {
     );
   }
 
-  //resendotp
   resendOtp(email: object): Observable<HttpResponseModel> {
-    // console.log('resend otp');
     return this.http.post<HttpResponseModel>(
       `${this.apiUrl}/user/resendOtp`,
       email
     );
   }
 
-  //verifyOtp
   verifyOtp(data: OtpData): Observable<HttpResponseModel> {
-    // console.log('verify otp service');
     return this.http.post<HttpResponseModel>(
       `${this.apiUrl}/user/verifyOtp`,
       data
     );
   }
 
-  //login user
   userLogin(data: LoginModel): Observable<LoginResponseModel> {
-    // console.log('userLogin method triggered with data:', data);
     return this.http.post<LoginResponseModel>(
       `${this.apiUrl}/user/login`,
       data
@@ -72,9 +66,7 @@ export class UserService {
     );
   }
 
-  // getuserDetails(data: { _id: string }): Observable<UserInfo> {
   getuserDetails(data: { _id: string }): Observable<UserInfo> {
-    // console.log('user profile _api', data);
     const httpParams = new HttpParams({ fromObject: data });
     return this.http.get<UserInfo>(`${this.apiUrl}/user/getuserDetails`, {
       params: httpParams,
@@ -89,7 +81,6 @@ export class UserService {
   }
 
   editUserProfile_name(data: object): Observable<HttpResponseModel> {
-    // console.log('edit UserProfile_name service');
     return this.http.post<HttpResponseModel>(
       `${this.apiUrl}/user/editUserProfile_name`,
       data
@@ -97,15 +88,14 @@ export class UserService {
   }
 
   opt_for_new_email(data: object): Observable<HttpResponseModel> {
-    // console.log('edit opt_for_new_email service');
     return this.http.post<HttpResponseModel>(
       `${this.apiUrl}/user/opt_for_new_email`,
       data
     );
   }
 
-  googleLogin(token: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/user/googleLogin`, { token });
+  googleLogin(token: string): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/user/googleLogin`, { token });
   }
 
   checkUserStatus(userId: string): Observable<any> {
@@ -119,8 +109,8 @@ export class UserService {
     );
   }
 
-  getSpecialisation(): Observable<specialisation[]> {
-    return this.http.get<specialisation[]>(
+  getSpecialisation(): Observable<Specialisation[]> {
+    return this.http.get<Specialisation[]>(
       `${this.apiUrl}/user/getSpecialisation`
     );
   }
@@ -143,11 +133,10 @@ export class UserService {
     });
   }
 
-  addSlot(data: Object): Observable<any> {
+  addSlot(data: object): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/user/addSlots`, data);
   }
 
-  //get a particular slot
   getSlot(data: any): Observable<any> {
     const httpParams = new HttpParams({ fromObject: data });
     return this.http.get<any>(`${this.apiUrl}/user/getSlot`, {
@@ -155,44 +144,38 @@ export class UserService {
     });
   }
 
-  //submit appointmnet letter
-  appointmnet_booking(data: Object): Observable<any> {
+  appointmnet_booking(data: object): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/user/appointment_booking`, data);
   }
 
   check_if_the_slot_available(data: any): Observable<any> {
     const httpParams = new HttpParams({ fromObject: data });
-    // console.log('httpParams contains slotId:',httpParams)
+
     return this.http.get<any>(
       `${this.apiUrl}/user/check_if_the_slot_available`,
       { params: httpParams }
     );
   }
 
-  //payment for slot booking
-  booking_payment(data: Object): Observable<any> {
-    // console.log('razorpay booking service');
+  booking_payment(data: object): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/user/booking_payment`, data);
   }
 
   userDetails(data: any): Observable<any> {
-    // console.log('wallet_details service');
     const httpParams = new HttpParams({ fromObject: data });
     return this.http.get<any>(`${this.apiUrl}/user/userDetails`, {
       params: httpParams,
     });
   }
 
-  //get booking details of this user
   get_booking_details_of_user(data: any): Observable<any> {
     const httpParams = new HttpParams({ fromObject: data });
-    // console.log('data', FormDataEvent);
+
     return this.http.get<any>(`${this.apiUrl}/user/get_booking_details`, {
       params: httpParams,
     });
   }
 
-  //to cancel slot
   cancelSlot(data: any): Observable<any> {
     const httpParams = new HttpParams({ fromObject: data });
     return this.http.get<any>(`${this.apiUrl}/user/cancelSlot`, {

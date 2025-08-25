@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
@@ -15,7 +17,7 @@ import { CapitaliseFirstPipe } from '../../../shared/pipes/capitalise-first.pipe
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { Subscription } from 'rxjs';
 
-declare var Razorpay: any;
+declare let Razorpay: any;
 @AutoUnsubscribe
 @Component({
   selector: 'app-appointment-booking',
@@ -32,7 +34,7 @@ declare var Razorpay: any;
 export class AppointmentBookingComponent implements OnInit {
   slotId!: any;
   slotDetails!: any;
-  visible: boolean = false;
+  visible = false;
   namePattern = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*\s*$/;
   agePattern = /^(?:[1-9][0-9]?|10[0-9])$/;
   isDisable = true;
@@ -56,12 +58,11 @@ export class AppointmentBookingComponent implements OnInit {
 
   appointmentBooking() {
     this.slotId = localStorage.getItem('slotId');
-    // console.log('slotId from localStorage:',this.slotId)
+
     this.appointmentBookingSubscription = this.userService
       .getSlot({ slotId: this.slotId })
       .subscribe({
         next: (Response) => {
-          // console.log(Response)
           this.slotDetails = Response;
         },
         error: (error) => {
@@ -101,7 +102,6 @@ export class AppointmentBookingComponent implements OnInit {
     });
   }
 
-  
   farmer_details_form_submit() {
     if (this.farmer_details_form.invalid) {
       this.markFormGroupTouched(this.farmer_details_form);
@@ -128,7 +128,7 @@ export class AppointmentBookingComponent implements OnInit {
     this.userService
       .check_if_the_slot_available({ slotId: this.slotId })
       .subscribe({
-        next: (Response) => {
+        next: () => {
           if (this.payment_form.value.payment_method === 'online_payment') {
             this.onlinePayment();
           } else if (
@@ -153,19 +153,16 @@ export class AppointmentBookingComponent implements OnInit {
         consultation_fee: this.slotDetails.expertId.consultation_fee,
       })
       .subscribe({
-        // For payment
         next: (response) => {
-          // console.log('razorpay, booking response',response);
           this.razorpayPopUp(response);
         },
         error: (error) => {
-          console.log(error.message);
+          console.error(error.message);
         },
       });
   }
 
   razorpayPopUp(res: any) {
-    // console.log('razorpayPopUp');
     const RazorpayOptions = {
       description: 'Agriconnect Razorpay payment',
       currency: 'INR',
@@ -218,7 +215,6 @@ export class AppointmentBookingComponent implements OnInit {
   payment(data: any) {
     this.userService.appointmnet_booking(this.farmer_details).subscribe({
       next: (Response) => {
-        // console.log(Response)
         this.messageService.showSuccessToastr(Response.message);
 
         this.router.navigate([
@@ -227,7 +223,7 @@ export class AppointmentBookingComponent implements OnInit {
         ]);
       },
       error: (error) => {
-        console.log(error.error);
+        console.error(error.error);
         this.messageService.showErrorToastr(error.error.message);
       },
     });

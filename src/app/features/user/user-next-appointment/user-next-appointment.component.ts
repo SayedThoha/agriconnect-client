@@ -7,62 +7,60 @@ import { MessageToasterService } from '../../../shared/services/message-toaster.
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { Subscription } from 'rxjs';
 
-
 @AutoUnsubscribe
 @Component({
   selector: 'app-user-next-appointment',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './user-next-appointment.component.html',
-  styleUrl: './user-next-appointment.component.css'
+  styleUrl: './user-next-appointment.component.css',
 })
-export class UserNextAppointmentComponent implements OnInit{
-  roomId!:any
-  slotDetails!:any
-  link!:any
-  disable=false
-  noAppointmnet=false
+export class UserNextAppointmentComponent implements OnInit {
+  roomId!: any;
+  slotDetails!: any;
+  link!: any;
+  disable = false;
+  noAppointmnet = false;
 
-  upcomingAppointmentSubscription!:Subscription
+  upcomingAppointmentSubscription!: Subscription;
   constructor(
-    private userService:UserService,
-    private router:Router,
-    private messageService:MessageToasterService,
-  ){}
+    private userService: UserService,
+    private router: Router,
+    private messageService: MessageToasterService
+  ) {}
 
   ngOnInit(): void {
-   this.upcomingAppointment()
+    this.upcomingAppointment();
   }
 
+  upcomingAppointment() {
+    const userId = localStorage.getItem('userId');
 
-  upcomingAppointment(){
-    const userId=localStorage.getItem('userId')
-    
-     this.upcomingAppointmentSubscription= this.userService.upcoming_appointment({_id:userId}).subscribe({
-        next:(Response)=>{
-          // console.log('response:',Response);
-          
-          if(Object.entries(Response).length === 0){
-            this.slotDetails=0
-          }else{
-            this.slotDetails=Response
-            this.checkAppointmentTime()
+    this.upcomingAppointmentSubscription = this.userService
+      .upcoming_appointment({ _id: userId })
+      .subscribe({
+        next: (Response) => {
+          if (Object.entries(Response).length === 0) {
+            this.slotDetails = 0;
+          } else {
+            this.slotDetails = Response;
+            this.checkAppointmentTime();
           }
-        },error:(error)=>{
-          this.messageService.showErrorToastr(error.error.message)
-        }
-      })
-    
+        },
+        error: (error) => {
+          this.messageService.showErrorToastr(error.error.message);
+        },
+      });
   }
 
-  //change this with iso date formta and check, change dateofbooking to time
   checkAppointmentTime() {
     if (this.slotDetails && this.slotDetails.dateOfBooking) {
-      const appointmentDate = new Date(this.slotDetails.dateOfBooking).getTime();
+      const appointmentDate = new Date(
+        this.slotDetails.dateOfBooking
+      ).getTime();
       const windowStart = appointmentDate;
-      const windowEnd = appointmentDate + 30 * 60 * 1000; // 30 minutes in milliseconds
+      const windowEnd = appointmentDate + 30 * 60 * 1000;
       const currentDate = new Date().getTime();
-  
-      // Enable the input only if the current time is within the 30-minute window
+
       if (currentDate >= windowStart && currentDate <= windowEnd) {
         this.disable = false;
       } else {
@@ -71,23 +69,33 @@ export class UserNextAppointmentComponent implements OnInit{
     }
   }
 
-  enterRoom(){
-    this.userService.getUpcomingSlot({appointmentId:this.slotDetails._id,roomId:this.roomId}).subscribe({
-      next:(Response)=>{
-        if(Response.roomId===this.roomId){
-          this.router.navigate(['/user/user_video_call_room',this.roomId,this.slotDetails._id])
-        }else{
-          this.messageService.showErrorToastr('InCorrect roomId. Check once more')
-        }
-      },error:(error)=>{
-        this.messageService.showErrorToastr(error.error.message)
-      }
-    })
-   
+  enterRoom() {
+    this.userService
+      .getUpcomingSlot({
+        appointmentId: this.slotDetails._id,
+        roomId: this.roomId,
+      })
+      .subscribe({
+        next: (Response) => {
+          if (Response.roomId === this.roomId) {
+            this.router.navigate([
+              '/user/user_video_call_room',
+              this.roomId,
+              this.slotDetails._id,
+            ]);
+          } else {
+            this.messageService.showErrorToastr(
+              'InCorrect roomId. Check once more'
+            );
+          }
+        },
+        error: (error) => {
+          this.messageService.showErrorToastr(error.error.message);
+        },
+      });
   }
 
-  expert_listing(){
-    this.router.navigate(['/user/expert_listing'])
+  expert_listing() {
+    this.router.navigate(['/user/expert_listing']);
   }
-  
 }

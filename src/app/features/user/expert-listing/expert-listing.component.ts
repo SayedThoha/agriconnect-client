@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { CommonModule } from '@angular/common';
 import {
@@ -8,7 +8,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { expertData, specialisation } from '../../admin/models/expertModel';
+import { expertData, Specialisation } from '../../admin/models/expertModel';
 import { UserService } from '../../../shared/services/user.service';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { Router } from '@angular/router';
@@ -22,13 +22,13 @@ import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
   templateUrl: './expert-listing.component.html',
   styleUrl: './expert-listing.component.css',
 })
-export class ExpertListingComponent {
-  specialisations: specialisation[] = [];
+export class ExpertListingComponent implements OnInit {
+  specialisations: Specialisation[] = [];
   experts: expertData[] = [];
   displayed_expert: expertData[] = [];
   searchForm!: FormGroup;
 
-  expertListingSubscription!:Subscription
+  expertListingSubscription!: Subscription;
   constructor(
     private userService: UserService,
     private messageService: MessageToasterService,
@@ -41,7 +41,6 @@ export class ExpertListingComponent {
     this.getSpecialisations();
     this.getExpertDetails();
     this.setupSearchSubscription();
-   
   }
 
   initialseForms(): void {
@@ -53,7 +52,7 @@ export class ExpertListingComponent {
   setupSearchSubscription() {
     this.searchForm
       .get('searchData')
-      ?.valueChanges.pipe(debounceTime(300)) // Adjust debounce time as needed
+      ?.valueChanges.pipe(debounceTime(300))
       .subscribe((value) => {
         this.filterExperts(value);
       });
@@ -85,16 +84,11 @@ export class ExpertListingComponent {
   }
 
   getExpertDetails() {
-    this.expertListingSubscription= this.userService.getExperts().subscribe({
+    this.expertListingSubscription = this.userService.getExperts().subscribe({
       next: (Response) => {
-        // console.log(Response)
         this.experts = Response;
 
         this.displayed_expert = this.experts;
-        this.displayed_expert.forEach((data) => {
-          // console.log(data);
-          // console.log('profile pic', data.profile_picture);
-        });
       },
       error: (error) => {
         console.error(error);
@@ -103,7 +97,7 @@ export class ExpertListingComponent {
     });
   }
 
-  specialisedExperts(data: any) {
+  specialisedExperts(data: string) {
     if (data === 'all') {
       this.displayed_expert = this.experts;
     } else {
@@ -113,7 +107,7 @@ export class ExpertListingComponent {
     }
   }
 
-  expertProfile(data: any) {
+  expertProfile(data: string) {
     this.router.navigate(['/user/expert_profile', data]);
   }
 }

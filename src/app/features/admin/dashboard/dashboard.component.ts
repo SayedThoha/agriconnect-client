@@ -37,8 +37,7 @@ export class DashboardComponent implements OnInit {
   total_cancelled_bookings!: number;
   graph_data_based_on: string = 'weekly';
 
-
-  dashBoardSubscription!:Subscription
+  dashBoardSubscription!: Subscription;
   constructor(
     private adminService: AdminServiceService,
     private messageService: MessageToasterService
@@ -53,9 +52,8 @@ export class DashboardComponent implements OnInit {
   }
 
   get_Slot_Details() {
-    // console.log('client side');
     const expertId = localStorage.getItem('expertId');
-   this.dashBoardSubscription= this.adminService
+    this.dashBoardSubscription = this.adminService
       .get_admin_dashboard_details({ expertId: expertId })
       .subscribe({
         next: (Response) => {
@@ -73,11 +71,7 @@ export class DashboardComponent implements OnInit {
 
   get_dashboard_display_contents() {
     this.total_revenue = this.booked_Slots.reduce((acc: number, data: any) => {
-      if (
-        data.consultation_status === 'consulted' 
-        // ||
-        // data.consultation_status === 'not_consulted'
-      ) {
+      if (data.consultation_status === 'consulted') {
         return acc + data.slotId.adminPaymentAmount;
       }
       return acc;
@@ -234,8 +228,8 @@ export class DashboardComponent implements OnInit {
     };
 
     this.booked_Slots.forEach((slot: any) => {
-      const day = new Date(slot.created_time).getDay(); // Get day of the week (0-6, 0 is Sunday)
-      const dayIndex = (day + 6) % 7; // Adjust to (0-6, 0 is Monday)
+      const day = new Date(slot.created_time).getDay(); 
+      const dayIndex = (day + 6) % 7; 
       weeklyData.bookings[dayIndex]++;
       if (slot.consultation_status === 'consulted') {
         weeklyData.consulted[dayIndex]++;

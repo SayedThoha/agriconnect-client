@@ -64,7 +64,7 @@ export class UsersignupComponent implements OnInit {
         ],
       ],
       email: ['', [Validators.required, Validators.email]],
-      // profile_pic:[null,Validators.required],
+
       password: [
         '',
         [Validators.required, Validators.pattern(passwordPattern)],
@@ -74,7 +74,6 @@ export class UsersignupComponent implements OnInit {
   }
 
   onsubmit() {
-    // console.log('onsubmit entered', this.user_registration_form);
     const password = this.user_registration_form.get('password')?.value;
     if (this.user_registration_form.invalid) {
       if (this.firstnameError()) {
@@ -99,7 +98,7 @@ export class UsersignupComponent implements OnInit {
         this.showMessage.showErrorToastr('Passwords do not match');
         return;
       }
-      // console.log('form submitted');
+
       const data = {
         firstName: this.user_registration_form.get('firstname')?.value,
         lastName: this.user_registration_form.get('lastname')?.value,
@@ -107,8 +106,7 @@ export class UsersignupComponent implements OnInit {
         password: this.user_registration_form.get('password')?.value,
       };
       this.userService.userRegister(data).subscribe({
-        next: (response) => {
-          // console.log('Server response:', response);
+        next: () => {
           localStorage.setItem(
             'email',
             this.user_registration_form.get('email')?.value
@@ -118,15 +116,12 @@ export class UsersignupComponent implements OnInit {
           this.showMessage.showSuccessToastr('Registered successfully');
         },
         error: (error) => {
-          // const errorMessage = error.error?.message || 'An unknown error occurred';
-          // console.log('Error:', error);  // Log the full error to inspect its structure
           this.showMessage.showErrorToastr(error.error.message);
         },
       });
     }
   }
 
-  //email error
   emailError(): string {
     const email = this.user_registration_form.get('email');
     if (email?.errors?.['required']) {
@@ -136,8 +131,6 @@ export class UsersignupComponent implements OnInit {
     }
     return '';
   }
-
-  //password Error
 
   passwordError(): string {
     const password = this.user_registration_form.get('password');
@@ -149,7 +142,6 @@ export class UsersignupComponent implements OnInit {
     return '';
   }
 
-  //confirm password error
   confirm_passwordError(): string {
     const password = this.user_registration_form.get('confirmPassword');
     if (password?.errors?.['required']) {
@@ -158,7 +150,6 @@ export class UsersignupComponent implements OnInit {
     return '';
   }
 
-  // firstname error handling
   firstnameError(): string {
     const name = this.user_registration_form.get('firstname');
 
@@ -174,7 +165,6 @@ export class UsersignupComponent implements OnInit {
     return ``;
   }
 
-  // lastname error handling
   lastnameError(): string {
     const name = this.user_registration_form.get('lastname');
 

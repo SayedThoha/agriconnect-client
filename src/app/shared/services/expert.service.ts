@@ -1,8 +1,8 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { OtpData } from '../../core/models/commonModel';
-import { catchError, Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import {
   HttpResponseModel,
   UpdatePasswordRequest,
@@ -11,13 +11,10 @@ import {
 import {
   LoginModel,
   ExpertLoginResponseModel,
-  upcomingAppointment,
-  // ExpertData,
-  // Specialization,
 } from '../../core/models/expertModel';
 import {
   expertData,
-  specialisation,
+  Specialisation,
 } from '../../features/admin/models/expertModel';
 
 @Injectable({
@@ -28,33 +25,19 @@ export class ExpertService {
 
   private apiUrl: string = environment.apiUrl;
 
-  //Expert registration
   expertRegister(data: FormData): Observable<HttpResponseModel> {
-    // Log FormData entries
-    // for (const [key, value] of data.entries()) {
-    //   console.log(`${key}:`, value);
-    // }
     return this.http.post<HttpResponseModel>(
       `${this.apiUrl}/expert/registration`,
       data
     );
-    // .pipe(
-    //   catchError((error) => {
-    //     console.error('Registration failed:', error.error);
-    //     return throwError(
-    //       () => new Error('Registration failed. Please try again.')
-    //     );
-    //   })
-    // );
   }
 
-  getSpecialisation(): Observable<specialisation> {
-    return this.http.get<specialisation>(
+  getSpecialisation(): Observable<Specialisation> {
+    return this.http.get<Specialisation>(
       `${this.apiUrl}/expert/specialisation`
     );
   }
 
-  //Expert login
   expertLogin(data: LoginModel): Observable<ExpertLoginResponseModel> {
     return this.http.post<ExpertLoginResponseModel>(
       `${this.apiUrl}/expert/login`,
@@ -62,7 +45,6 @@ export class ExpertService {
     );
   }
 
-  //verifyEmail_Forgetpassword
   verifyEmail(data: object): Observable<HttpResponseModel> {
     return this.http.post<HttpResponseModel>(
       `${this.apiUrl}/expert/verifyEmail`,
@@ -138,7 +120,7 @@ export class ExpertService {
   }
 
   //add slot for expert
-  addSlots(data: Object): Observable<HttpResponseModel> {
+  addSlots(data: object): Observable<HttpResponseModel> {
     return this.http.post<HttpResponseModel>(
       `${this.apiUrl}/expert/slotCreation`,
       data
@@ -232,10 +214,10 @@ export class ExpertService {
   }
 
   getPrescriptionHistory(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data });
+    // const httpParams =
+    new HttpParams({ fromObject: data });
     return this.http.get<any[]>(`${this.apiUrl}/expert/prescriptions`);
   }
-
 
   getAllNotifications(data: any): Observable<any[]> {
     const httpParams = new HttpParams({ fromObject: data });

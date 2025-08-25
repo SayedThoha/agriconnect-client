@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
 
@@ -11,7 +11,6 @@ export class UploadService {
 
   constructor(private http: HttpClient) {}
   uploadImage(file: File, uploadPreset: string): Observable<any> {
-    // console.log('uoload preset:', uploadPreset);
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', uploadPreset);
@@ -19,7 +18,6 @@ export class UploadService {
 
     return this.http.post<{ url: string }>(this._cloudinaryUrl, formData).pipe(
       map((response) => {
-        // console.log('response:', response, response.url);
         return response.url;
       }),
       catchError((error) => {

@@ -71,7 +71,7 @@ export class VerifyemailComponent implements OnInit {
             this.router.navigate(['/user/verifyOtp']);
           },
           error: (error) => {
-            // console.log(error.error.message)
+            
             this.showMessage.showErrorToastr(error.error.message);
           },
         });
@@ -82,7 +82,7 @@ export class VerifyemailComponent implements OnInit {
             this.router.navigate(['/expert/verifyOtp']);
           },
           error: (error) => {
-            // console.log(error.error.message)
+            
             this.showMessage.showErrorToastr(error.error.message);
           },
         });

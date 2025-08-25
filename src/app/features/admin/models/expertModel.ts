@@ -3,12 +3,12 @@ export interface expertData{
     firstName:string,
     lastName:string,
     email:string,
-    contactno:Number,
+    contactno:number,
     profile_picture?:string,
     specialisation:string,
     current_working_address:string,
     experience:string,
-    consultation_fee:Number,
+    consultation_fee:number,
     qualification_certificate?:[string],
     experience_certificate?:[string],
     liscence?:string,
@@ -30,7 +30,7 @@ export interface kyc_verification{
     current_working_address:string,
 }
 
-export interface specialisation{
+export interface Specialisation{
     _id:string,
     specialisation:string
 }

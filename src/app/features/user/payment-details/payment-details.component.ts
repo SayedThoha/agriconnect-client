@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { CommonModule } from '@angular/common';
 import {
@@ -18,14 +19,14 @@ import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
   templateUrl: './payment-details.component.html',
   styleUrl: './payment-details.component.css',
 })
-export class PaymentDetailsComponent {
+export class PaymentDetailsComponent implements OnInit {
   payments!: any;
   payments_to_display!: any;
   userId!: any;
   searchForm!: FormGroup;
   paymentForm!: FormGroup;
 
-  bookingDetailsSubscription!:Subscription
+  bookingDetailsSubscription!: Subscription;
   constructor(
     private messageService: MessageToasterService,
     private formBuilder: FormBuilder,
@@ -44,7 +45,7 @@ export class PaymentDetailsComponent {
   }
 
   getAppointmentDetails() {
-    this.bookingDetailsSubscription=this.userService
+    this.bookingDetailsSubscription = this.userService
       .get_booking_details_of_user({ userId: localStorage.getItem('userId') })
       .subscribe({
         next: (Response) => {
@@ -65,11 +66,11 @@ export class PaymentDetailsComponent {
       status: ['all'],
     });
   }
-  
+
   setupSearchSubscription() {
     this.searchForm
       .get('searchData')
-      ?.valueChanges.pipe(debounceTime(300)) 
+      ?.valueChanges.pipe(debounceTime(300))
       .subscribe((value) => {
         this.filterExperts(value);
       });

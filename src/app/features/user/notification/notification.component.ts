@@ -1,3 +1,4 @@
+
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,9 +15,9 @@ import { Router } from '@angular/router';
 })
 export class NotificationComponent implements OnInit, OnDestroy {
   notifications: any[] = [];
-  unreadCount: number = 0;
+  unreadCount = 0;
   private notificationSubscription!: Subscription;
-  showNotifications: boolean = false;
+  showNotifications = false;
 
   constructor(
     private socketService: SocketServiceService,
@@ -29,7 +30,6 @@ export class NotificationComponent implements OnInit, OnDestroy {
     const userId = localStorage.getItem('userId');
     if (userId) {
       this.socketService.register(userId);
-    } else {
     }
     this.notificationSubscription = this.socketService
       .onNotification()
@@ -59,7 +59,6 @@ export class NotificationComponent implements OnInit, OnDestroy {
       this.userService
         .getAllNotifications({ userId: userId })
         .subscribe((notifications) => {
-          // console.log('Fetched all notifications:', notifications);
           this.notifications = notifications;
           this.unreadCount = this.notifications.filter(
             (n) => !n.isReadByUser
@@ -103,10 +102,9 @@ export class NotificationComponent implements OnInit, OnDestroy {
   formatNotificationMessage(notification: any): string {
     let message = notification.message;
 
-     // Remove "(Coordinated Universal Time)" if present
-     message = message.replace(/\(Coordinated Universal Time\)/g, ''); 
-     message = message.replace(/\(UTC\)/g, '');
-    // Extract date from message
+    message = message.replace(/\(Coordinated Universal Time\)/g, '');
+    message = message.replace(/\(UTC\)/g, '');
+
     const dateMatch = message.match(
       /\w{3} \w{3} \d{1,2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4}/
     );
@@ -126,13 +124,9 @@ export class NotificationComponent implements OnInit, OnDestroy {
         timeZone: 'Asia/Kolkata',
       });
 
-      
-
-      // Replace the original date in the message with the formatted date
       message = message.replace(originalDateString, formattedDate);
     }
 
-    // Add Expert Name if Available
     if (notification.expertId?.firstName) {
       message = message.replace(
         'Your slot booking',

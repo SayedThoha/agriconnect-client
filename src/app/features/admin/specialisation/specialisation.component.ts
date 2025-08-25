@@ -9,7 +9,7 @@ import {
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { AdminServiceService } from '../services/admin-service.service';
 import { CommonModule } from '@angular/common';
-import { specialisation } from '../models/expertModel';
+import { Specialisation } from '../models/expertModel';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { Subscription } from 'rxjs';
 @AutoUnsubscribe
@@ -23,8 +23,8 @@ import { Subscription } from 'rxjs';
 
 export class SpecialisationComponent implements OnInit {
   namePattern = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*\s*$/;
-  specialisation!: specialisation[];
-  editData!: specialisation;
+  specialisation!: Specialisation[];
+  editData!: Specialisation;
   edit = false;
   specialisationForm!: FormGroup;
   editspecialisationForm!: FormGroup;
@@ -79,13 +79,13 @@ export class SpecialisationComponent implements OnInit {
 
   //add spec
   addSubmit() {
-    let data = this.specialisationForm.value.specialisation;
+    const data = this.specialisationForm.value.specialisation;
     if (this.specialisationForm.invalid) {
       if (this.specialisationError()) {
         this.messageService.showErrorToastr(this.specialisationError());
       }
     } else {
-      let spec = this.specialisation.some(
+      const spec = this.specialisation.some(
         (spec) => spec.specialisation.toLowerCase() === data!.toLowerCase()
       );
       if (spec) {
@@ -110,8 +110,8 @@ export class SpecialisationComponent implements OnInit {
     }
   }
 
-  //edit call of a spec
-  editSpec(data: specialisation) {
+  
+  editSpec(data: Specialisation) {
     this.editData = data;
     this.edit = true;
     this.editspecialisationForm.setValue({
@@ -119,14 +119,14 @@ export class SpecialisationComponent implements OnInit {
     });
   }
 
-  //closeEdit
+  
   closeEdit() {
     this.edit = !this.edit;
   }
 
-  //edit spec
+  
   editSubmit() {
-    let data = this.editData;
+    const data = this.editData;
     if (this.editspecialisationForm.invalid) {
       if (this.editspecialisationError()) {
         this.messageService.showErrorToastr(this.editspecialisationError());
@@ -148,8 +148,8 @@ export class SpecialisationComponent implements OnInit {
     this.edit = !this.edit;
   }
 
-  //delete spec
-  deleteSpec(data: any) {
+  
+  deleteSpec(data: Specialisation) {
     const value = { _id: data._id, specialisation: data.specialisation };
     this.adminService.deleteSpecialisation(data).subscribe({
       next: (Response) => {
@@ -164,7 +164,7 @@ export class SpecialisationComponent implements OnInit {
     });
   }
 
-  //add spec error
+  
   specialisationError(): string {
     const name = this.specialisationForm.get('specialisation');
     if (name?.invalid) {
@@ -179,7 +179,7 @@ export class SpecialisationComponent implements OnInit {
     return ``;
   }
 
-  //edit specialization error
+  
   editspecialisationError(): string {
     const name = this.editspecialisationForm.get('specialisation');
     if (name?.invalid) {

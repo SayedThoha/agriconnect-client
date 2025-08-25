@@ -19,32 +19,32 @@ export class SocketServiceService {
   }
 
   sendMessage(message: any): void {
-    // console.log('sendMessage:', message);
+  
     this.socket.emit('newMessage', message);
   }
 
   onMessage(): Observable<any> {
     return new Observable((observer) => {
       this.socket.on('messageReceived', (data: any) => {
-        // console.log('message receives:', data);
+      
         observer.next(data);
       });
     });
   }
 
   messageSendfromUser(data: any) {
-    // console.log('data from user:', data);
+  
     this.socket.emit('newMessage', data);
   }
 
   messageSendfromExpert(data: any) {
-    // console.log('data from expert:', data);
+  
     this.socket.emit('newMessage', data);
   }
 
 
  
- // Listen for incoming messages
+ 
  onNotification(): Observable<any> {
   return new Observable((observer) => {
     this.socket.on('notification', (message) => {
@@ -53,7 +53,7 @@ export class SocketServiceService {
   });
 }
 
-// Emit an event when notifications are read
+
 markNotificationsAsRead() {
   this.socket.emit('notificationsRead');
 }

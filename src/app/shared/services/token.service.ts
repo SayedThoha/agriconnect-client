@@ -36,7 +36,7 @@ export class TokenService {
     private expertService: ExpertService
   ) {}
 
-  // Method to refresh user token
+  
   refreshUserAccessToken(): Observable<any> {
     if (this.refreshingUserToken) {
       return this.userTokenSubject.asObservable();
@@ -46,7 +46,7 @@ export class TokenService {
 
     const refreshToken = localStorage.getItem('userRefreshToken');
     if (!refreshToken) {
-      // this.showMessage.showErrorToastr('Session expired. Please log in again.');
+      
       this.router.navigate(['/home']);
       this.store.dispatch(
         refreshUserTokenFailure({ error: 'No refresh token found' })
@@ -77,7 +77,7 @@ export class TokenService {
     );
   }
 
-  // Method to refresh expert token
+  
   refreshExpertAccessToken(): Observable<any> {
     if (this.refreshingExpertToken) {
       return this.expertTokenSubject.asObservable();
@@ -87,7 +87,7 @@ export class TokenService {
 
     const refreshToken = localStorage.getItem('expertRefreshToken');
     if (!refreshToken) {
-      // this.showMessage.showErrorToastr('Session expired. Please log in again.');
+      
       this.router.navigate(['/home']);
       this.store.dispatch(
         refreshExpertTokenFailure({ error: 'No refresh token found' })

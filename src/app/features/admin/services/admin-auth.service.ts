@@ -4,8 +4,6 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class AdminAuthService {
-  constructor() {}
-
   admin_Auth = localStorage.getItem('adminToken');
 
   check_admin_logged_in(): boolean {

@@ -12,6 +12,7 @@ import { UserService } from '../../../shared/services/user.service';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { debounceTime, Subscription } from 'rxjs';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { AppointMent } from '../../admin/models/appointmentModel';
 @AutoUnsubscribe
 @Component({
   selector: 'app-booking-details',
@@ -25,16 +26,16 @@ import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
   styleUrl: './booking-details.component.css',
 })
 export class BookingDetailsComponent implements OnInit {
-
-  @ViewChild(PrescriptionModalComponent) prescriptionModal!: PrescriptionModalComponent;
-  userId!: any;
-  appointments!: any;
+  @ViewChild(PrescriptionModalComponent)
+  prescriptionModal!: PrescriptionModalComponent;
+  userId!: string;
+  appointments!: AppointMent[];
   appointments_to_display!: any;
   searchForm!: FormGroup;
   consultationForm!: FormGroup;
   prescription_id: string | null = null;
 
-  bookingDetailsSubscription!:Subscription
+  bookingDetailsSubscription!: Subscription;
   constructor(
     private userService: UserService,
     private messageService: MessageToasterService,
@@ -46,34 +47,31 @@ export class BookingDetailsComponent implements OnInit {
     this.initialiseForms();
     this.getAppointmentDetails();
     this.setupSearchSubscription();
-    
   }
 
   getAppointmentDetails() {
     const userId = localStorage.getItem('userId');
-    
-    this.bookingDetailsSubscription= this.userService.get_booking_details_of_user({ userId: userId }).subscribe({
-      next: (Response) => {
-        this.appointments = Response;
-        // console.log("appointments details",this.appointments)
-        this.appointments_to_display = this.appointments;
-      },
-      error: (error) => {
-        this.messageService.showErrorToastr(error.error.message);
-      },
-    });
+
+    this.bookingDetailsSubscription = this.userService
+      .get_booking_details_of_user({ userId: userId })
+      .subscribe({
+        next: (Response) => {
+          this.appointments = Response;
+
+          this.appointments_to_display = this.appointments;
+        },
+        error: (error) => {
+          this.messageService.showErrorToastr(error.error.message);
+        },
+      });
   }
 
- 
-  
-
   openPrescriptionModal(prescription_id: string | null) {
-    // console.log('Opening prescription modal with ID:', prescription_id);
     this.prescription_id = prescription_id;
     if (this.prescriptionModal) {
       this.prescriptionModal.prescription_id = prescription_id;
-      this.prescriptionModal.get_prescription(); // Fetch prescription details
-      this.prescriptionModal.openModal(); // Open the modal
+      this.prescriptionModal.get_prescription();
+      this.prescriptionModal.openModal();
     } else {
       console.error('Prescription modal is not available');
     }
@@ -92,7 +90,7 @@ export class BookingDetailsComponent implements OnInit {
   setupSearchSubscription() {
     this.searchForm
       .get('searchData')
-      ?.valueChanges.pipe(debounceTime(300)) // Adjust debounce time as needed
+      ?.valueChanges.pipe(debounceTime(300))
       .subscribe((value) => {
         this.filterExperts(value);
       });
@@ -151,13 +149,13 @@ export class BookingDetailsComponent implements OnInit {
         this.updateInTable(slotId);
       },
       error: (error) => {
-        console.log('error:', error.error);
+        console.error('error:', error.error);
         this.messageService.showErrorToastr(error.error.message);
       },
     });
   }
 
-  updateInTable(slotId: any) {
+  updateInTable(slotId: string) {
     this.appointments_to_display = this.appointments_to_display.map(
       (item: { slotId: any; consultation_status: string }) => {
         if (item.slotId._id === slotId) {

@@ -12,7 +12,6 @@
     >
       <ng-template pTemplate="header">
         <tr>
-          <!-- <th style="width:25%">sl No.</th> -->
           <th style="width: 25%">PrescriptionId</th>
           <th style="width: 25%">Issue</th>
           <th style="width: 25%">Details</th>
@@ -20,7 +19,6 @@
       </ng-template>
       <ng-template pTemplate="body" let-slot>
         <tr>
-          <!-- <td>{{i+1}}</td> -->
           <td>{{ prescription_to_display._id }}</td>
           <td>{{ prescription_to_display.issue }}</td>
           <td>

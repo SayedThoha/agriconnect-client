@@ -53,7 +53,7 @@ export class KycVerificationComponent implements OnInit {
       .subscribe({
         next: (Response) => {
           this.expert_kyc_details = Response;
-          console.log('expert kyc details', this.expert_kyc_details);
+          
           this.setFormData();
         },
         error: (error) => {

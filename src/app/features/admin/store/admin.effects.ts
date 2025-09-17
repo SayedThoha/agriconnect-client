@@ -1,15 +1,8 @@
-//admin.effects.ts
-import { inject, Injectable, OnInit } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { AdminServiceService } from '../services/admin-service.service';
 import { Router } from '@angular/router';
-import {
-  adminlogin,
-  login_admin_success,
-  loginadminFailure,
-  loginadminSuccess,
-  logoutadmin,
-} from './admin.action';
+import { adminlogin, loginadminSuccess, logoutadmin } from './admin.action';
 import { catchError, exhaustMap, map, of, tap } from 'rxjs';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 
@@ -26,14 +19,9 @@ export class adminEffects {
     this.actions$.pipe(
       ofType(adminlogin),
       exhaustMap((action) => {
-        // console.log('admin login effects')
         return this.adminService.adminLogin(action.data).pipe(
           map((data) => {
-            // console.log('data from admin efects:',data)
             if (data.accessedUser) {
-              // console.log('admin accesed user:',data.accessedUser._id);
-              // console.log('admin accesed user:',data.accessedUser.payOut);
-
               localStorage.setItem('adminToken', data.accessToken);
               localStorage.setItem(
                 'admindetails',
@@ -41,20 +29,18 @@ export class adminEffects {
               );
 
               this.messageToaster.showSuccessToastr(data.message);
-              // console.log('message toster up');
+
               this.router.navigate(['/admin/adminHome']);
-              // console.log('navigation up');
+
               return loginadminSuccess({ data: data.accessedUser });
             } else {
-              // console.log('If no data',data)
               return;
             }
           }),
           catchError((error) => {
-            console.log(error.error.message);
+            console.error(error.error.message);
             this.messageToaster.showErrorToastr(error.error.message);
             return of(error.message);
-            // return of(loginadminFailure({ error: error.error.message }));
           })
         );
       })

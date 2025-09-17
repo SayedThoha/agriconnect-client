@@ -16,12 +16,11 @@ import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 
 @Component({
   selector: 'app-user-list',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule,RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.css',
 })
 @AutoUnsubscribe
-
 export class UserListComponent implements OnInit {
   users!: userdata[];
   users_to_display!: userdata[];
@@ -30,7 +29,7 @@ export class UserListComponent implements OnInit {
   searchForm!: FormGroup;
   statusForm!: FormGroup;
 
-  userListSubscription!:Subscription
+  userListSubscription!: Subscription;
 
   constructor(
     private _adminService: AdminServiceService,
@@ -43,7 +42,6 @@ export class UserListComponent implements OnInit {
     this.initializeForm();
     this.setupSearchSubscription();
     this.statusForm.get('status')?.valueChanges.subscribe((value) => {
-      // console.log('Status changed to:', value);
       if (value) this.getAllUsers();
     });
   }
@@ -61,7 +59,7 @@ export class UserListComponent implements OnInit {
   setupSearchSubscription() {
     this.searchForm
       .get('searchData')
-      ?.valueChanges.pipe(debounceTime(300)) // Adjust debounce time as needed
+      ?.valueChanges.pipe(debounceTime(300))
       .subscribe((value) => {
         this.filterExperts(value);
       });
@@ -71,7 +69,7 @@ export class UserListComponent implements OnInit {
     if (searchTerm) {
       const regex = new RegExp(searchTerm, 'i');
       this.users_to_display = this.users.filter(
-        (users: any) =>
+        (users) =>
           regex.test(users.firstName) ||
           regex.test(users.lastName) ||
           regex.test(users.email)
@@ -81,10 +79,6 @@ export class UserListComponent implements OnInit {
     }
   }
 
-  // statusForm=this._formBuilder.group({
-  //   status:['all']
-  // })
-
   statusFormSubmit() {
     if (this.statusForm.valid) {
       const selectedStatus = this.statusForm.value.status;
@@ -93,11 +87,11 @@ export class UserListComponent implements OnInit {
           this.users_to_display = this.users;
         } else if (selectedStatus === 'true') {
           this.users_to_display = this.users_to_display.filter(
-            (item: any) => item.blocked === true
+            (item) => item.blocked === true
           );
         } else if (selectedStatus === 'false') {
           this.users_to_display = this.users.filter(
-            (item: any) => item.blocked === false
+            (item) => item.blocked === false
           );
         }
       }
@@ -105,7 +99,7 @@ export class UserListComponent implements OnInit {
   }
 
   getAllUsers() {
-  this.userListSubscription=  this._adminService.getUsers().subscribe({
+    this.userListSubscription = this._adminService.getUsers().subscribe({
       next: (Response) => {
         this.users = Response;
         this.users_to_display = this.users;
@@ -116,12 +110,13 @@ export class UserListComponent implements OnInit {
     });
   }
 
-  changeStatus(data: any) {
+  changeStatus(data: userdata) {
     const queryparams = { _id: data._id };
     this._adminService.userBlock(queryparams).subscribe({
-      next: (Response) => {
-        //user blocked or unblocked
-        data.blocked === true ? (data.blocked = false) : (data.blocked = true);
+      next: () => {
+        
+        // data.blocked === true ? (data.blocked = false) : (data.blocked = true);
+        data.blocked = !data.blocked;
       },
       error: (error) => {
         this._messageService.showErrorToastr(error.message);

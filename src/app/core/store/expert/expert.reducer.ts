@@ -1,7 +1,7 @@
-import { Action, createReducer, on } from '@ngrx/store';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { createReducer, on } from '@ngrx/store';
 
 import {
-  expert_blocked,
   expertBlocked,
   loginExpertSuccess,
   logoutExpert,
@@ -61,21 +61,17 @@ const _expertReducer = createReducer(
     };
   }),
 
-  
   on(refreshExpertTokenSuccess, (state, action) => {
-    
     return {
       ...state,
       expertInfo: {
         ...state.userInfo,
-        accessToken: action.accessToken, 
+        accessToken: action.accessToken,
       },
     };
   }),
 
-  
   on(refreshExpertTokenFailure, (state) => {
-    
     return {
       ...state,
       userInfo: {

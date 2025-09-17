@@ -9,14 +9,13 @@ import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 import { routes } from './app.routes';
 import {
-  BrowserModule,
   provideClientHydration,
   withEventReplay,
 } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideStore, StoreModule } from '@ngrx/store';
-import { EffectsModule, provideEffects } from '@ngrx/effects';
-import { provideToastr, ToastrModule } from 'ngx-toastr';
+import { provideStore } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
+import { provideToastr } from 'ngx-toastr';
 import {
   provideHttpClient,
   withFetch,
@@ -31,8 +30,6 @@ import { expertEffects } from './core/store/expert/expert.effects';
 import { adminReducer } from './features/admin/store/admin.reducer';
 import { adminEffects } from './features/admin/store/admin.effects';
 
-import { SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
-import { GoogleLoginProvider } from '@abacritt/angularx-social-login';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
@@ -40,22 +37,15 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
 const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
-// const config: SocketIoConfig = { url: environment.apiUrl, options: {} };
+
 import {
   getAnalytics,
   provideAnalytics,
   ScreenTrackingService,
   UserTrackingService,
 } from '@angular/fire/analytics';
-import {
-  initializeAppCheck,
-  ReCaptchaEnterpriseProvider,
-  provideAppCheck,
-} from '@angular/fire/app-check';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { environment } from '../environments/environment';
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: 'AIzaSyCh53c6v1p-h_J_eqagtap_led9LP-XSuA',
   authDomain: 'agriconnect-6517e.firebaseapp.com',

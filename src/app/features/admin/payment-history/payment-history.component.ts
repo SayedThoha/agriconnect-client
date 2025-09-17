@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AdminServiceService } from '../services/admin-service.service';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import {
@@ -19,7 +19,7 @@ import { AppointMent } from '../models/appointmentModel';
   templateUrl: './payment-history.component.html',
   styleUrl: './payment-history.component.css',
 })
-export class PaymentHistoryComponent {
+export class PaymentHistoryComponent implements OnInit {
   payments!: AppointMent[];
   payments_to_display!: AppointMent[];
   searchForm!: FormGroup;
@@ -78,9 +78,9 @@ export class PaymentHistoryComponent {
     if (searchTerm) {
       const regex = new RegExp(searchTerm, 'i');
       this.payments_to_display = this.payments_to_display.filter(
-        (appointment: any) =>
+        (appointment: AppointMent) =>
           regex.test(appointment.expertId.firstName) ||
-          regex.test(appointment.slotId.bookingAmount) ||
+          regex.test(appointment.slotId.bookingAmount.toString()) ||
           regex.test(appointment.payment_method)
       );
     } else {

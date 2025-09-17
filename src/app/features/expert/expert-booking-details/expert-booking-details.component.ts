@@ -12,24 +12,32 @@ import { debounceTime, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { PrescriptionModalComponent } from '../../../shared/prescription-modal/prescription-modal.component';
+import { BookedSlot } from '../../../core/models/slotModel';
+import { AppointmentCodePipe } from '../../../shared/pipes/appointment-code.pipe';
 @AutoUnsubscribe
 @Component({
   selector: 'app-expert-booking-details',
-  imports: [ReactiveFormsModule, FormsModule, CommonModule,PrescriptionModalComponent,],
+  imports: [
+    ReactiveFormsModule,
+    FormsModule,
+    CommonModule,
+    PrescriptionModalComponent,
+    AppointmentCodePipe
+  ],
   templateUrl: './expert-booking-details.component.html',
   styleUrl: './expert-booking-details.component.css',
 })
 export class ExpertBookingDetailsComponent implements OnInit {
-
-   @ViewChild(PrescriptionModalComponent) prescriptionModal!: PrescriptionModalComponent;
-  payments!: any;
-  payments_to_display!: any;
+  @ViewChild(PrescriptionModalComponent)
+  prescriptionModal!: PrescriptionModalComponent;
+  payments!: BookedSlot[];
+  payments_to_display!: BookedSlot[];
   expertId!: string | null;
   searchForm!: FormGroup;
   consultationForm!: FormGroup;
   prescription_id: string | null = null;
 
-  appoitmentDetailsSubscription!:Subscription
+  appoitmentDetailsSubscription!: Subscription;
 
   constructor(
     private messageService: MessageToasterService,
@@ -37,7 +45,6 @@ export class ExpertBookingDetailsComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private expertService: ExpertService
   ) {}
-
 
   ngOnInit(): void {
     this.initialiseForms();
@@ -49,24 +56,22 @@ export class ExpertBookingDetailsComponent implements OnInit {
     this.setupSearchSubscription();
   }
 
-
-
   getAppointmentDetails() {
-   this.appoitmentDetailsSubscription= this.expertService
-      .get_booking_details_of_expert({
-        expertId: localStorage.getItem('expertId'),
-      })
-      .subscribe({
-        next: (Response) => {
-          this.payments = Response;
-          this.payments_to_display = this.payments;
-        },
-        error: (error) => {
-          this.messageService.showErrorToastr(error.error.message);
-        },
-      });
+    const expertId = localStorage.getItem('expertId');
+    if (expertId) {
+      this.appoitmentDetailsSubscription = this.expertService
+        .get_booking_details_of_expert({ expertId: expertId })
+        .subscribe({
+          next: (Response) => {
+            this.payments = Response;
+            this.payments_to_display = this.payments;
+          },
+          error: (error) => {
+            this.messageService.showErrorToastr(error.error.message);
+          },
+        });
+    }
   }
-
 
   initialiseForms(): void {
     this.searchForm = this.formBuilder.group({
@@ -87,12 +92,11 @@ export class ExpertBookingDetailsComponent implements OnInit {
       });
   }
 
-
   filterExperts(searchTerm: string | null) {
     if (searchTerm) {
       const regex = new RegExp(searchTerm, 'i');
       this.payments_to_display = this.payments_to_display.filter(
-        (appointment: any) =>
+        (appointment) =>
           regex.test(appointment.userId.firstName) ||
           regex.test(appointment.userId.lastName) ||
           regex.test(appointment.consultation_status)
@@ -102,7 +106,6 @@ export class ExpertBookingDetailsComponent implements OnInit {
     }
   }
 
-
   consultationFormSubmit() {
     if (this.consultationForm.valid) {
       const selectedStatus = this.consultationForm.value.status;
@@ -110,37 +113,33 @@ export class ExpertBookingDetailsComponent implements OnInit {
         this.payments_to_display = this.payments;
       } else if (selectedStatus === 'pending') {
         this.payments_to_display = this.payments.filter(
-          (item: any) => item.consultation_status === 'pending'
+          (item) => item.consultation_status === 'pending'
         );
       } else if (selectedStatus === 'consulted') {
         this.payments_to_display = this.payments.filter(
-          (item: any) => item.consultation_status === 'consulted'
+          (item) => item.consultation_status === 'consulted'
         );
       } else if (selectedStatus === 'not_consulted') {
         this.payments_to_display = this.payments.filter(
-          (item: any) => item.consultation_status === 'not_consulted'
+          (item) => item.consultation_status === 'not_consulted'
         );
       } else if (selectedStatus === 'cancelled') {
         this.payments_to_display = this.payments.filter(
-          (item: any) => item.consultation_status === 'cancelled'
+          (item) => item.consultation_status === 'cancelled'
         );
       }
       this.cdr.detectChanges();
     }
   }
 
-
   openPrescriptionModal(prescription_id: string | null) {
-    // console.log('Opening prescription modal with ID:', prescription_id);
     this.prescription_id = prescription_id;
     if (this.prescriptionModal) {
       this.prescriptionModal.prescription_id = prescription_id;
-      this.prescriptionModal.get_prescription(); // Fetch prescription details
-      this.prescriptionModal.openModal(); // Open the modal
+      this.prescriptionModal.get_prescription();
+      this.prescriptionModal.openModal();
     } else {
       console.error('Prescription modal is not available');
     }
   }
-  
-
 }

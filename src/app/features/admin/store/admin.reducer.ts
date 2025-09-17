@@ -1,10 +1,8 @@
-//admin.reducer.ts
-
-import { createReducer, on } from '@ngrx/store';
+import { Action, createReducer, on } from '@ngrx/store';
 import { loginadminSuccess, logoutadmin } from './admin.action';
 import { admin_state, adminState } from './admin.state';
 
-export function adminReducer(state: adminState | undefined, action: any) {
+export function adminReducer(state: adminState | undefined, action: Action) {
   return _adminReducer(state, action);
 }
 

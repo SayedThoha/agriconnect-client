@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
@@ -16,8 +14,15 @@ import { CommonModule } from '@angular/common';
 import { CapitaliseFirstPipe } from '../../../shared/pipes/capitalise-first.pipe';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { Subscription } from 'rxjs';
-
-declare let Razorpay: any;
+import { FarmerDetails } from '../../../core/models/expertModel';
+import { PaymentOrder, Slot } from '../../../core/models/slotModel';
+import { RazorpayOptions } from '../../../core/models/razorPay';
+// declare let Razorpay: any;
+// declare global {
+//   interface Window {
+//     Razorpay: typeof Razorpay;
+//   }
+// }
 @AutoUnsubscribe
 @Component({
   selector: 'app-appointment-booking',
@@ -32,13 +37,13 @@ declare let Razorpay: any;
   styleUrl: './appointment-booking.component.css',
 })
 export class AppointmentBookingComponent implements OnInit {
-  slotId!: any;
-  slotDetails!: any;
+  slotId!: string;
+  slotDetails!: Slot;
   visible = false;
   namePattern = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*\s*$/;
   agePattern = /^(?:[1-9][0-9]?|10[0-9])$/;
   isDisable = true;
-  farmer_details!: any;
+  farmer_details!: FarmerDetails;
   userId = localStorage.getItem('userId');
   farmer_details_form!: FormGroup;
   payment_form!: FormGroup;
@@ -57,18 +62,19 @@ export class AppointmentBookingComponent implements OnInit {
   }
 
   appointmentBooking() {
-    this.slotId = localStorage.getItem('slotId');
-
-    this.appointmentBookingSubscription = this.userService
-      .getSlot({ slotId: this.slotId })
-      .subscribe({
-        next: (Response) => {
-          this.slotDetails = Response;
-        },
-        error: (error) => {
-          this.messageService.showErrorToastr(error.error.message);
-        },
-      });
+    this.slotId = localStorage.getItem('slotId')!;
+    if (this.slotId) {
+      this.appointmentBookingSubscription = this.userService
+        .getSlot({ slotId: this.slotId })
+        .subscribe({
+          next: (Response) => {
+            this.slotDetails = Response;
+          },
+          error: (error) => {
+            this.messageService.showErrorToastr(error.error.message);
+          },
+        });
+    }
   }
 
   intialiseForms(): void {
@@ -125,29 +131,33 @@ export class AppointmentBookingComponent implements OnInit {
   }
 
   payment_form_submit() {
-    this.userService
-      .check_if_the_slot_available({ slotId: this.slotId })
-      .subscribe({
-        next: () => {
-          if (this.payment_form.value.payment_method === 'online_payment') {
-            this.onlinePayment();
-          } else if (
-            this.payment_form.value.payment_method === 'wallet_payment'
-          ) {
-            this.walletPayment();
-          } else {
-            this.messageService.showSuccessToastr('select any payment method');
-          }
-        },
-        error: (error) => {
-          this.messageService.showErrorToastr(error.error.message);
-        },
-      });
+    if (this.slotId) {
+      this.userService
+        .check_if_the_slot_available({ slotId: this.slotId })
+        .subscribe({
+          next: () => {
+            if (this.payment_form.value.payment_method === 'online_payment') {
+              this.onlinePayment();
+            } else if (
+              this.payment_form.value.payment_method === 'wallet_payment'
+            ) {
+              this.walletPayment();
+            } else {
+              this.messageService.showSuccessToastr(
+                'select any payment method'
+              );
+            }
+          },
+          error: (error) => {
+            this.messageService.showErrorToastr(error.error.message);
+          },
+        });
+    }
   }
 
   onlinePayment() {
     this.isDisable = true;
-    const slot_id = this.slotDetails._id;
+
     this.userService
       .booking_payment({
         consultation_fee: this.slotDetails.expertId.consultation_fee,
@@ -162,8 +172,8 @@ export class AppointmentBookingComponent implements OnInit {
       });
   }
 
-  razorpayPopUp(res: any) {
-    const RazorpayOptions = {
+  razorpayPopUp(res:PaymentOrder) {
+    const RazorpayOptions:RazorpayOptions = {
       description: 'Agriconnect Razorpay payment',
       currency: 'INR',
       amount: res.fee,
@@ -175,7 +185,7 @@ export class AppointmentBookingComponent implements OnInit {
       prefill: {
         name: 'agriconnect',
         email: 'devsaytho@gmail.com',
-        phone: '8921535373',
+        contact: '8921535373',
       },
       theme: {
         color: '#6466e3',
@@ -187,32 +197,36 @@ export class AppointmentBookingComponent implements OnInit {
       },
       handler: this.paymentSuccess.bind(this),
     };
-    const rpz = new Razorpay(RazorpayOptions);
+    const rpz = new window.Razorpay(RazorpayOptions);
     rpz.open();
   }
 
-  paymentSuccess(options: any) {
+  paymentSuccess() {
     this.farmer_details.payment_method = 'online_payment';
     this.farmer_details.payment_status = true;
-    this.payment(this.farmer_details);
+    this.payment();
   }
 
   walletPayment() {
     this.isDisable = false;
-    this.userService.userDetails({ userId: this.userId }).subscribe({
-      next: (Response) => {
-        if (Response.wallet < this.slotDetails.adminPaymentAmount) {
-          this.messageService.showErrorToastr('Insufficient Balance!');
-        } else {
-          this.farmer_details.payment_method = 'wallet_payment';
-          this.farmer_details.payment_status = true;
-          this.payment(this.farmer_details);
-        }
-      },
-    });
+    if (this.userId) {
+      this.userService.userDetails({ userId: this.userId }).subscribe({
+        next: (Response) => {
+          if (Response.wallet) {
+            if (Response.wallet < this.slotDetails.adminPaymentAmount) {
+              this.messageService.showErrorToastr('Insufficient Balance!');
+            } else {
+              this.farmer_details.payment_method = 'wallet_payment';
+              this.farmer_details.payment_status = true;
+              this.payment();
+            }
+          }
+        },
+      });
+    }
   }
 
-  payment(data: any) {
+  payment() {
     this.userService.appointmnet_booking(this.farmer_details).subscribe({
       next: (Response) => {
         this.messageService.showSuccessToastr(Response.message);

@@ -13,6 +13,7 @@ import { MessageToasterService } from '../../../shared/services/message-toaster.
 import { CapitaliseFirstPipe } from '../../../shared/pipes/capitalise-first.pipe';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { Subscription } from 'rxjs';
+import { Expert, ExpertKyc } from '../models/expertModel';
 
 @Component({
   selector: 'app-kyc-verification',
@@ -28,12 +29,11 @@ import { Subscription } from 'rxjs';
 })
 @AutoUnsubscribe
 export class KycVerificationComponent implements OnInit {
-  expert_kyc_details!: any;
+  expert_kyc_details!: ExpertKyc;
   expert_id!: string | null;
-
   kyc_verification_form!: FormGroup;
-
   kycVerificationSubscription!: Subscription;
+
   constructor(
     private _router: Router,
     private _adminService: AdminServiceService,
@@ -53,7 +53,6 @@ export class KycVerificationComponent implements OnInit {
       .subscribe({
         next: (Response) => {
           this.expert_kyc_details = Response;
-          
           this.setFormData();
         },
         error: (error) => {
@@ -82,23 +81,27 @@ export class KycVerificationComponent implements OnInit {
       qualification_certificate:
         this.expert_kyc_details.qualification_certificate,
       experience_certificate: this.expert_kyc_details.exp_certificate,
-      specialisation: this.expert_kyc_details.specialization,
+      specialisation: this.expert_kyc_details.specialisation,
       current_working_address: this.expert_kyc_details.current_working_address,
     });
   }
 
-  file_download(name: string, index: Number = -1) {
+  file_download(name: keyof Expert) {
+    const expert = this.expert_kyc_details.expertId;
     const pdf_name = name;
-    let pdfUrl = this.expert_kyc_details.expertId[pdf_name];
-    this._router.navigate(['/admin/adminHome/pdf_viewer'], {
-      queryParams: { url: encodeURIComponent(pdfUrl) },
-    });
+    if (typeof expert !== 'string') {
+      const pdfUrl = expert[pdf_name];
+
+      this._router.navigate(['/admin/adminHome/pdf_viewer'], {
+        queryParams: { url: encodeURIComponent(pdfUrl as string) },
+      });
+    }
   }
 
   submit_kyc_verification_form() {
     const data = {
       _id: this.expert_kyc_details._id,
-      expert_id: this.expert_kyc_details.expertId._id,
+      expert_id: (this.expert_kyc_details.expertId as Expert)._id,
       id_proof_type: this.kyc_verification_form.value.id_proof_type,
       id_proof: this.kyc_verification_form.value.id_proof,
       expert_licence: this.kyc_verification_form.value.expert_licence,

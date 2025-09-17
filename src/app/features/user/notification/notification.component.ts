@@ -1,4 +1,3 @@
-
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { SocketServiceService } from '../../../shared/services/socket-service.service';
 import { UserService } from '../../../shared/services/user.service';
 import { Router } from '@angular/router';
+import { INotification } from '../../../core/models/notificationModel';
 
 @Component({
   selector: 'app-notification',
@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
   styleUrl: './notification.component.css',
 })
 export class NotificationComponent implements OnInit, OnDestroy {
-  notifications: any[] = [];
+  notifications: INotification[] = [];
   unreadCount = 0;
   private notificationSubscription!: Subscription;
   showNotifications = false;
@@ -99,7 +99,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
     }
   }
 
-  formatNotificationMessage(notification: any): string {
+  formatNotificationMessage(notification: INotification): string {
     let message = notification.message;
 
     message = message.replace(/\(Coordinated Universal Time\)/g, '');

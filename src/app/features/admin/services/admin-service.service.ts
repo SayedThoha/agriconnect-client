@@ -6,10 +6,19 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { adminLoginResponse, HttpResponseModel } from '../models/commonModel';
 import {
   expertData,
+  ExpertKyc,
+  IKycVerificationPayload,
   kyc_verification,
   Specialisation,
 } from '../models/expertModel';
 import { userdata } from '../models/userModel';
+import { AdminDashboardResponse } from '../models/dashboardModel';
+import { AppointMent } from '../models/appointmentModel';
+
+type HttpParamsInput = Record<
+  string,
+  string | number | boolean | readonly (string | number | boolean)[]
+>;
 
 @Injectable({
   providedIn: 'root',
@@ -26,7 +35,6 @@ export class AdminServiceService {
   getExperts(params: Record<string, string>): Observable<expertData[]> {
     let httpParams = new HttpParams();
     for (const key in params) {
-      // if (params.hasOwnProperty(key)) {
       if (Object.prototype.hasOwnProperty.call(params, key)) {
         httpParams = httpParams.set(key, params[key]);
       }
@@ -109,22 +117,24 @@ export class AdminServiceService {
     );
   }
 
-  get_expert_kyc_details_from_id(data: any): Observable<expertData> {
+  get_expert_kyc_details_from_id(data: HttpParamsInput): Observable<ExpertKyc> {
     const httpParams = new HttpParams({ fromObject: data });
-    return this._http.get<expertData>(
+    return this._http.get<ExpertKyc>(
       `${this.api}/admin/get_kyc_details_of_expert`,
       { params: httpParams }
     );
   }
 
-  submit_kyc_details(data: any): Observable<HttpResponseModel> {
+  submit_kyc_details(
+    data: IKycVerificationPayload
+  ): Observable<HttpResponseModel> {
     return this._http.post<HttpResponseModel>(
       `${this.api}/admin/submit_kyc_details`,
       data
     );
   }
 
-  download_kyc_documents(data: any): Observable<HttpResponseModel> {
+  download_kyc_documents(data: HttpParamsInput): Observable<HttpResponseModel> {
     const httpParams = new HttpParams({ fromObject: data });
     return this._http.get<HttpResponseModel>(
       `${this.api}/admin/download_kyc_documents`,
@@ -132,15 +142,15 @@ export class AdminServiceService {
     );
   }
 
-  getAppointment(): Observable<any> {
-    return this._http.get<any>(`${this.api}/admin/get_appointment_details`);
+  getAppointment(): Observable<AppointMent[]> {
+    return this._http.get<AppointMent[]>(
+      `${this.api}/admin/get_appointment_details`
+    );
   }
 
-  get_admin_dashboard_details(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data });
-    return this._http.get<any>(
-      `${this.api}/admin/get_admin_dashboard_details`,
-      { params: httpParams }
+  get_admin_dashboard_details(): Observable<AdminDashboardResponse> {
+    return this._http.get<AdminDashboardResponse>(
+      `${this.api}/admin/get_admin_dashboard_details`
     );
   }
 }

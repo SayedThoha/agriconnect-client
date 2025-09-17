@@ -8,6 +8,7 @@ import { TableModule } from 'primeng/table';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { CalendarModule } from 'primeng/calendar';
 import { DatePickerModule } from 'primeng/datepicker';
+import { Slot } from '../../../core/models/slotModel';
 
 @Component({
   selector: 'app-slot-adding',
@@ -19,22 +20,19 @@ import { DatePickerModule } from 'primeng/datepicker';
     TableModule,
     ScrollPanelModule,
     CalendarModule,
-    DatePickerModule
+    DatePickerModule,
   ],
   templateUrl: './slot-adding.component.html',
   styleUrl: './slot-adding.component.css',
-  
 })
 export class SlotAddingComponent implements OnInit {
   date!: Date;
   minDate!: Date;
   maxDate!: Date;
-  slots: any[] = [];
-  clickedSlots: any = [];
-  preSelected_slots: any[] = [];
-  slots_for_display: any[] = [];
-  existingSlots: any[] = [];
-  expertId: any = [];
+  slots: Slot[] = [];
+  slots_for_display: string[] = [];
+  existingSlots: string[] = [];
+  expertId!: string | null;
 
   constructor(
     private messageservice: MessageToasterService,
@@ -45,76 +43,66 @@ export class SlotAddingComponent implements OnInit {
 
   ngOnInit() {
     this.expertId = localStorage.getItem('expertId');
-    let today = new Date();
+    const today = new Date();
     this.minDate = new Date();
     this.maxDate = new Date(today.setMonth(today.getMonth() + 1));
     this.date = new Date();
     this.getSlots();
-  
   }
 
   getSlots() {
-    this.expertService.getSlots({ _id: this.expertId }).subscribe({
-      next: (Response) => {
-       
-        this.slots = Response;
-        
-        this.sort_slots()
-        this.onDateChange(this.date);
-        
-      },
-      error: (error) => {
-        console.log(error.error.message);
-      },
-    });
+    if (this.expertId) {
+      this.expertService.getSlots({ _id: this.expertId }).subscribe({
+        next: (Response) => {
+          this.slots = Response;
+
+          this.sort_slots();
+          this.onDateChange(this.date);
+        },
+        error: (error) => {
+          console.error(error.error.message);
+        },
+      });
+    }
   }
 
-  onDateChange(event: any) {
+  onDateChange(event: Date) {
     this.date = event;
     this.generateISO8601Dates(this.date);
-    // console.log('onDateChange', event);
+
     this.removeExistingSlots();
   }
 
   addSlots(time: string, index: number) {
-  
     if (!this.date) {
       this.messageservice.showErrorToastr('select any date!!');
     } else {
-      const data = { time: time, _id: this.expertId }; 
-    
+      const data = { time: time, _id: this.expertId };
+
       this.expertService.addSlots(data).subscribe({
         next: (Response) => {
-          // console.log('API Response:', Response);
-        
           this.messageservice.showSuccessToastr('slot added');
-          
-        
-          // this.slots = [...this.slots, Response.data]; 
-          this.slots.push(Response.data);
-          
+
+          this.slots.push(Response.data as Slot);
+
           this.slots_for_display.splice(index, 1);
           this.sort_slots();
-        
-          // this.cdr.detectChanges();
-          
-
-        },error: (error) => {
+        },
+        error: (error) => {
           this.messageservice.showErrorToastr(error.error.message);
         },
       });
     }
   }
 
-  generateISO8601Dates(inputDate: any) {
+  generateISO8601Dates(inputDate: Date) {
     const baseDate = new Date(inputDate);
     this.slots_for_display = [];
 
-    // Set time to 9:00 AM if before
     if (baseDate.getHours() < 9) {
       baseDate.setHours(9, 0, 0, 0);
     } else {
-      let minutes = baseDate.getMinutes();
+      const minutes = baseDate.getMinutes();
       if (minutes > 0 && minutes <= 30) {
         baseDate.setMinutes(30);
       } else if (minutes > 30) {
@@ -138,25 +126,19 @@ export class SlotAddingComponent implements OnInit {
   }
 
   removeExistingSlots(): void {
-    // Ensure existingSlots is up-to-date
-    this.existingSlots = this.slots.map((slot: { time: any }) => slot.time);
+    this.existingSlots = this.slots.map((slot) => slot.time.toString());
 
-    // Filter out existing slots from slots_for_display
-    this.slots_for_display = this.slots_for_display.filter(
-      (slotDate: string) => {
-        return !this.existingSlots.includes(slotDate);
-      }
-    );
+    this.slots_for_display = this.slots_for_display.filter((slotDate) => {
+      return !this.existingSlots.includes(slotDate);
+    });
   }
 
-  remove_slot(slot: any, i: number) {
-    // console.log('date in display while removing slot:', this.date);
-    // console.log('slot date while removing:', slot.time);
+  remove_slot(slot: Slot, i: number) {
     this.expertService.removeSlot({ _id: slot._id }).subscribe({
       next: (Response) => {
         this.messageservice.showSuccessToastr(Response.message);
         this.slots.splice(i, 1);
-        // Normalize `this.date` to UTC midnight
+
         const displayDate = new Date(
           Date.UTC(
             this.date.getFullYear(),
@@ -165,12 +147,12 @@ export class SlotAddingComponent implements OnInit {
           )
         )
           .toISOString()
-          .split('T')[0]; // yyyy-MM-dd
-        const slotDate = new Date(slot.time).toISOString().split('T')[0]; // yyyy-MM-dd
+          .split('T')[0];
+        const slotDate = new Date(slot.time).toISOString().split('T')[0];
         if (slotDate === displayDate) {
-          this.slots_for_display.push(slot.time);
+          this.slots_for_display.push(slot.time.toISOString());
           this.sort_slots_for_display();
-          this.cdr.detectChanges(); // Trigger change detection after modifying the array
+          this.cdr.detectChanges();
         }
       },
       error: (error) => {
@@ -180,16 +162,15 @@ export class SlotAddingComponent implements OnInit {
   }
 
   sort_slots_for_display() {
-    this.slots_for_display.sort((a: any, b: any) => {
+    this.slots_for_display.sort((a, b) => {
       return new Date(a).getTime() - new Date(b).getTime();
     });
   }
 
   sort_slots() {
-    this.slots.sort((a: any, b: any) => {
+    this.slots.sort((a, b) => {
       return new Date(a.time).getTime() - new Date(b.time).getTime();
     });
-    // console.log('slots length:', this.slots.length);
   }
 
   defaultSlots() {
@@ -205,10 +186,9 @@ export class SlotAddingComponent implements OnInit {
           next: (Response) => {
             this.messageservice.showSuccessToastr('Slots added successfully');
             this.slots.push(...Response);
-            
+
             this.sort_slots();
             this.slots_for_display = [];
-            
           },
           error: (error) => {
             this.messageservice.showErrorToastr(error.error.message);
@@ -216,8 +196,4 @@ export class SlotAddingComponent implements OnInit {
         });
     }
   }
-
-
 }
-
-

@@ -1,4 +1,4 @@
-//admin.selector.ts
+
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
 import { adminState } from './admin.state';

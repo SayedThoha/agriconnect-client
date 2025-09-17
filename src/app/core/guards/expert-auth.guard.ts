@@ -1,9 +1,8 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../../shared/services/auth.service';
-import { inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { inject } from '@angular/core';
 
-export const expertLoggedInGuard: CanActivateFn = (route, state) => {
+export const expertLoggedInGuard: CanActivateFn = () => {
   const expertAuth = inject(AuthService);
   const router = inject(Router);
 
@@ -15,7 +14,7 @@ export const expertLoggedInGuard: CanActivateFn = (route, state) => {
   }
 };
 
-export const expertLoggedOutGuard: CanActivateFn = (route, state) => {
+export const expertLoggedOutGuard: CanActivateFn = () => {
   const expertAuth = inject(AuthService);
   const router = inject(Router);
 

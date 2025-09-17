@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ExpertService } from '../../../shared/services/expert.service';
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -17,7 +18,6 @@ import {
   expertBlocked,
   loginExpert,
   loginExpertSuccess,
-  logoutExpert,
   refreshExpertToken,
   refreshExpertTokenFailure,
   refreshExpertTokenSuccess,
@@ -27,7 +27,7 @@ import { MessageToasterService } from '../../../shared/services/message-toaster.
 import { getexpertstate } from './expert.selectors';
 import { ExpertInfo } from '../../models/expertModel';
 import { Store } from '@ngrx/store';
-// Define the AppState interface
+
 
 interface AppState {
   expert: ExpertInfo;
@@ -86,7 +86,7 @@ export class expertEffects {
           }),
 
           catchError((error) => {
-            console.log('error.error.message:', error.error.message);
+            console.error('error.error.message:', error.error.message);
 
             if (
               error.status === 403 &&

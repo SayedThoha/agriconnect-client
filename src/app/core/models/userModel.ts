@@ -54,7 +54,6 @@ export interface ChatAccessData {
   userId: string;
 }
 
-
 export interface UserData {
   _id: string;
   firstName: string;
@@ -62,4 +61,20 @@ export interface UserData {
   email: string;
   is_verified: boolean;
   blocked: boolean;
+}
+
+export interface IUser {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  is_verified?: boolean;
+  role?: string;
+  blocked?: boolean;
+  created_time?: Date;
+  wallet?: number;
+  profile_picture?: string;
+  googleId: string;
+  authProvider: string;
 }

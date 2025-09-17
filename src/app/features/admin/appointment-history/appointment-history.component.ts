@@ -81,7 +81,7 @@ export class AppointmentHistoryComponent implements OnInit {
     if (searchTerm) {
       const regex = new RegExp(searchTerm, 'i');
       this.appointments_to_display = this.appointments_to_display.filter(
-        (appointment: any) =>
+        (appointment: AppointMent) =>
           regex.test(appointment.userId.firstName) ||
           regex.test(appointment.userId.lastName) ||
           regex.test(appointment.expertId.firstName) ||

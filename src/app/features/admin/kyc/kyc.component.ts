@@ -9,34 +9,31 @@ import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 
 @Component({
   selector: 'app-kyc',
-  imports: [CommonModule,FormsModule,RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './kyc.component.html',
-  styleUrl: './kyc.component.css'
+  styleUrl: './kyc.component.css',
 })
 @AutoUnsubscribe
-export class KycComponent implements OnInit{
-
-  kycdatas!:kyc_verification[]
+export class KycComponent implements OnInit {
+  kycdatas!: kyc_verification[];
 
   constructor(
-    private _adminService:AdminServiceService,
-    private _messageService:MessageToasterService
-  ){}
+    private _adminService: AdminServiceService,
+    private _messageService: MessageToasterService
+  ) {}
 
-  
-  ngOnInit(){
-    this.kycData()
+  ngOnInit() {
+    this.kycData();
   }
 
-  kycData(){
+  kycData() {
     this._adminService.kycdata().subscribe({
-      next:(Response)=>{
-        this.kycdatas=Response
+      next: (Response) => {
+        this.kycdatas = Response;
       },
-      error:(error)=>{
-        this._messageService.showErrorToastr(error.error.message)
-      }
-    })
+      error: (error) => {
+        this._messageService.showErrorToastr(error.error.message);
+      },
+    });
   }
-
 }

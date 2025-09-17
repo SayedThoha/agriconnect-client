@@ -67,3 +67,44 @@ export interface upcomingAppointment {
 export interface Email {
   email: string;
 }
+
+export interface IExpert {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  contactno: number;
+  profile_picture: string;
+  specialisation: string;
+  current_working_address: string;
+  experience: string;
+  consultation_fee: number;
+  qualification_certificate: string[];
+  experience_certificate: string[];
+  expert_licence: string;
+  identity_proof_type: string;
+  identity_proof: string;
+  kyc_verification: boolean;
+  blocked: boolean;
+  created_time?: Date;
+  otp: string;
+  otp_update_time?: Date;
+  is_verified?: boolean;
+  role?: string;
+}
+
+export interface FarmerDetails {
+  slotId: string;
+  userId: string | null;
+  expertId: string;
+  farmer_details: {
+    name: string;
+    email: string;
+    age: number;
+    gender: string;
+    address: string;
+    reason_for_visit: string;
+  };
+  payment_method?: string;
+  payment_status?: boolean;
+}

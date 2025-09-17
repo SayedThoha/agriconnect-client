@@ -5,11 +5,7 @@ import { CommonService } from './common.service';
 import { MessageToasterService } from './message-toaster.service';
 
 import { AuthService } from './auth.service';
-import {
-  Auth,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from '@angular/fire/auth';
+import { Auth, GoogleAuthProvider, signInWithPopup } from '@angular/fire/auth';
 @Injectable({
   providedIn: 'root',
 })
@@ -20,21 +16,13 @@ export class AuthGoogleService {
   private messageToaster = inject(MessageToasterService);
   private commonService = inject(CommonService);
   private authService = inject(AuthService);
-  constructor() {}
 
   async login() {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(this.auth, provider);
       const user = result.user;
-      
-      this.commonService.setGoogleUser({
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        uid: user.uid,
-        token: await user.getIdToken(),
-      });
+
       this.authService.setLoginState(true);
       localStorage.setItem('userToken', await user.getIdToken());
       localStorage.setItem('userId', user.uid);
@@ -52,7 +40,7 @@ export class AuthGoogleService {
   async logout() {
     try {
       await this.auth.signOut();
-      this.commonService.logoutGoogleUser();
+      // this.commonService.logoutGoogleUser();
       localStorage.removeItem('userToken');
       localStorage.removeItem('userId');
       this.authService.setLoginState(false);

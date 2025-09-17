@@ -18,10 +18,11 @@ import { debounceTime, Subscription } from 'rxjs';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { ChatServiceService } from '../../../shared/services/chat-service.service';
 import { SocketServiceService } from '../../../shared/services/socket-service.service';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { environment } from '../../../../environments/environment';
 import { CapitaliseFirstPipe } from '../../../shared/pipes/capitalise-first.pipe';
 import { Router } from '@angular/router';
+import { IChat, IMessage } from '../../../core/models/chatModel';
 
 @Component({
   selector: 'app-expert-chat',
@@ -38,27 +39,27 @@ import { Router } from '@angular/router';
 export class ExpertChatComponent implements OnInit, OnDestroy {
   private onMessageSubscription: Subscription | undefined;
   showScrollUpButton = false;
-  socket!: any;
-  senderId: any;
-  selectedExpert!: any;
-  profile_picture!: any;
-  selectedChatMessages: any[] = [];
-  lastSeen: string = '';
+  socket!: Socket;
+  senderId!: string;
+  selectedExpert!: string;
+  profile_picture!: string;
+  selectedChatMessages!: IMessage[];
+  lastSeen = '';
   @ViewChild('chatContainer')
   chatContainer!: ElementRef;
-  expertId!: any;
-  chatId!: any;
-  chats!: any;
-  messages!: any;
+  expertId!: string | null;
+  chatId!: string;
+  chats!: IChat[];
+  messages!: IMessage[];
   chatForm!: FormGroup;
   searchForm!: FormGroup;
-  filteredChats!:any
+  filteredChats!: IChat[];
   constructor(
     private chatService: ChatServiceService,
     private messageService: MessageToasterService,
     private formBuilder: FormBuilder,
     private socketService: SocketServiceService,
-    private router:Router
+    private router: Router
   ) {
     this.socket = io(environment.apiUrl);
   }
@@ -68,35 +69,39 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
     this.expertId = localStorage.getItem('expertId');
     this.fetch_all_chats();
     this.setupSearchSubscription();
-    if (this.chatId) {
-      this.socket.emit('joinChat', this.chatId);
-    }
+    this.joinChat();
     this.scrollToBottom();
     this.messageSubscription();
   }
 
   intialiseForms(): void {
-   this.searchForm = this.formBuilder.group({
+    this.searchForm = this.formBuilder.group({
       searchData: ['', Validators.required],
     });
-    //chatform
+
     this.chatForm = this.formBuilder.group({
       message: ['', Validators.required],
     });
   }
 
-  //call if any message comes
+  joinChat() {
+    if (this.chatId) {
+      this.socket.emit('joinChat', this.chatId);
+    }
+  }
+  
   messageSubscription() {
-    // console.log('function get called...');
     this.onMessageSubscription = this.socketService
       .onMessage()
-      .subscribe((res: any) => {
+      .subscribe((res) => {
         if (res.chat === this.chatId) {
           this.messages.unshift(res);
-          this.chats.filter((chat: any) => {
+          this.chats.filter((chat) => {
             if (chat._id === this.chatId) {
-              chat.latestMessage.content = res.content;
-              chat.updatedAt = res.updatedAt;
+              if (chat.latestMessage) {
+                chat.latestMessage.content = res.content;
+                chat.updatedAt = res.updatedAt!;
+              }
             }
           });
         }
@@ -104,54 +109,52 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
       });
   }
 
-  //fetching accessible chats
   fetch_all_chats() {
-    this.chatService
-      .expert_accessed_chats({ expertId: this.expertId })
-      .subscribe({
-        next: (Response) => {
-          // console.log('fetched chats:', Response);
-          this.chats = Response;
-          this.filteredChats=this.chats
-        },
-      });
+    if (this.expertId) {
+      this.chatService
+        .expert_accessed_chats({ expertId: this.expertId })
+        .subscribe({
+          next: (Response) => {
+            this.chats = Response;
+            this.filteredChats = this.chats;
+          },
+        });
+    }
   }
 
- setupSearchSubscription() {
+  setupSearchSubscription() {
     this.searchForm
       .get('searchData')
-      ?.valueChanges.pipe(debounceTime(300)) // Adjust debounce time as needed
+      ?.valueChanges.pipe(debounceTime(300))
       .subscribe((value) => {
         this.filterChats(value);
       });
   }
- 
+
   filterChats(searchTerm: string | null) {
     if (searchTerm) {
       const regex = new RegExp(searchTerm, 'i');
       this.filteredChats = this.chats.filter(
-        (chats: any) =>
-          regex.test(chats.user.firstName) ||
-          regex.test(chats.user.lastName) 
-
+        (chats) =>
+          regex.test(chats.user.firstName) || regex.test(chats.user.lastName)
       );
     } else {
       this.filteredChats = this.chats;
     }
   }
 
-  //call a particular user
-  selectExpert(chat: any): void {
-    this.socketService.register(this.expertId);
+  selectExpert(chat: IChat): void {
+    if (this.expertId) {
+      this.socketService.register(this.expertId);
+    }
     this.chatId = chat._id;
     this.fetchAllMessages(chat._id);
     this.selectedExpert = `${chat.user.firstName} ${chat.user.lastName}`;
-    this.profile_picture = chat.user.profile_picture;
-    this.lastSeen = chat.updatedAt;
+    this.profile_picture = chat.user.profile_picture!;
+    this.lastSeen = chat.updatedAt.toString();
   }
 
-  //fetch all messages of a particular chatID
-  fetchAllMessages(chatId: any) {
+  fetchAllMessages(chatId: string) {
     this.chatService.expertFetchAllMessages({ chatId: chatId }).subscribe({
       next: (Response) => {
         this.messages = Response;
@@ -162,14 +165,13 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  //submission of chat form
   chatFormSubmit() {
     if (this.chatForm.valid) {
       const message = this.chatForm.value.message;
       if (message && message.trim().length === 0) {
         return;
       }
-      let data = {
+      const data = {
         content: message,
         chatId: this.chatId,
         expertId: this.expertId,
@@ -181,17 +183,17 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
     }
   }
 
-
   scrollToBottom(): void {
     try {
       this.chatContainer.nativeElement.scrollTop =
         this.chatContainer.nativeElement.scrollHeight;
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+    }
   }
 
-
-  onScroll(event: { target: any }): void {
-    const element = event.target;
+  onScroll(event: Event): void {
+    const element = event.target as HTMLElement;
     this.showScrollUpButton =
       element.scrollTop + element.clientHeight < element.scrollHeight - 20;
   }
@@ -199,18 +201,19 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
   scrollToTop(): void {
     try {
       this.chatContainer.nativeElement.scrollTop = 0;
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+    }
   }
 
-  
   ngOnDestroy(): void {
     if (this.socket) {
       this.socket.disconnect();
     }
     this.onMessageSubscription?.unsubscribe();
   }
-  
-  goToHome(){
-    this.router.navigate(['/expert/expertHome'])
+
+  goToHome() {
+    this.router.navigate(['/expert/expertHome']);
   }
 }

@@ -19,8 +19,6 @@ import { Subscription } from 'rxjs';
   templateUrl: './specialisation.component.html',
   styleUrl: './specialisation.component.css',
 })
-
-
 export class SpecialisationComponent implements OnInit {
   namePattern = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*\s*$/;
   specialisation!: Specialisation[];
@@ -29,7 +27,7 @@ export class SpecialisationComponent implements OnInit {
   specialisationForm!: FormGroup;
   editspecialisationForm!: FormGroup;
 
-  specialisationSubscription!:Subscription
+  specialisationSubscription!: Subscription;
   constructor(
     private adminService: AdminServiceService,
     private messageService: MessageToasterService,
@@ -67,17 +65,18 @@ export class SpecialisationComponent implements OnInit {
   }
 
   getSpecialisation() {
-  this.specialisationSubscription=  this.adminService.getSpecialisation().subscribe({
-      next: (Response) => {
-        this.specialisation = Response;
-      },
-      error: (error) => {
-        this.messageService.showErrorToastr(error.error.message);
-      },
-    });
+    this.specialisationSubscription = this.adminService
+      .getSpecialisation()
+      .subscribe({
+        next: (Response) => {
+          this.specialisation = Response;
+        },
+        error: (error) => {
+          this.messageService.showErrorToastr(error.error.message);
+        },
+      });
   }
 
-  //add spec
   addSubmit() {
     const data = this.specialisationForm.value.specialisation;
     if (this.specialisationForm.invalid) {
@@ -110,7 +109,6 @@ export class SpecialisationComponent implements OnInit {
     }
   }
 
-  
   editSpec(data: Specialisation) {
     this.editData = data;
     this.edit = true;
@@ -119,12 +117,10 @@ export class SpecialisationComponent implements OnInit {
     });
   }
 
-  
   closeEdit() {
     this.edit = !this.edit;
   }
 
-  
   editSubmit() {
     const data = this.editData;
     if (this.editspecialisationForm.invalid) {
@@ -148,7 +144,6 @@ export class SpecialisationComponent implements OnInit {
     this.edit = !this.edit;
   }
 
-  
   deleteSpec(data: Specialisation) {
     const value = { _id: data._id, specialisation: data.specialisation };
     this.adminService.deleteSpecialisation(data).subscribe({
@@ -164,7 +159,6 @@ export class SpecialisationComponent implements OnInit {
     });
   }
 
-  
   specialisationError(): string {
     const name = this.specialisationForm.get('specialisation');
     if (name?.invalid) {
@@ -179,7 +173,6 @@ export class SpecialisationComponent implements OnInit {
     return ``;
   }
 
-  
   editspecialisationError(): string {
     const name = this.editspecialisationForm.get('specialisation');
     if (name?.invalid) {
@@ -193,5 +186,4 @@ export class SpecialisationComponent implements OnInit {
     }
     return ``;
   }
-  
 }

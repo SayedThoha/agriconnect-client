@@ -37,6 +37,7 @@ export class CommisionComponent implements OnInit {
         const parsedDetails = JSON.parse(adminDetails);
         this.payOut = parsedDetails.payOut;
       } catch (error) {
+        console.error(error);
         this.payOut = undefined;
       }
     }

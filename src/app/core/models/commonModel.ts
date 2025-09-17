@@ -1,11 +1,9 @@
-
-
 export interface HttpResponseModel {
   message: string;
-  success:boolean;
-  statusCode:number
+  success: boolean;
+  statusCode: number;
   error: string;
-  data?:object
+  data?: object;
 }
 
 export interface OtpData {
@@ -50,5 +48,28 @@ export interface ChartOptions {
   };
 }
 
+export interface ChartData {
+  labels: string[];
+  datasets: Dataset[];
+}
 
+interface Dataset {
+  type: 'line' | 'bar';
+  label: string;
+  data: number[];
+  borderColor?: string;
+  borderWidth?: number;
+  backgroundColor?: string;
+  fill?: boolean;
+  tension?: number;
+}
 
+export type HttpParamsInput = Record<
+  string,
+  string | number | boolean | readonly (string | number | boolean)[]
+>;
+
+export interface ITokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}

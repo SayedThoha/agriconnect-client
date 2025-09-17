@@ -15,6 +15,7 @@ import { ButtonModule } from 'primeng/button';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { Subscription } from 'rxjs';
 import { UploadService } from '../../../shared/services/upload.service';
+import { IUser } from '../../../core/models/userModel';
 
 @Component({
   selector: 'app-user-profile-data',
@@ -24,12 +25,20 @@ import { UploadService } from '../../../shared/services/upload.service';
 })
 @AutoUnsubscribe
 export class UserProfileDataComponent implements OnInit {
-  user_profile_data: any = { firstName: '', lastName: '' };
-  userId!: any;
+  user_profile_data: IUser = {
+    firstName: '', lastName: '',
+    _id: '',
+    email: '',
+    password: '',
+    googleId: '',
+    authProvider: ''
+  };
+  
+  userId!: string | null;
   email_edit = false;
   name_edit = false;
-  url: any = null;
-  imagePath!: any;
+  url: string | null = null;
+  imagePath!: string;
   profile_pic_event!: Event;
 
   edit_profile_picture!: FormGroup;
@@ -58,14 +67,18 @@ export class UserProfileDataComponent implements OnInit {
   selectedFile: File | null = null;
   previewUrl: string | null = null;
 
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    const file = input.files[0];
     if (file) {
       this.selectedFile = file;
       this.uploadImage();
       const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.previewUrl = e.target.result;
+      reader.onload = (e) => {
+        if (e.target) {
+          this.previewUrl = e.target.result as string;
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -244,24 +257,26 @@ export class UserProfileDataComponent implements OnInit {
 
   profileData() {
     this.userId = localStorage.getItem('userId');
-    this.profileDataSubscription = this.userService
-      .getuserDetails({ _id: this.userId })
-      .subscribe({
-        next: (response) => {
-          this.user_profile_data = response;
-          this.url = this.user_profile_data.profile_picture;
-          this.name_form.patchValue({
-            firstName: this.user_profile_data.firstName,
-            lastName: this.user_profile_data.lastName,
-          });
-          this.email_form.patchValue({
-            email: this.user_profile_data.email,
-          });
-        },
-        error: (error) => {
-          console.error(error);
-          this.showMessage.showErrorToastr('Error in fetching profile data');
-        },
-      });
+    if (this.userId) {
+      this.profileDataSubscription = this.userService
+        .getuserDetails({ _id: this.userId })
+        .subscribe({
+          next: (response) => {
+            this.user_profile_data = response;
+            this.url = this.user_profile_data.profile_picture!;
+            this.name_form.patchValue({
+              firstName: this.user_profile_data.firstName,
+              lastName: this.user_profile_data.lastName,
+            });
+            this.email_form.patchValue({
+              email: this.user_profile_data.email,
+            });
+          },
+          error: (error) => {
+            console.error(error);
+            this.showMessage.showErrorToastr('Error in fetching profile data');
+          },
+        });
+    }
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, OnInit } from '@angular/core';
 import { CommonService } from '../../../shared/services/common.service';
 import { ExpertService } from '../../../shared/services/expert.service';
@@ -30,13 +31,13 @@ import { UploadService } from '../../../shared/services/upload.service';
   styleUrl: './expert-profile-data.component.css',
 })
 export class ExpertProfileDataComponent implements OnInit {
-  expertId!: any;
+  expertId!: string;
   expertDetails!: any;
   edit = false;
-  url!: any;
+  url!: string;
 
-  email_edit: boolean = false;
-  name_edit: boolean = false;
+  email_edit = false;
+  name_edit = false;
 
   editProfileForm!: FormGroup;
   email_form!: FormGroup;
@@ -86,10 +87,8 @@ export class ExpertProfileDataComponent implements OnInit {
         .uploadImage(this.selectedFile, 'AgriConnect')
         .subscribe({
           next: (imageUrl) => {
-            
             const transformedUrl = this.applyTransformation(imageUrl, 200, 200);
 
-            // Save the transformed URL
             this.url = transformedUrl;
             this.upload_image_to_server();
           },
@@ -99,13 +98,10 @@ export class ExpertProfileDataComponent implements OnInit {
   }
 
   applyTransformation(imageUrl: string, width: number, height: number): string {
-    
-    const uploadIndex = imageUrl.indexOf('/upload/') + 8; 
+    const uploadIndex = imageUrl.indexOf('/upload/') + 8;
 
-    
     const transformation = `c_fill,g_auto,w_${width},h_${height}`;
 
-    
     const transformedUrl = `${imageUrl.slice(
       0,
       uploadIndex
@@ -177,9 +173,7 @@ export class ExpertProfileDataComponent implements OnInit {
   }
 
   submit_profile_details() {
-    
     if (this.editProfileForm.invalid) {
-      
       this.markFormGroupTouched(this.editProfileForm);
       return;
     } else {
@@ -219,7 +213,7 @@ export class ExpertProfileDataComponent implements OnInit {
           this.close_name();
         },
         error: (error) => {
-          console.log('Error response:', error);
+          console.error('Error response:', error);
           this.showMessage.showErrorToastr(error.error.message);
           this.close_name();
         },
@@ -228,9 +222,7 @@ export class ExpertProfileDataComponent implements OnInit {
   }
 
   submit_email() {
-  
     if (this.email_form.invalid) {
-      
       this.markFormGroupTouched(this.email_form);
       return;
     } else {
@@ -314,7 +306,7 @@ export class ExpertProfileDataComponent implements OnInit {
       .subscribe({
         next: (Response) => {
           this.expertDetails = Response;
-          this.url = Response.profile_picture;
+          this.url = Response.profile_picture ?? '';
           this.editProfileForm.patchValue({
             firstName: this.expertDetails.firstName,
             lastName: this.expertDetails.lastName,

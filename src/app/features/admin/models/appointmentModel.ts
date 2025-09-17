@@ -1,4 +1,3 @@
-//  type Root = AppointMent[];
 
 export interface AppointMent {
   farmer_details: FarmerDetails;
@@ -30,8 +29,6 @@ interface UserId {
   lastName: string;
   email: string;
   password: string;
-  otp: string;
-  otp_update_time: string;
   is_verified: boolean;
   role: string;
   blocked: boolean;
@@ -46,8 +43,8 @@ interface UserId {
 
 interface SlotId {
   _id: string;
-  expertId: string;
-  time: string;
+  expertId: ExpertId;
+  time?: Date;
   booked: boolean;
   bookingAmount: number;
   adminPaymentAmount: number;

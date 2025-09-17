@@ -9,7 +9,6 @@ import {
 } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
-import { CommonService } from '../../../shared/services/common.service';
 import { adminlogin } from '../store/admin.action';
 import { CommonModule } from '@angular/common';
 
@@ -30,8 +29,7 @@ export class AdminLoginComponent implements OnInit {
   constructor(
     private formbuilder: FormBuilder,
     private showMessage: MessageToasterService,
-    private store: Store,
-    private commonService: CommonService
+    private store: Store
   ) {}
 
   ngOnInit() {

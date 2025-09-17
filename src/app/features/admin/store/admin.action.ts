@@ -1,4 +1,3 @@
-//admin.action.ts
 import { createAction, props } from '@ngrx/store';
 import { Adminlogin, adminInfo } from './admin.state';
 

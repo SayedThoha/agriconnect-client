@@ -13,6 +13,7 @@ import {
   refreshExpertTokenFailure,
   refreshExpertTokenSuccess,
 } from '../../core/store/expert/expert.actions';
+import { ITokenResponse } from '../../core/models/commonModel';
 
 @Injectable({
   providedIn: 'root',
@@ -21,12 +22,8 @@ export class TokenService {
   private refreshingUserToken = false;
   private refreshingExpertToken = false;
 
-  private userTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(
-    null
-  );
-  private expertTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(
-    null
-  );
+  private userTokenSubject = new BehaviorSubject<ITokenResponse | null>(null);
+  private expertTokenSubject = new BehaviorSubject<ITokenResponse | null>(null);
 
   constructor(
     private store: Store,
@@ -36,17 +33,14 @@ export class TokenService {
     private expertService: ExpertService
   ) {}
 
-  
-  refreshUserAccessToken(): Observable<any> {
+  refreshUserAccessToken(): Observable<ITokenResponse | null> {
     if (this.refreshingUserToken) {
       return this.userTokenSubject.asObservable();
     }
-
     this.refreshingUserToken = true;
 
     const refreshToken = localStorage.getItem('userRefreshToken');
     if (!refreshToken) {
-      
       this.router.navigate(['/home']);
       this.store.dispatch(
         refreshUserTokenFailure({ error: 'No refresh token found' })
@@ -77,8 +71,7 @@ export class TokenService {
     );
   }
 
-  
-  refreshExpertAccessToken(): Observable<any> {
+  refreshExpertAccessToken(): Observable<ITokenResponse | null> {
     if (this.refreshingExpertToken) {
       return this.expertTokenSubject.asObservable();
     }
@@ -87,7 +80,6 @@ export class TokenService {
 
     const refreshToken = localStorage.getItem('expertRefreshToken');
     if (!refreshToken) {
-      
       this.router.navigate(['/home']);
       this.store.dispatch(
         refreshExpertTokenFailure({ error: 'No refresh token found' })

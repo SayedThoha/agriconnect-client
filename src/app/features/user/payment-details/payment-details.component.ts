@@ -1,4 +1,3 @@
-
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { CommonModule } from '@angular/common';
@@ -12,26 +11,36 @@ import {
 import { UserService } from '../../../shared/services/user.service';
 import { debounceTime, Subscription } from 'rxjs';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { AppointMent } from '../../admin/models/appointmentModel';
+import { AppointmentCodePipe } from '../../../shared/pipes/appointment-code.pipe';
+import { Router } from '@angular/router';
 @AutoUnsubscribe
 @Component({
   selector: 'app-payment-details',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    AppointmentCodePipe,
+  ],
   templateUrl: './payment-details.component.html',
   styleUrl: './payment-details.component.css',
 })
 export class PaymentDetailsComponent implements OnInit {
-  payments!: any;
-  payments_to_display!: any;
-  userId!: any;
+  payments!: AppointMent[];
+  payments_to_display!: AppointMent[];
+  userId!: string | null;
   searchForm!: FormGroup;
   paymentForm!: FormGroup;
+  slotId!: string;
 
   bookingDetailsSubscription!: Subscription;
   constructor(
     private messageService: MessageToasterService,
     private formBuilder: FormBuilder,
     private cdr: ChangeDetectorRef,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -45,17 +54,20 @@ export class PaymentDetailsComponent implements OnInit {
   }
 
   getAppointmentDetails() {
-    this.bookingDetailsSubscription = this.userService
-      .get_booking_details_of_user({ userId: localStorage.getItem('userId') })
-      .subscribe({
-        next: (Response) => {
-          this.payments = Response;
-          this.payments_to_display = this.payments;
-        },
-        error: (error) => {
-          this.messageService.showErrorToastr(error.error.message);
-        },
-      });
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      this.bookingDetailsSubscription = this.userService
+        .get_booking_details_of_user({ userId: userId })
+        .subscribe({
+          next: (Response) => {
+            this.payments = Response;
+            this.payments_to_display = this.payments;
+          },
+          error: (error) => {
+            this.messageService.showErrorToastr(error.error.message);
+          },
+        });
+    }
   }
 
   initialiseForms(): void {
@@ -80,9 +92,9 @@ export class PaymentDetailsComponent implements OnInit {
     if (searchTerm) {
       const regex = new RegExp(searchTerm, 'i');
       this.payments_to_display = this.payments_to_display.filter(
-        (appointment: any) =>
+        (appointment) =>
           regex.test(appointment.expertId.firstName) ||
-          regex.test(appointment.slotId.bookingAmount) ||
+          regex.test(appointment.slotId.bookingAmount.toString()) ||
           regex.test(appointment.payment_method)
       );
     } else {
@@ -109,4 +121,6 @@ export class PaymentDetailsComponent implements OnInit {
       this.cdr.detectChanges();
     }
   }
+
+  
 }

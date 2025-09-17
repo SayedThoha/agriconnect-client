@@ -16,7 +16,7 @@ import { UserSidebarComponent } from '../user-sidebar/user-sidebar.component';
   styleUrl: './user-video-call-room.component.css',
 })
 export class UserVideoCallRoomComponent implements OnInit, AfterViewInit {
-  roomID!: any;
+  roomID!: string | null;
   constructor(private route: ActivatedRoute) {}
 
   @ViewChild('root')
@@ -28,10 +28,11 @@ export class UserVideoCallRoomComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     const appID = 81955247;
     const serverSecret = '5c7063a4640154acc0779bcc6a1a2200';
+
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
       appID,
       serverSecret,
-      this.roomID,
+      this.roomID!,
       Date.now().toString(),
       Date.now().toString()
     );

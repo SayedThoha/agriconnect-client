@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonService } from '../services/common.service';
 import { Store } from '@ngrx/store';
@@ -28,7 +28,7 @@ export class HeaderComponent implements OnInit {
   expert!: boolean;
   nobody!: boolean;
 
-  activeTab: string = '';
+  activeTab = '';
 
   constructor(
     private router: Router,
@@ -47,8 +47,7 @@ export class HeaderComponent implements OnInit {
       this.activeTab = storedTab;
     }
 
-    this.authService.authState$.subscribe((isLoggedIn) => {
-      // console.log('Google authState updated:', isLoggedIn);
+    this.authService.authState$.subscribe(() => {
       this.checkuser();
     });
   }
@@ -87,20 +86,17 @@ export class HeaderComponent implements OnInit {
   expertSignIn() {
     this.setActiveTab('expertLogin');
     localStorage.setItem('auth', 'expert');
-    // console.log(this.commonService.getAuthFromLocalStorage());
     this.router.navigate(['/expert/expertLogin']);
   }
 
   userLogin() {
     this.setActiveTab('userLogin');
     localStorage.setItem('auth', 'user');
-    // console.log(this.commonService.getAuthFromLocalStorage());
     this.router.navigate(['/user/login']);
   }
 
   userHome() {
     this.setActiveTab('userHome');
-    // console.log(this.commonService.getAuthFromLocalStorage());
     this.router.navigate(['/user/userHome']);
   }
 

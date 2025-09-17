@@ -4,11 +4,10 @@ import { Store } from '@ngrx/store';
 import { map, take } from 'rxjs';
 import { selectAdmin } from '../store/admin.selector';
 
-export const adminLoggedInGuard: CanActivateFn = (route, state) => {
+export const adminLoggedInGuard: CanActivateFn = () => {
   const store = inject(Store);
   const router = inject(Router);
 
-  console.warn(route, state);
   return store.select(selectAdmin).pipe(
     take(1),
     map((adminInfo) => {
@@ -24,10 +23,9 @@ export const adminLoggedInGuard: CanActivateFn = (route, state) => {
   );
 };
 
-export const adminLoggedOutGuard: CanActivateFn = (route, state) => {
+export const adminLoggedOutGuard: CanActivateFn = () => {
   const store = inject(Store);
   const router = inject(Router);
-  console.warn(route, state);
 
   return store.select(selectAdmin).pipe(
     take(1),

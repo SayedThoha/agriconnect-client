@@ -54,9 +54,9 @@
             <div
               *ngFor="let expert of displayed_expert"
               class="flex items-center p-2 bg-gray-100 rounded-md cursor-pointer"
-              (click)="accessedchat(expert._id)"
-              (keydown.enter)="accessedchat(expert._id)"
-              (keydown.space)="accessedchat(expert._id)"
+              (click)="accessedchat(expert._id!)"
+              (keydown.enter)="accessedchat(expert._id!)"
+              (keydown.space)="accessedchat(expert._id!)"
               tabindex="0"
             >
               <img

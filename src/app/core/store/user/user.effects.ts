@@ -1,15 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { UserService } from '../../../shared/services/user.service';
 import {
-  googleLogin,
-  googleLoginSuccess,
-  googleLoginFailure,
   loginUser,
   loginUserSuccess,
-  loginUserFailure,
   userBlocked,
-  logoutUser,
   refreshUserToken,
   refreshUserTokenFailure,
   refreshUserTokenSuccess,
@@ -19,7 +16,6 @@ import {
   EMPTY,
   exhaustMap,
   filter,
-  from,
   interval,
   map,
   mergeMap,
@@ -91,7 +87,7 @@ export class UserEffects {
             }
           }),
           catchError((error) => {
-            console.log('error.error.message:', error.error.message);
+            console.error('error.error.message:', error.error.message);
 
             if (
               error.status === 403 &&

@@ -3,19 +3,28 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import {
+  HttpParamsInput,
   HttpResponseModel,
   OtpData,
   UpdatePasswordRequest,
 } from '../../core/models/commonModel';
 import {
+  IUser,
   LoginModel,
   LoginResponseModel,
-  UserInfo,
 } from '../../core/models/userModel';
 import {
   expertData,
   Specialisation,
 } from '../../features/admin/models/expertModel';
+import {
+  BookedSlot,
+  IPrescription,
+  PaymentOrder,
+  Slot,
+} from '../../core/models/slotModel';
+import { INotification } from '../../core/models/notificationModel';
+import { AppointMent } from '../../features/admin/models/appointmentModel';
 @Injectable({
   providedIn: 'root',
 })
@@ -66,9 +75,9 @@ export class UserService {
     );
   }
 
-  getuserDetails(data: { _id: string }): Observable<UserInfo> {
+  getuserDetails(data: { _id: string }): Observable<IUser> {
     const httpParams = new HttpParams({ fromObject: data });
-    return this.http.get<UserInfo>(`${this.apiUrl}/user/getuserDetails`, {
+    return this.http.get<IUser>(`${this.apiUrl}/user/getuserDetails`, {
       params: httpParams,
     });
   }
@@ -98,8 +107,10 @@ export class UserService {
     return this.http.post<string>(`${this.apiUrl}/user/googleLogin`, { token });
   }
 
-  checkUserStatus(userId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/user/status/${userId}`);
+  checkUserStatus(userId: string): Observable<{ blocked: boolean }> {
+    return this.http.get<{ blocked: boolean }>(
+      `${this.apiUrl}/user/status/${userId}`
+    );
   }
 
   refreshUserToken(refreshToken: string) {
@@ -119,121 +130,153 @@ export class UserService {
     return this.http.get<expertData[]>(`${this.apiUrl}/user/getExperts`);
   }
 
-  getExpertDetails(data: any): Observable<expertData> {
+  getExpertDetails(data: HttpParamsInput): Observable<expertData> {
     const httpParams = new HttpParams({ fromObject: data });
     return this.http.get<expertData>(`${this.apiUrl}/user/getExpertDetails`, {
       params: httpParams,
     });
   }
 
-  getSlots(data: any): Observable<any> {
+  getSlots(data: HttpParamsInput): Observable<Slot[]> {
     const httpParams = new HttpParams({ fromObject: data });
-    return this.http.get<any>(`${this.apiUrl}/user/getSlots`, {
+    return this.http.get<Slot[]>(`${this.apiUrl}/user/getSlots`, {
       params: httpParams,
     });
   }
 
-  addSlot(data: object): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/user/addSlots`, data);
+  addSlot(data: object): Observable<Slot[]> {
+    return this.http.post<Slot[]>(`${this.apiUrl}/user/addSlots`, data);
   }
 
-  getSlot(data: any): Observable<any> {
+  getSlot(data: HttpParamsInput): Observable<Slot> {
     const httpParams = new HttpParams({ fromObject: data });
-    return this.http.get<any>(`${this.apiUrl}/user/getSlot`, {
+    return this.http.get<Slot>(`${this.apiUrl}/user/getSlot`, {
       params: httpParams,
     });
   }
 
-  appointmnet_booking(data: object): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/user/appointment_booking`, data);
+  appointmnet_booking(data: object): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.apiUrl}/user/appointment_booking`,
+      data
+    );
   }
 
-  check_if_the_slot_available(data: any): Observable<any> {
+  check_if_the_slot_available(
+    data: HttpParamsInput
+  ): Observable<{ isAvailable: boolean; message: string }> {
     const httpParams = new HttpParams({ fromObject: data });
-
-    return this.http.get<any>(
+    return this.http.get<{ isAvailable: boolean; message: string }>(
       `${this.apiUrl}/user/check_if_the_slot_available`,
       { params: httpParams }
     );
   }
 
-  booking_payment(data: object): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/user/booking_payment`, data);
+  booking_payment(data: object): Observable<PaymentOrder> {
+    return this.http.post<PaymentOrder>(
+      `${this.apiUrl}/user/booking_payment`,
+      data
+    );
   }
 
-  userDetails(data: any): Observable<any> {
+  userDetails(data: HttpParamsInput): Observable<IUser> {
     const httpParams = new HttpParams({ fromObject: data });
-    return this.http.get<any>(`${this.apiUrl}/user/userDetails`, {
+    return this.http.get<IUser>(`${this.apiUrl}/user/userDetails`, {
       params: httpParams,
     });
   }
 
-  get_booking_details_of_user(data: any): Observable<any> {
+  get_booking_details_of_user(
+    data: HttpParamsInput
+  ): Observable<AppointMent[]> {
     const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<AppointMent[]>(
+      `${this.apiUrl}/user/get_booking_details`,
+      {
+        params: httpParams,
+      }
+    );
+  }
 
-    return this.http.get<any>(`${this.apiUrl}/user/get_booking_details`, {
+  cancelSlot(data: HttpParamsInput): Observable<{ message: string }> {
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<{ message: string }>(
+      `${this.apiUrl}/user/cancelSlot`,
+      {
+        params: httpParams,
+      }
+    );
+  }
+
+  upcoming_appointment(data: HttpParamsInput): Observable<BookedSlot> {
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<BookedSlot>(
+      `${this.apiUrl}/user/upcoming_appointment`,
+      {
+        params: httpParams,
+      }
+    );
+  }
+
+  getUpcomingSlot(data: HttpParamsInput): Observable<BookedSlot> {
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<BookedSlot>(`${this.apiUrl}/user/getUpcomingSlot`, {
       params: httpParams,
     });
   }
 
-  cancelSlot(data: any): Observable<any> {
+  prescription_history(data: HttpParamsInput): Observable<IPrescription[]> {
     const httpParams = new HttpParams({ fromObject: data });
-    return this.http.get<any>(`${this.apiUrl}/user/cancelSlot`, {
+    return this.http.get<IPrescription[]>(
+      `${this.apiUrl}/user/prescription_history`,
+      {
+        params: httpParams,
+      }
+    );
+  }
+
+  get_prescription_details(data: HttpParamsInput): Observable<IPrescription> {
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<IPrescription>(
+      `${this.apiUrl}/user/get_prescription_details`,
+      {
+        params: httpParams,
+      }
+    );
+  }
+
+  get_bookings_of_user(data: HttpParamsInput): Observable<BookedSlot> {
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<BookedSlot>(
+      `${this.apiUrl}/user/get_bookings_of_user`,
+      {
+        params: httpParams,
+      }
+    );
+  }
+
+  getAllNotifications(data: HttpParamsInput): Observable<INotification[]> {
+    const httpParams = new HttpParams({ fromObject: data });
+    return this.http.get<INotification[]>(`${this.apiUrl}/user/notifications`, {
       params: httpParams,
     });
   }
 
-  upcoming_appointment(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data });
-    return this.http.get<any>(`${this.apiUrl}/user/upcoming_appointment`, {
-      params: httpParams,
-    });
+  markNotificationsAsRead(userId: string): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(
+      `${this.apiUrl}/user/notifications/mark-as-read`,
+      {
+        userId,
+      }
+    );
   }
 
-  getUpcomingSlot(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data });
-    return this.http.get<any>(`${this.apiUrl}/user/getUpcomingSlot`, {
-      params: httpParams,
-    });
-  }
-
-  prescription_history(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data });
-    return this.http.get<any>(`${this.apiUrl}/user/prescription_history`, {
-      params: httpParams,
-    });
-  }
-
-  get_prescription_details(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data });
-    return this.http.get<any>(`${this.apiUrl}/user/get_prescription_details`, {
-      params: httpParams,
-    });
-  }
-
-  get_bookings_of_user(data: any): Observable<any> {
-    const httpParams = new HttpParams({ fromObject: data });
-    return this.http.get<any>(`${this.apiUrl}/user/get_bookings_of_user`, {
-      params: httpParams,
-    });
-  }
-
-  getAllNotifications(data: any): Observable<any[]> {
-    const httpParams = new HttpParams({ fromObject: data });
-    return this.http.get<any[]>(`${this.apiUrl}/user/notifications`, {
-      params: httpParams,
-    });
-  }
-
-  markNotificationsAsRead(userId: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/user/notifications/mark-as-read`, {
-      userId,
-    });
-  }
-
-  clearAllNotifications(userId: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/user/notifications/clear`, {
-      userId,
-    });
+  clearAllNotifications(userId: string): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(
+      `${this.apiUrl}/user/notifications/clear`,
+      {
+        userId,
+      }
+    );
   }
 }

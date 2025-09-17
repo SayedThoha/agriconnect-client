@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminServiceService } from '../services/admin-service.service';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
-import { ChartOptions } from '../../../core/models/commonModel';
+import { ChartData, ChartOptions } from '../../../core/models/commonModel';
 import { ChartModule } from 'primeng/chart';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { Subscription } from 'rxjs';
+import { IBookedSlot } from '../models/dashboardModel';
 
 @AutoUnsubscribe
 @Component({
@@ -23,10 +24,10 @@ import { Subscription } from 'rxjs';
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent implements OnInit {
-  data!: any;
+  data!: ChartData;
   options!: ChartOptions;
-  revenue!: Number;
-  booked_Slots!: any;
+  revenue!: number;
+  booked_Slots!: IBookedSlot[];
   total_revenue!: number;
   total_users!: number;
   total_experts!: number;
@@ -35,7 +36,7 @@ export class DashboardComponent implements OnInit {
   total_consulted_bookings!: number;
   total_not_consulted_bookings!: number;
   total_cancelled_bookings!: number;
-  graph_data_based_on: string = 'weekly';
+  graph_data_based_on = 'weekly';
 
   dashBoardSubscription!: Subscription;
   constructor(
@@ -52,9 +53,8 @@ export class DashboardComponent implements OnInit {
   }
 
   get_Slot_Details() {
-    const expertId = localStorage.getItem('expertId');
     this.dashBoardSubscription = this.adminService
-      .get_admin_dashboard_details({ expertId: expertId })
+      .get_admin_dashboard_details()
       .subscribe({
         next: (Response) => {
           this.booked_Slots = Response.slotDetails;
@@ -70,15 +70,21 @@ export class DashboardComponent implements OnInit {
   }
 
   get_dashboard_display_contents() {
-    this.total_revenue = this.booked_Slots.reduce((acc: number, data: any) => {
-      if (data.consultation_status === 'consulted') {
-        return acc + data.slotId.adminPaymentAmount;
-      }
-      return acc;
-    }, 0);
+    this.total_revenue = this.booked_Slots.reduce(
+      (acc: number, data: IBookedSlot) => {
+        if (
+          data.consultation_status === 'consulted' &&
+          typeof data.slotId !== 'string'
+        ) {
+          return acc + data.slotId.adminPaymentAmount;
+        }
+        return acc;
+      },
+      0
+    );
 
     this.total_upcoming_booking = this.booked_Slots.reduce(
-      (acc: number, data: any) => {
+      (acc: number, data: IBookedSlot) => {
         if (data.consultation_status === 'pending') {
           return acc + 1;
         }
@@ -86,18 +92,21 @@ export class DashboardComponent implements OnInit {
       },
       0
     );
-    this.total_booking = this.booked_Slots.reduce((acc: number, data: any) => {
-      if (
-        data.consultation_status === 'pending' ||
-        data.consultation_status === 'consulted'
-      ) {
-        return acc + 1;
-      }
-      return acc;
-    }, 0);
+    this.total_booking = this.booked_Slots.reduce(
+      (acc: number, data: IBookedSlot) => {
+        if (
+          data.consultation_status === 'pending' ||
+          data.consultation_status === 'consulted'
+        ) {
+          return acc + 1;
+        }
+        return acc;
+      },
+      0
+    );
 
     this.total_consulted_bookings = this.booked_Slots.reduce(
-      (acc: number, data: any) => {
+      (acc: number, data: IBookedSlot) => {
         if (data.consultation_status === 'consulted') {
           return acc + 1;
         }
@@ -106,7 +115,7 @@ export class DashboardComponent implements OnInit {
       0
     );
     this.total_not_consulted_bookings = this.booked_Slots.reduce(
-      (acc: number, data: any) => {
+      (acc: number, data: IBookedSlot) => {
         if (data.consultation_status === 'not_consulted') {
           return acc + 1;
         }
@@ -115,7 +124,7 @@ export class DashboardComponent implements OnInit {
       0
     );
     this.total_cancelled_bookings = this.booked_Slots.reduce(
-      (acc: number, data: any) => {
+      (acc: number, data: IBookedSlot) => {
         if (data.consultation_status === 'cancelled') {
           return acc + 1;
         }
@@ -227,9 +236,9 @@ export class DashboardComponent implements OnInit {
       notConsulted: new Array(7).fill(0),
     };
 
-    this.booked_Slots.forEach((slot: any) => {
-      const day = new Date(slot.created_time).getDay(); 
-      const dayIndex = (day + 6) % 7; 
+    this.booked_Slots.forEach((slot: IBookedSlot) => {
+      const day = new Date(slot.created_time).getDay();
+      const dayIndex = (day + 6) % 7;
       weeklyData.bookings[dayIndex]++;
       if (slot.consultation_status === 'consulted') {
         weeklyData.consulted[dayIndex]++;
@@ -264,8 +273,8 @@ export class DashboardComponent implements OnInit {
       notConsulted: new Array(12).fill(0),
     };
 
-    this.booked_Slots.forEach((slot: any) => {
-      const month = new Date(slot.created_time).getMonth(); // Get month (0-11)
+    this.booked_Slots.forEach((slot: IBookedSlot) => {
+      const month = new Date(slot.created_time).getMonth();
       monthlyData.bookings[month]++;
       if (slot.consultation_status === 'consulted') {
         monthlyData.consulted[month]++;

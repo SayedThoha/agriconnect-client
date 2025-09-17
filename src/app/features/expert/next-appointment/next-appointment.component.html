@@ -1,7 +1,7 @@
 <div class="bg-gray-100 p-8">
   <!-- Next Appointment Section -->
   <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-    <ng-container *ngIf="upcoming_appointment === 0; else next_slot">
+    <ng-container *ngIf="!upcoming_appointment; else next_slot">
       <h2>No Appointmnet</h2>
     </ng-container>
     <ng-template #next_slot>
@@ -9,18 +9,18 @@
       <p class="text-lg">
         <strong>User Name:</strong>
         {{
-          upcoming_appointment?.userId.firstName +
+          upcoming_appointment!.userId.firstName +
             " " +
-            upcoming_appointment?.userId.lastName
+            upcoming_appointment!.userId.lastName
         }}
       </p>
       <p class="text-lg">
         <strong>Date:</strong>
-        {{ upcoming_appointment?.slotId.time | date : "dd/MM/YY" }}
+        {{ upcoming_appointment!.slotId.time | date : "dd/MM/YY" }}
       </p>
       <p class="text-lg">
         <strong>Time:</strong>
-        {{ upcoming_appointment?.slotId.time | date : "shortTime" }}
+        {{ upcoming_appointment!.slotId.time | date : "shortTime" }}
       </p>
     </ng-template>
   </div>
@@ -43,7 +43,7 @@
         type="text"
         class="border border-gray-300 p-2 rounded mb-4 w-full"
         placeholder="Enter room ID"
-        [disabled]="disable"
+        
         [ngClass]="{
           'border-red-500':
             roomIdForm.get('roomId')?.touched &&
@@ -73,3 +73,6 @@
     </form>
   </div>
 </div>
+
+
+<!-- [disabled]="disable" -->

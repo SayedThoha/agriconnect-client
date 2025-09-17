@@ -11,7 +11,11 @@ import { ExpertService } from '../../../shared/services/expert.service';
 import { CapitaliseFirstPipe } from '../../../shared/pipes/capitalise-first.pipe';
 import { debounceTime } from 'rxjs';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable'
+import autoTable from 'jspdf-autotable';
+import {
+  GroupedPrescription,
+  IPrescription,
+} from '../../../core/models/slotModel';
 
 @Component({
   selector: 'app-prescription-history',
@@ -25,12 +29,11 @@ import autoTable from 'jspdf-autotable'
   styleUrl: './prescription-history.component.css',
 })
 export class PrescriptionHistoryComponent implements OnInit {
-  prescriptions: any[] = [];
-  isLoading: boolean = true;
-  
+  prescriptions: IPrescription[] = [];
+  isLoading = true;
   expertId: string | null = '';
-  filteredPrescriptions: any[] = [];
-  groupedPrescriptions: any[] = [];
+  filteredPrescriptions: IPrescription[] = [];
+  groupedPrescriptions: GroupedPrescription[] = [];
   searchForm!: FormGroup;
   constructor(
     private expertService: ExpertService,
@@ -45,24 +48,25 @@ export class PrescriptionHistoryComponent implements OnInit {
   }
 
   fetchPrescriptionHistory(): void {
-    this.expertService
-      .getPrescriptionHistory({ expertId: this.expertId })
-      .subscribe({
-        next: (data) => {
-          
-          this.prescriptions = data.filter(
-            (prescription: any) =>
-              prescription.bookedSlot.expertId._id === this.expertId
-          );
-          
-          this.groupPrescriptionsByFarmer(this.prescriptions);
-          this.isLoading = false;
-        },
-        error: (error) => {
-          
-          this.isLoading = false;
-        },
-      });
+    if (this.expertId) {
+      this.expertService
+        .getPrescriptionHistory({ expertId: this.expertId })
+        .subscribe({
+          next: (data) => {
+            this.prescriptions = data.filter(
+              (prescription) =>
+                prescription.bookedSlot.expertId._id === this.expertId
+            );
+
+            this.groupPrescriptionsByFarmer(this.prescriptions);
+            this.isLoading = false;
+          },
+          error: (error) => {
+            console.error(error);
+            this.isLoading = false;
+          },
+        });
+    }
   }
 
   initialiseForms(): void {
@@ -80,12 +84,10 @@ export class PrescriptionHistoryComponent implements OnInit {
       });
   }
 
-  // **Filter Function**
   filterPrescriptions(searchValue: string): void {
     if (searchValue) {
       const regex = new RegExp(searchValue, 'i');
       const filterd = this.prescriptions.filter((prescription) => {
-       
         const fullName = `${prescription.bookedSlot?.userId?.firstName || ''} ${
           prescription.bookedSlot?.userId?.lastName || ''
         }`
@@ -95,17 +97,13 @@ export class PrescriptionHistoryComponent implements OnInit {
         return regex.test(fullName) || regex.test(issue);
       });
       this.groupPrescriptionsByFarmer(filterd);
-    }else{
-  
-        // 🔹 Reset to original data when search is cleared
-        this.groupPrescriptionsByFarmer(this.prescriptions);
-        return;
-    
+    } else {
+      this.groupPrescriptionsByFarmer(this.prescriptions);
+      return;
     }
   }
 
-  // **Group Prescriptions by Farmer**
-  groupPrescriptionsByFarmer(prescriptions: any[]): void {
+  groupPrescriptionsByFarmer(prescriptions: IPrescription[]): void {
     const grouped = prescriptions.reduce((acc, prescription) => {
       const fullName = `${prescription.bookedSlot.userId.firstName} ${prescription.bookedSlot.userId.lastName}`;
       if (!acc[fullName]) {
@@ -113,31 +111,30 @@ export class PrescriptionHistoryComponent implements OnInit {
       }
       acc[fullName].prescriptions.push(prescription);
       return acc;
-    }, {});
+    }, {}as Record<string, GroupedPrescription>);
 
     this.groupedPrescriptions = Object.values(grouped);
-    
   }
 
-  downloadFarmerHistory(group: any): void {
+  downloadFarmerHistory(group:GroupedPrescription): void {
     const doc = new jsPDF();
     doc.setFontSize(18);
     doc.text(`Prescription History - ${group.name}`, 14, 15);
-  
-    const tableData = group.prescriptions.map((prescription: any) => [
+
+    const tableData = group.prescriptions.map((prescription) => [
       new Date(prescription.createdAt).toLocaleString(),
       prescription.issue,
       prescription.prescription,
     ]);
-  
+
     autoTable(doc, {
       startY: 25,
-      head: [['Date and Time','Issue', 'Prescription']],
+      head: [['Date and Time', 'Issue', 'Prescription']],
       body: tableData,
       theme: 'striped',
-      headStyles: { fillColor: [40, 40, 40] }, // Dark gray header
+      headStyles: { fillColor: [40, 40, 40] },
     });
-  
+
     doc.save(`Prescription_History_${group.name}.pdf`);
   }
 }

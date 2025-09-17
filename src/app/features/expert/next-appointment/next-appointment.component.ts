@@ -13,6 +13,7 @@ import { roomIdPattern } from '../../../shared/regexp/regexp';
 import { CommonModule } from '@angular/common';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { Subscription } from 'rxjs';
+import { BookedSlot } from '../../../core/models/slotModel';
 
 @AutoUnsubscribe
 @Component({
@@ -22,9 +23,9 @@ import { Subscription } from 'rxjs';
   styleUrl: './next-appointment.component.css',
 })
 export class NextAppointmentComponent implements OnInit {
-  disable: boolean = false;
+  disable = false;
   roomId: string | null | undefined = '';
-  upcoming_appointment!: any;
+  upcoming_appointment: BookedSlot | null = null;
   roomIdForm!: FormGroup;
 
   nextAppointmentSubscription!: Subscription;
@@ -37,43 +38,42 @@ export class NextAppointmentComponent implements OnInit {
 
   ngOnInit(): void {
     this.initialiseForms();
+    this.upcomingAppointment();
+  }
 
+  upcomingAppointment() {
     const expertId = localStorage.getItem('expertId');
-    if (expertId)
+    if (expertId) {
       this.nextAppointmentSubscription = this.expertService
         .upcomingAppointment({ expertId: expertId })
         .subscribe({
           next: (Response) => {
-            // console.log('next appointment', Response);
-            if (Object.entries(Response).length === 0) {
-              this.upcoming_appointment = 0;
+            if (!Response) {
+              this.upcoming_appointment = null;
             } else {
               this.upcoming_appointment = Response;
               this.checkAppointmentTime();
             }
-            // console.log(Response);
           },
           error: (error) => {
             this.messageService.showErrorToastr(error.error.message);
           },
         });
-        
+    }
   }
-
   checkAppointmentTime() {
-    if (this.upcoming_appointment && this.upcoming_appointment.dateOfBooking) {
+    if (this.upcoming_appointment && this.upcoming_appointment.slotId.time) {
       const appointmentDate = new Date(
-        this.upcoming_appointment.dateOfBooking
+        this.upcoming_appointment.slotId.time
       ).getTime();
-      const windowStart = appointmentDate;
-      const windowEnd = appointmentDate + 30 * 60 * 1000; // 30 minutes in milliseconds
+
+      const windowStart = appointmentDate - 60 * 60 * 1000;
+      const windowEnd = appointmentDate + 30 * 60 * 1000;
       const currentDate = new Date().getTime();
-      // Enable the input only if the current time is within the 30-minute window
+
       if (currentDate >= windowStart && currentDate <= windowEnd) {
         this.roomIdForm.get('roomId')?.enable();
-        this.disable = false;
       } else {
-        this.disable = true;
         this.roomIdForm.get('roomId')?.disable();
       }
     }
@@ -81,7 +81,10 @@ export class NextAppointmentComponent implements OnInit {
 
   initialiseForms(): void {
     this.roomIdForm = this.formBuilder.group({
-      roomId: ['', [Validators.required, Validators.pattern(roomIdPattern)]],
+      roomId: [
+        { value: '', disabled: true },
+        [Validators.required, Validators.pattern(roomIdPattern)],
+      ],
     });
   }
 
@@ -100,7 +103,7 @@ export class NextAppointmentComponent implements OnInit {
       return;
     } else {
       this.roomId = this.roomIdForm.value.roomId;
-      // console.log('Room ID:', this.roomId);
+
       this.enterRoom();
     }
   }
@@ -108,8 +111,8 @@ export class NextAppointmentComponent implements OnInit {
   enterRoom() {
     this.expertService
       .share_roomId_through_email({
-        roomId: this.roomId,
-        slotId: this.upcoming_appointment._id,
+        roomId: this.roomId as string,
+        slotId: this.upcoming_appointment!._id,
       })
       .subscribe({
         next: (Response) => {
@@ -123,7 +126,7 @@ export class NextAppointmentComponent implements OnInit {
       this.router.navigate([
         '/expert/expert_video_call_room',
         this.roomId,
-        this.upcoming_appointment._id,
+        this.upcoming_appointment!._id,
       ]);
     } else {
       this.messageService.showErrorToastr('enter the roomId');

@@ -69,19 +69,19 @@ export class CommonService {
     return localStorage.getItem('adminToken') as string;
   }
 
-  private user: any = null;
+  // private user: any = null;
 
-  setGoogleUser(user: any) {
-    this.user = user;
-    localStorage.setItem('user', JSON.stringify(user));
-  }
+  // setGoogleUser(user: any) {
+  //   this.user = user;
+  //   localStorage.setItem('user', JSON.stringify(user));
+  // }
 
-  getGoogleUser() {
-    return this.user || JSON.parse(localStorage.getItem('user') || '{}');
-  }
+  // getGoogleUser() {
+  //   return this.user || JSON.parse(localStorage.getItem('user') || '{}');
+  // }
 
-  logoutGoogleUser() {
-    this.user = null;
-    localStorage.removeItem('user');
-  }
+  // logoutGoogleUser() {
+  //   this.user = null;
+  //   localStorage.removeItem('user');
+  // }
 }

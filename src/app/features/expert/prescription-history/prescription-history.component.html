@@ -44,19 +44,18 @@
 
   <div *ngIf="groupedPrescriptions.length > 0" class="overflow-x-auto">
     <ng-container *ngFor="let group of groupedPrescriptions">
-      <!-- Farmer Name as Section Header -->
+    
       <div class="border p-4 text-center font-bold bg-gray-200">
         <span class="text-gray-600 font-semibold">Farmer:</span>
-        {{ group?.name | capitaliseFirst }}
+        {{ group.name | capitaliseFirst }}
         <button
           (click)="downloadFarmerHistory(group)"
           class="ml-4 bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm"
         >
-          Download {{ group?.name }}'s History
+          Download {{ group.name }}'s History
         </button>
       </div>
 
-      <!-- Table Starts Here -->
       <table class="min-w-full border border-gray-300 rounded-lg shadow-md">
         <thead>
           <tr class="bg-gray-700 text-white uppercase text-sm text-left">

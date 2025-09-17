@@ -40,7 +40,6 @@ export class ExpertListComponent implements OnInit {
     this.getAllExperts();
     this.setupSearchSubscription();
     this.verificationForm.get('status')?.valueChanges.subscribe((value) => {
-      // console.log('Status changed to:', value);
       if (value) this.verificationFormSubmit();
     });
   }
@@ -58,7 +57,7 @@ export class ExpertListComponent implements OnInit {
   setupSearchSubscription() {
     this.searchForm
       .get('searchData')
-      ?.valueChanges.pipe(debounceTime(300)) // Adjust debounce time as needed
+      ?.valueChanges.pipe(debounceTime(300))
       .subscribe((value) => {
         this.filterExperts(value);
       });
@@ -68,7 +67,7 @@ export class ExpertListComponent implements OnInit {
     if (searchTerm) {
       const regex = new RegExp(searchTerm, 'i');
       this.experts_to_display = this.experts.filter(
-        (experts: any) =>
+        (experts) =>
           regex.test(experts.firstName) ||
           regex.test(experts.lastName) ||
           regex.test(experts.email)
@@ -79,39 +78,37 @@ export class ExpertListComponent implements OnInit {
   }
 
   verificationFormSubmit() {
-    // console.log('verification form submit');
-
     if (this.verificationForm.valid) {
       const selectedStatus = this.verificationForm.value.status;
-      // console.log('status:', selectedStatus);
+
       if (selectedStatus === 'all') {
         this.experts_to_display = this.experts;
       } else if (selectedStatus === 'verified') {
         this.experts_to_display = this.experts.filter(
-          (item: any) => item.kyc_verification === true
+          (item: expertData) => item.kyc_verification === true
         );
       } else if (selectedStatus === 'not_verified') {
         this.experts_to_display = this.experts.filter(
-          (item: any) => item.kyc_verification === false
+          (item: expertData) => item.kyc_verification === false
         );
       } else if (selectedStatus === 'blocked') {
         this.experts_to_display = this.experts.filter(
-          (item: any) => item.blocked === true
+          (item: expertData) => item.blocked === true
         );
       } else if (selectedStatus === 'unblocked') {
         this.experts_to_display = this.experts.filter(
-          (item: any) => item.blocked === false
+          (item: expertData) => item.blocked === false
         );
       }
-      // this.cdr.detectChanges();
     }
   }
 
-  kyc_verification(data: any) {
+  kyc_verification(data?: string) {
     const _id = data;
-    // console.log('_id for expert kyc from expert listing component:', _id);
-    localStorage.setItem('expert_id_for_kyc_details', _id);
-    this.router.navigate(['admin/adminHome/checkDocumentsKyc']);
+    if (_id) {
+      localStorage.setItem('expert_id_for_kyc_details', _id);
+      this.router.navigate(['admin/adminHome/checkDocumentsKyc']);
+    }
   }
 
   getAllExperts() {
@@ -120,28 +117,26 @@ export class ExpertListComponent implements OnInit {
       .getExperts(queryparams)
       .subscribe({
         next: (Response) => {
-          // console.log('get expert details', Response);
           this.experts = Response;
           this.experts_to_display = this.experts;
         },
         error: (error) => {
-          console.log('got error');
+          console.error('got error');
           this.messageservice.showErrorToastr(error.message);
         },
       });
   }
 
-  changeStatus(data: any) {
+  changeStatus(data: expertData) {
     const datas = { _id: data._id };
-    // console.log('queryparams:', datas);
+
     this.adminService.expertBlock(datas).subscribe({
-      next: (Response) => {
-        // console.log('status changes');
-        // data.blocked=!data.blocked
-        data.blocked === true ? (data.blocked = false) : (data.blocked = true);
+      next: () => {
+        // data.blocked === true ? (data.blocked = false) : (data.blocked = true);
+        data.blocked = !data.blocked;
       },
       error: (error) => {
-        console.log('got error', error);
+        console.error('got error', error);
         this.messageservice.showErrorToastr(error.message);
       },
     });

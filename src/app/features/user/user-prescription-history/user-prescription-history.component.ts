@@ -4,6 +4,7 @@ import { MessageToasterService } from '../../../shared/services/message-toaster.
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
+import { IPrescription } from '../../../core/models/slotModel';
 
 @Component({
   selector: 'app-user-prescription-history',
@@ -12,17 +13,22 @@ import { TableModule } from 'primeng/table';
   styleUrl: './user-prescription-history.component.css',
 })
 export class UserPrescriptionHistoryComponent implements OnInit {
-  prescription!: any;
-  prescription_to_display!: any;
+  prescription!: IPrescription[];
+  prescription_to_display!: IPrescription[];
+
   constructor(
     private messageService: MessageToasterService,
     private userService: UserService
   ) {}
 
   ngOnInit(): void {
-    this.userService
-      .prescription_history({ userId: localStorage.getItem('userId') })
-      .subscribe({
+    this.getPrescriptions();
+  }
+
+  getPrescriptions() {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      this.userService.prescription_history({ userId: userId }).subscribe({
         next: (response) => {
           this.prescription = response;
           this.prescription_to_display = this.prescription;
@@ -31,9 +37,10 @@ export class UserPrescriptionHistoryComponent implements OnInit {
           this.messageService.showErrorToastr(error.error.message);
         },
       });
+    }
   }
 
-  showDetails(prescription: any) {
-    console.warn(prescription)
+  showDetails(prescription: IPrescription) {
+    console.warn(prescription);
   }
 }

@@ -1,4 +1,4 @@
-// admin.state.ts
+
 export interface adminState {
   adminInfo: adminInfo;
 }

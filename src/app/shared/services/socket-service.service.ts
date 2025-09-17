@@ -1,8 +1,11 @@
+
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
 
 import { Observable } from 'rxjs';
+import { IMessage } from '../../core/models/chatModel';
+import { INotification } from '../../core/models/notificationModel';
 @Injectable({
   providedIn: 'root',
 })
@@ -18,44 +21,39 @@ export class SocketServiceService {
     this.socket.emit('register', userId);
   }
 
-  sendMessage(message: any): void {
-  
+  sendMessage(message: {
+    content: string;
+    chatId: string;
+    userId: string;
+  }): void {
     this.socket.emit('newMessage', message);
   }
 
-  onMessage(): Observable<any> {
+  onMessage(): Observable<IMessage> {
     return new Observable((observer) => {
-      this.socket.on('messageReceived', (data: any) => {
-      
+      this.socket.on('messageReceived', (data) => {
         observer.next(data);
       });
     });
   }
 
-  messageSendfromUser(data: any) {
-  
+  messageSendfromUser(data: IMessage) {
     this.socket.emit('newMessage', data);
   }
 
-  messageSendfromExpert(data: any) {
-  
+  messageSendfromExpert(data: IMessage) {
     this.socket.emit('newMessage', data);
   }
 
-
- 
- 
- onNotification(): Observable<any> {
-  return new Observable((observer) => {
-    this.socket.on('notification', (message) => {
-      observer.next(message);
+  onNotification(): Observable<INotification> {
+    return new Observable((observer) => {
+      this.socket.on('notification', (message) => {
+        observer.next(message);
+      });
     });
-  });
-}
+  }
 
-
-markNotificationsAsRead() {
-  this.socket.emit('notificationsRead');
-}
-
+  markNotificationsAsRead() {
+    this.socket.emit('notificationsRead');
+  }
 }

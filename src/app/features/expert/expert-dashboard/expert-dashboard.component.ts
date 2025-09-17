@@ -7,6 +7,8 @@ import { ExpertService } from '../../../shared/services/expert.service';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { Subscription } from 'rxjs';
+import { BookedSlot } from '../../../core/models/slotModel';
+import { ChartData, ChartOptions } from '../../../core/models/commonModel';
 @AutoUnsubscribe
 @Component({
   selector: 'app-expert-dashboard',
@@ -21,10 +23,10 @@ import { Subscription } from 'rxjs';
   styleUrl: './expert-dashboard.component.css',
 })
 export class ExpertDashboardComponent implements OnInit {
-  data!: any;
-  options!: any;
+  data!: ChartData;
+  options!: ChartOptions;
   revenue!: number;
-  booked_Slots!: any;
+  booked_Slots!: BookedSlot[];
   total_revenue!: number;
   total_users!: number;
   total_booking!: number;
@@ -32,10 +34,10 @@ export class ExpertDashboardComponent implements OnInit {
   total_consulted_bookings!: number;
   total_not_consulted_bookings!: number;
   total_cancelled_bookings!: number;
-  graph_data_based_on: string = 'weekly';
-  total_upcoming_booking_count!:number
+  graph_data_based_on = 'weekly';
+  total_upcoming_booking_count!: number;
 
-  slotDetailsSubscription!:Subscription
+  slotDetailsSubscription!: Subscription;
   constructor(
     private expertService: ExpertService,
     private messageService: MessageToasterService
@@ -50,30 +52,26 @@ export class ExpertDashboardComponent implements OnInit {
   }
 
   get_Slot_Details() {
-    // console.log('  client side');
     const expertId = localStorage.getItem('expertId');
-   this.slotDetailsSubscription= this.expertService
-      .get_expert_dashboard_details({ expertId: expertId })
-      .subscribe({
-        next: (Response) => {
-          // console.log("dashboard details",Response)
-          this.booked_Slots = Response;
-          this.get_dashboard_display_contents();
-          this.graph_details(this.graph_data_based_on);
-        },
-        error: (error) => {
-          this.messageService.showErrorToastr(error.error.message);
-        },
-      });
+    if (expertId) {
+      this.slotDetailsSubscription = this.expertService
+        .get_expert_dashboard_details({ expertId: expertId })
+        .subscribe({
+          next: (Response) => {
+            this.booked_Slots = Response;
+            this.get_dashboard_display_contents();
+            this.graph_details(this.graph_data_based_on);
+          },
+          error: (error) => {
+            this.messageService.showErrorToastr(error.error.message);
+          },
+        });
+    }
   }
 
   get_dashboard_display_contents() {
-    this.total_revenue = this.booked_Slots.reduce((acc: number, data: any) => {
-      if (
-        data.consultation_status === 'consulted' 
-        // ||
-        // data.consultation_status === 'not_consulted'
-      ) {
+    this.total_revenue = this.booked_Slots.reduce((acc: number, data) => {
+      if (data.consultation_status === 'consulted') {
         return (
           acc + (data.slotId.bookingAmount - data.slotId.adminPaymentAmount)
         );
@@ -81,7 +79,7 @@ export class ExpertDashboardComponent implements OnInit {
       return acc;
     }, 0);
     this.total_upcoming_booking = this.booked_Slots.reduce(
-      (acc: number, data: any) => {
+      (acc: number, data) => {
         if (data.consultation_status === 'pending') {
           return (
             acc + (data.slotId.bookingAmount - data.slotId.adminPaymentAmount)
@@ -92,10 +90,10 @@ export class ExpertDashboardComponent implements OnInit {
       0
     );
     const users = new Set(
-      this.booked_Slots.map((item: any) => item.userId.toString())
+      this.booked_Slots.map((item) => item.userId.toString())
     );
     this.total_users = users.size;
-    this.total_booking = this.booked_Slots.reduce((acc: number, data: any) => {
+    this.total_booking = this.booked_Slots.reduce((acc: number, data) => {
       if (
         data.consultation_status == 'pending' ||
         data.consultation_status == 'consulted'
@@ -106,7 +104,7 @@ export class ExpertDashboardComponent implements OnInit {
     }, 0);
 
     this.total_consulted_bookings = this.booked_Slots.reduce(
-      (acc: number, data: any) => {
+      (acc: number, data) => {
         if (data.consultation_status === 'consulted') {
           return acc + 1;
         }
@@ -115,7 +113,7 @@ export class ExpertDashboardComponent implements OnInit {
       0
     );
     this.total_not_consulted_bookings = this.booked_Slots.reduce(
-      (acc: number, data: any) => {
+      (acc: number, data) => {
         if (data.consultation_status === 'not_consulted') {
           return acc + 1;
         }
@@ -124,7 +122,7 @@ export class ExpertDashboardComponent implements OnInit {
       0
     );
     this.total_cancelled_bookings = this.booked_Slots.reduce(
-      (acc: number, data: any) => {
+      (acc: number, data) => {
         if (data.consultation_status === 'cancelled') {
           return acc + 1;
         }
@@ -133,10 +131,9 @@ export class ExpertDashboardComponent implements OnInit {
       0
     );
 
-     // Calculate the number of upcoming bookings
-  this.total_upcoming_booking_count = this.booked_Slots.filter(
-    (data: any) => data.consultation_status === 'pending'
-  ).length;
+    this.total_upcoming_booking_count = this.booked_Slots.filter(
+      (data) => data.consultation_status === 'pending'
+    ).length;
   }
 
   graph_details(graph_data_based_on: string) {
@@ -242,9 +239,9 @@ export class ExpertDashboardComponent implements OnInit {
       notConsulted: new Array(7).fill(0),
     };
 
-    this.booked_Slots.forEach((slot: any) => {
-      const day = new Date(slot.created_time).getDay(); // Get day of the week (0-6, 0 is Sunday)
-      const dayIndex = (day + 6) % 7; // Adjust to (0-6, 0 is Monday)
+    this.booked_Slots.forEach((slot) => {
+      const day = new Date(slot.created_time).getDay();
+      const dayIndex = (day + 6) % 7;
 
       weeklyData.bookings[dayIndex]++;
       if (slot.consultation_status === 'consulted') {
@@ -255,7 +252,6 @@ export class ExpertDashboardComponent implements OnInit {
         weeklyData.notConsulted[dayIndex]++;
       }
     });
-    // console.log('weeklyData:', weeklyData);
 
     return weeklyData;
   }
@@ -274,7 +270,7 @@ export class ExpertDashboardComponent implements OnInit {
       'Nov',
       'Dec',
     ];
-    // console.log('bookedSlots:',this.booked_Slots);
+
     const monthlyData = {
       labels: monthsOfYear,
       bookings: new Array(12).fill(0),
@@ -283,8 +279,8 @@ export class ExpertDashboardComponent implements OnInit {
       notConsulted: new Array(12).fill(0),
     };
 
-    this.booked_Slots.forEach((slot: any) => {
-      const month = new Date(slot.created_time).getMonth(); // Get month (0-11)
+    this.booked_Slots.forEach((slot) => {
+      const month = new Date(slot.created_time).getMonth();
       monthlyData.bookings[month]++;
       if (slot.consultation_status === 'consulted') {
         monthlyData.consulted[month]++;
@@ -294,8 +290,7 @@ export class ExpertDashboardComponent implements OnInit {
         monthlyData.notConsulted[month]++;
       }
     });
-    // console.log(monthlyData);
+
     return monthlyData;
   }
-  
 }

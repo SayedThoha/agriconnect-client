@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createReducer, on } from '@ngrx/store';
 import { user_State } from './user.state';
 import {

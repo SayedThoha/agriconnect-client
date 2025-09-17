@@ -20,6 +20,7 @@ import { CommonModule } from '@angular/common';
 import { ImageUploadService } from '../../../shared/services/image-upload.service';
 import { firstValueFrom } from 'rxjs';
 import { HeaderComponent } from '../../../shared/header/header.component';
+import { Specialisation } from '../../admin/models/expertModel';
 
 @Component({
   selector: 'app-expertsignup',
@@ -38,8 +39,8 @@ export class ExpertsignupComponent implements OnInit {
 
   registration_form!: FormGroup;
   title = 'Expert Registration';
-  specialisation: any = [];
-  url!: any;
+  specialisation!: Specialisation[];
+  url = '';
 
   markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach((control) => {
@@ -105,24 +106,23 @@ export class ExpertsignupComponent implements OnInit {
   getSpecialisation() {
     this.expertService.getSpecialisation().subscribe({
       next: (Response) => {
-        this.specialisation = Response.specialisation;
+        this.specialisation = Response;
       },
     });
   }
 
   onFileSelected(event: Event, controlName: string): void {
     const inputFile = event.target as HTMLInputElement;
-    // console.log(`${controlName} files:`, inputFile.files);
+
     if (inputFile.files && inputFile.files.length > 0) {
       if (controlName === 'profile_picture') {
-        // const file=Array.from(inputFile.files).filter(file => file.type === '.jpg, .jpeg, .png');
         const file = Array.from(inputFile.files).find(
           (file) =>
             file.type === 'image/jpeg' ||
             file.type === 'image/jpg' ||
             file.type === 'image/png'
         );
-        // console.log('Profile picture file:', file);
+
         if (file) {
           this.registration_form.patchValue({
             profile_picture: file,
@@ -137,8 +137,6 @@ export class ExpertsignupComponent implements OnInit {
         const file = Array.from(inputFile.files).filter(
           (file) => file.type === 'application/pdf'
         );
-        // console.log(`${controlName} PDF files:`, file);
-        // Check if the selected file is a PDF
         if (file.length > 0) {
           if (controlName === 'identity_proof') {
             this.registration_form.patchValue({
@@ -164,21 +162,7 @@ export class ExpertsignupComponent implements OnInit {
     }
   }
 
-  
-
   onsubmit() {
-    // console.log('Form values:', this.registration_form.value);
-    // console.log('Files to upload:', {
-    //   profile_picture: this.registration_form.get('profile_picture')?.value,
-    //   identity_proof: this.registration_form.get('identity_proof')?.value,
-    //   expert_licence: this.registration_form.get('expert_licence')?.value,
-    //   qualification_certificate: this.registration_form.get(
-    //     'qualification_certificate'
-    //   )?.value,
-    //   experience_certificate: this.registration_form.get(
-    //     'experience_certificate'
-    //   )?.value,
-    // });
     const password = this.registration_form.value.password;
     if (this.registration_form.invalid) {
       this.markFormGroupTouched(this.registration_form);
@@ -192,7 +176,7 @@ export class ExpertsignupComponent implements OnInit {
       }
 
       const formData = new FormData();
-      const uploadPromises: Promise<any>[] = []; // To store all upload tasks
+      const uploadPromises: Promise<{ fileUrl: string }>[] = [];
 
       const profile_picture =
         this.registration_form.get('profile_picture')?.value;
@@ -213,13 +197,11 @@ export class ExpertsignupComponent implements OnInit {
           'expert-profile-images'
         );
         uploadPromises.push(
-          firstValueFrom(profileUpload$)
-         
-          .then(response => {
-            // console.log('Profile picture uploaded:', response.fileUrl);
+          firstValueFrom(profileUpload$).then((response) => {
             this.registration_form.patchValue({
-              profile_picture: response.fileUrl
+              profile_picture: response.fileUrl,
             });
+            return response;
           })
         );
       }
@@ -230,13 +212,11 @@ export class ExpertsignupComponent implements OnInit {
           'identity_proof'
         );
         uploadPromises.push(
-          firstValueFrom(identityproofUpload$)
-         
-          .then(response => {
-            // console.log('Identity proof uploaded:', response.fileUrl);
+          firstValueFrom(identityproofUpload$).then((response) => {
             this.registration_form.patchValue({
-              identity_proof: response.fileUrl
+              identity_proof: response.fileUrl,
             });
+            return response;
           })
         );
       }
@@ -247,13 +227,12 @@ export class ExpertsignupComponent implements OnInit {
           'expert_licence'
         );
         uploadPromises.push(
-          firstValueFrom(expertLicenseUpload$)
-         
-          .then(response => {
-            // console.log('Expert license uploaded:', response.fileUrl);
+          firstValueFrom(expertLicenseUpload$).then((response) => {
             this.registration_form.patchValue({
-              expert_licence: response.fileUrl
+              expert_licence: response.fileUrl,
             });
+
+            return response;
           })
         );
       }
@@ -261,18 +240,21 @@ export class ExpertsignupComponent implements OnInit {
       if (qualification_certificate) {
         qualification_certificate.forEach((file: File) => {
           const qualificationCertificateUpload$ =
-            this.imageuploadService.uploadFile(file, 'qualification_certificate');
-          // .toPromise();
+            this.imageuploadService.uploadFile(
+              file,
+              'qualification_certificate'
+            );
+
           uploadPromises.push(
-            firstValueFrom(qualificationCertificateUpload$)
-           
-            .then(response => {
-              // console.log('Qualification certificate uploaded:', response.fileUrl);
-              const existingFiles = this.registration_form.get('qualification_certificate')?.value || [];
+            firstValueFrom(qualificationCertificateUpload$).then((response) => {
+              const existingFiles =
+                this.registration_form.get('qualification_certificate')
+                  ?.value || [];
               existingFiles.push(response.fileUrl);
               this.registration_form.patchValue({
-                qualification_certificate: existingFiles
+                qualification_certificate: existingFiles,
               });
+              return response;
             })
           );
         });
@@ -282,18 +264,17 @@ export class ExpertsignupComponent implements OnInit {
         experience_certificate.forEach((file: File) => {
           const experienceCertificateUpload$ =
             this.imageuploadService.uploadFile(file, 'experience_certificate');
-          // .toPromise();
 
           uploadPromises.push(
-            firstValueFrom(experienceCertificateUpload$)
-            
-            .then(response => {
-              // console.log('Experience certificate uploaded:', response.fileUrl);
-              const existingFiles = this.registration_form.get('experience_certificate')?.value || [];
+            firstValueFrom(experienceCertificateUpload$).then((response) => {
+              const existingFiles =
+                this.registration_form.get('experience_certificate')?.value ||
+                [];
               existingFiles.push(response.fileUrl);
               this.registration_form.patchValue({
-                experience_certificate: existingFiles
+                experience_certificate: existingFiles,
               });
+              return response;
             })
           );
         });
@@ -301,13 +282,11 @@ export class ExpertsignupComponent implements OnInit {
 
       Promise.all(uploadPromises)
         .then(() => {
-          // console.log('All uploads completed.');
           Object.keys(this.registration_form.controls).forEach((key) => {
             const control = this.registration_form.get(key);
-           
+
             if (control?.value) {
               if (Array.isArray(control.value)) {
-                // Handle arrays (qualification and experience certificates)
                 control.value.forEach((value: string) => {
                   formData.append(key, value);
                 });
@@ -315,16 +294,10 @@ export class ExpertsignupComponent implements OnInit {
                 formData.append(key, control.value);
               }
             }
-            
-
           });
-          // console.log('formdata:', formData);
 
-          // Call the expert service
           this.expertService.expertRegister(formData).subscribe({
-            next: (Response) => {
-              // console.log(Response);
-
+            next: () => {
               localStorage.setItem(
                 'email',
                 this.registration_form.get('email')?.value
@@ -334,14 +307,12 @@ export class ExpertsignupComponent implements OnInit {
               this.showMessage.showSuccessToastr('Registered successfully');
             },
             error: (error) => {
-              // console.log(error.message);
               console.error('Registration failed:', error);
               this.showMessage.showErrorToastr(error.message);
             },
           });
         })
         .catch((error) => {
-          // console.log(error);
           console.error('File upload failed:', error);
           this.showMessage.showErrorToastr('Error uploading files');
         });
@@ -349,13 +320,10 @@ export class ExpertsignupComponent implements OnInit {
   }
 
   applyTransformation(imageUrl: string, width: number, height: number): string {
-    // Find the index of the upload path to inject the transformation
-    const uploadIndex = imageUrl.indexOf('/upload/') + 8; // 8 is the length of '/upload/'
+    const uploadIndex = imageUrl.indexOf('/upload/') + 8;
 
-    // Create the transformation string to crop the image
     const transformation = `c_fill,g_auto,w_${width},h_${height}`;
 
-    // Insert the transformation into the URL
     const transformedUrl = `${imageUrl.slice(
       0,
       uploadIndex

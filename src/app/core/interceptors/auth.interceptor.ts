@@ -1,24 +1,14 @@
-import {
-  HttpErrorResponse,
-  HttpHandler,
-  HttpHandlerFn,
-  HttpInterceptorFn,
-  HttpRequest,
-} from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { CommonService } from '../../shared/services/common.service';
 import { Router } from '@angular/router';
-import { catchError, Observable, switchMap, throwError } from 'rxjs';
+import { catchError, switchMap, throwError } from 'rxjs';
 import { inject } from '@angular/core';
-
-import { Store } from '@ngrx/store';
-import { MessageToasterService } from '../../shared/services/message-toaster.service';
 import { TokenService } from '../../shared/services/token.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const commonService = inject(CommonService);
   const router = inject(Router);
-  const store = inject(Store);
-  const showMessage = inject(MessageToasterService);
+
   const tokenService = inject(TokenService);
   const s3BucketUrl = 'https://agriconnect.s3.ap-south-1.amazonaws.com';
 
@@ -109,7 +99,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           localStorage.removeItem('adminToken');
         }
 
-        console.log('403 Forbidden - Redirecting to home page');
+        console.error('403 Forbidden - Redirecting to home page');
         router.navigate(['/home']);
       }
 

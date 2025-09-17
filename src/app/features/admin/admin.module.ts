@@ -4,7 +4,6 @@ import { AdminLoginComponent } from './admin-login/admin-login.component';
 import { AdminHomeComponent } from './admin-home/admin-home.component';
 import { RouterModule, Routes } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {
   adminLoggedInGuard,
@@ -17,10 +16,6 @@ import { UserListComponent } from './user-list/user-list.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { KycComponent } from './kyc/kyc.component';
 import { SpecialisationComponent } from './specialisation/specialisation.component';
-import { StoreModule } from '@ngrx/store';
-import { adminReducer } from './store/admin.reducer';
-import { EffectsModule } from '@ngrx/effects';
-import { adminEffects } from './store/admin.effects';
 import { AppointmentHistoryComponent } from './appointment-history/appointment-history.component';
 import { CommisionComponent } from './commision/commision.component';
 import { PaymentHistoryComponent } from './payment-history/payment-history.component';
@@ -47,7 +42,7 @@ const routes: Routes = [
       { path: 'specialisation', component: SpecialisationComponent },
       { path: 'payOut', component: CommisionComponent },
       { path: 'appointment_history', component: AppointmentHistoryComponent },
-      {path:'payment_details',component:PaymentHistoryComponent},
+      { path: 'payment_details', component: PaymentHistoryComponent },
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

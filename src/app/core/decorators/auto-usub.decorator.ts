@@ -1,9 +1,8 @@
-import { OnDestroy } from '@angular/core';
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function AutoUnsubscribe(constructor: any) {
   const original = constructor.prototype.ngOnDestroy;
 
-  constructor.prototype.ngOnDestroy = function () {
+  constructor.prototype.ngOnDestroy = function (...args: unknown[]) {
     for (const prop in this) {
       const property = this[prop];
 
@@ -12,6 +11,6 @@ export function AutoUnsubscribe(constructor: any) {
       }
     }
 
-    original?.apply(this, arguments);
+    original?.apply(this, args);
   };
 }

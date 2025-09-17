@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { INotification } from '../../../core/models/notificationModel';
 
 @Component({
   selector: 'app-expert-notification',
@@ -13,10 +14,10 @@ import { Router } from '@angular/router';
   styleUrl: './expert-notification.component.css',
 })
 export class ExpertNotificationComponent implements OnInit, OnDestroy {
-  notifications: any[] = [];
-  unreadCount: number = 0;
+  notifications: INotification[] = [];
+  unreadCount = 0;
   private notificationSubscription!: Subscription;
-  showNotifications: boolean = false;
+  showNotifications = false;
 
   constructor(
     private socketService: SocketServiceService,
@@ -26,21 +27,14 @@ export class ExpertNotificationComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // console.log('Initializing NotificationComponent...');
-
     const expertId = localStorage.getItem('expertId');
     if (expertId) {
-      // console.log('Registering user for notifications:', expertId);
       this.socketService.register(expertId);
-    } else {
-      // console.warn('expert ID not found! Skipping registration.');
     }
     this.notificationSubscription = this.socketService
       .onNotification()
       .subscribe((message) => {
-        // console.log('New notification received:', message);
         if (!message) {
-          // console.error('Received an empty notification!');
           return;
         }
         this.notifications.unshift(message);
@@ -64,7 +58,6 @@ export class ExpertNotificationComponent implements OnInit, OnDestroy {
       this.expertService
         .getAllNotifications({ expertId: expertId })
         .subscribe((notifications) => {
-          // console.log('Fetched all notifications:', notifications);
           this.notifications = notifications;
           this.unreadCount = this.notifications.filter(
             (n) => !n.isReadByExpert
@@ -107,14 +100,12 @@ export class ExpertNotificationComponent implements OnInit, OnDestroy {
     }
   }
 
-  formatNotificationMessage(notification: any): string {
+  formatNotificationMessage(notification: INotification): string {
     let message = notification.message;
 
-    // Remove "(Coordinated Universal Time)" if present
     message = message.replace(/\(Coordinated Universal Time\)/g, '');
     message = message.replace(/\(UTC\)/g, '');
 
-    // Extract date from message
     const dateMatch = message.match(
       /\w{3} \w{3} \d{1,2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4}/
     );
@@ -134,11 +125,9 @@ export class ExpertNotificationComponent implements OnInit, OnDestroy {
         timeZone: 'Asia/Kolkata',
       });
 
-      // Replace the original date in the message with the formatted date
       message = message.replace(originalDateString, formattedDate);
     }
 
-    // Add Expert Name if Available
     if (notification.userId?.firstName) {
       message = message.replace(
         'Your slot booking',

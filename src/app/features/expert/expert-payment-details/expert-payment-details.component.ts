@@ -11,22 +11,24 @@ import {
 import { debounceTime, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
+import { BookedSlot } from '../../../core/models/slotModel';
+import { AppointmentCodePipe } from '../../../shared/pipes/appointment-code.pipe';
 
 @AutoUnsubscribe
 @Component({
   selector: 'app-expert-payment-details',
-  imports: [ReactiveFormsModule, CommonModule, FormsModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule,AppointmentCodePipe],
   templateUrl: './expert-payment-details.component.html',
   styleUrl: './expert-payment-details.component.css',
 })
 export class ExpertPaymentDetailsComponent implements OnInit {
-  payments!: any;
-  payments_to_display!: any;
-  expertId!: any;
+  payments!: BookedSlot[];
+  payments_to_display!: BookedSlot[];
+  expertId!: string | null;
   searchForm!: FormGroup;
   paymentForm!: FormGroup;
 
-  bookingDetailsSubscription!:Subscription
+  bookingDetailsSubscription!: Subscription;
 
   constructor(
     private messageService: MessageToasterService,
@@ -46,19 +48,22 @@ export class ExpertPaymentDetailsComponent implements OnInit {
   }
 
   getAppointmentDetails() {
-  this.bookingDetailsSubscription= this.expertService
-      .get_booking_details_of_expert({
-        expertId: localStorage.getItem('expertId'),
-      })
-      .subscribe({
-        next: (Response) => {
-          this.payments = Response;
-          this.payments_to_display = this.payments;
-        },
-        error: (error) => {
-          this.messageService.showErrorToastr(error.error.message);
-        },
-      });
+    const expertId = localStorage.getItem('expertId');
+    if (expertId) {
+      this.bookingDetailsSubscription = this.expertService
+        .get_booking_details_of_expert({
+          expertId: expertId,
+        })
+        .subscribe({
+          next: (Response) => {
+            this.payments = Response;
+            this.payments_to_display = this.payments;
+          },
+          error: (error) => {
+            this.messageService.showErrorToastr(error.error.message);
+          },
+        });
+    }
   }
 
   initialiseForms(): void {
@@ -74,7 +79,7 @@ export class ExpertPaymentDetailsComponent implements OnInit {
   setupSearchSubscription() {
     this.searchForm
       .get('searchData')
-      ?.valueChanges.pipe(debounceTime(300)) 
+      ?.valueChanges.pipe(debounceTime(300))
       .subscribe((value) => {
         this.filterExperts(value);
       });
@@ -84,9 +89,9 @@ export class ExpertPaymentDetailsComponent implements OnInit {
     if (searchTerm) {
       const regex = new RegExp(searchTerm, 'i');
       this.payments_to_display = this.payments_to_display.filter(
-        (appointment: any) =>
+        (appointment) =>
           regex.test(appointment.expertId.firstName) ||
-          regex.test(appointment.slotId.bookingAmount) ||
+          regex.test(appointment.slotId.bookingAmount.toString()) ||
           regex.test(appointment.payment_method)
       );
     } else {
@@ -95,7 +100,6 @@ export class ExpertPaymentDetailsComponent implements OnInit {
   }
 
   paymentFormSubmit() {
-    
     if (this.paymentForm.valid) {
       const selectedStatus = this.paymentForm.value.status;
       if (selectedStatus === 'all') {

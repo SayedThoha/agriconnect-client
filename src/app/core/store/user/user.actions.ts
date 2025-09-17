@@ -1,10 +1,10 @@
 import { createAction, props } from '@ngrx/store';
-import { LoginModel, UserInfo, User, UserModel } from '../../models/userModel';
+import { LoginModel, UserInfo } from '../../models/userModel';
 
 export const login_user = '[User page] Load User';
 export const login_user_success = '[User page] Load User Success';
 export const login_user_failure = '[User page] Login Failure';
-export const user_blocked='[User page] User Blocked';
+export const user_blocked = '[User page] User Blocked';
 export const logout_user = '[User page] Logout User';
 
 export const loginUser = createAction(
@@ -22,14 +22,12 @@ export const loginUserFailure = createAction(
   props<{ error: string }>()
 );
 
-
 export const userBlocked = createAction(
   user_blocked,
   props<{ message: string }>()
 );
 
 export const logoutUser = createAction(logout_user);
-
 
 export const refreshUserToken = createAction('[User] Refresh Token');
 
@@ -43,21 +41,25 @@ export const refreshUserTokenFailure = createAction(
   props<{ error: string }>()
 );
 
-
-
-
-
 export const googleLogin = createAction(
   '[Auth] Google Login',
-  props<{  data: { email: string; displayName: string; photoURL: string; uid: string; token: string } }>()
+  props<{
+    data: {
+      email: string;
+      displayName: string;
+      photoURL: string;
+      uid: string;
+      token: string;
+    };
+  }>()
 );
 
-export const googleLoginSuccess = createAction(
-  '[Auth] Google Login Success',
-  props<{ user: any }>()
-);
+// export const googleLoginSuccess = createAction(
+//   '[Auth] Google Login Success',
+//   props<{ user: any }>()
+// );
 
-export const googleLoginFailure = createAction(
-  '[Auth] Google Login Failure',
-  props<{ error: any }>()
-);
+// export const googleLoginFailure = createAction(
+//   '[Auth] Google Login Failure',
+//   props<{ error: any }>()
+// );

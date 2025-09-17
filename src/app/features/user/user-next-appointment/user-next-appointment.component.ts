@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { MessageToasterService } from '../../../shared/services/message-toaster.service';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { Subscription } from 'rxjs';
+import { BookedSlot } from '../../../core/models/slotModel';
 
 @AutoUnsubscribe
 @Component({
@@ -15,9 +16,9 @@ import { Subscription } from 'rxjs';
   styleUrl: './user-next-appointment.component.css',
 })
 export class UserNextAppointmentComponent implements OnInit {
-  roomId!: any;
-  slotDetails!: any;
-  link!: any;
+  roomId!: string;
+  slotDetails: BookedSlot | null = null;
+  link!: string;
   disable = false;
   noAppointmnet = false;
 
@@ -34,30 +35,29 @@ export class UserNextAppointmentComponent implements OnInit {
 
   upcomingAppointment() {
     const userId = localStorage.getItem('userId');
-
-    this.upcomingAppointmentSubscription = this.userService
-      .upcoming_appointment({ _id: userId })
-      .subscribe({
-        next: (Response) => {
-          if (Object.entries(Response).length === 0) {
-            this.slotDetails = 0;
-          } else {
-            this.slotDetails = Response;
-            this.checkAppointmentTime();
-          }
-        },
-        error: (error) => {
-          this.messageService.showErrorToastr(error.error.message);
-        },
-      });
+    if (userId) {
+      this.upcomingAppointmentSubscription = this.userService
+        .upcoming_appointment({ _id: userId })
+        .subscribe({
+          next: (Response) => {
+            if (!Response) {
+              this.slotDetails = null;
+            } else {
+              this.slotDetails = Response;
+              this.checkAppointmentTime();
+            }
+          },
+          error: (error) => {
+            this.messageService.showErrorToastr(error.error.message);
+          },
+        });
+    }
   }
 
   checkAppointmentTime() {
-    if (this.slotDetails && this.slotDetails.dateOfBooking) {
-      const appointmentDate = new Date(
-        this.slotDetails.dateOfBooking
-      ).getTime();
-      const windowStart = appointmentDate;
+    if (this.slotDetails && this.slotDetails.slotId.time) {
+      const appointmentDate = new Date(this.slotDetails.slotId.time).getTime();
+      const windowStart = appointmentDate - 30 * 60 * 1000;
       const windowEnd = appointmentDate + 30 * 60 * 1000;
       const currentDate = new Date().getTime();
 
@@ -72,7 +72,7 @@ export class UserNextAppointmentComponent implements OnInit {
   enterRoom() {
     this.userService
       .getUpcomingSlot({
-        appointmentId: this.slotDetails._id,
+        appointmentId: this.slotDetails!._id,
         roomId: this.roomId,
       })
       .subscribe({
@@ -81,7 +81,7 @@ export class UserNextAppointmentComponent implements OnInit {
             this.router.navigate([
               '/user/user_video_call_room',
               this.roomId,
-              this.slotDetails._id,
+              this.slotDetails!._id,
             ]);
           } else {
             this.messageService.showErrorToastr(

@@ -30,7 +30,7 @@ module.exports = tseslint.config(
         },
       ],
 
-      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-explicit-any": "warn",
       "no-console": ["warn", { allow: ["warn", "error"] }],
     },
   },

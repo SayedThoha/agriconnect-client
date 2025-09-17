@@ -13,6 +13,7 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { DatePickerModule } from 'primeng/datepicker';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { Subscription } from 'rxjs';
+import { Slot } from '../../../core/models/slotModel';
 
 @AutoUnsubscribe
 @Component({
@@ -33,16 +34,15 @@ import { Subscription } from 'rxjs';
 export class UserExpertProfileComponent implements OnInit {
   expertId!: string | null;
   expert!: expertData;
-  slots: any[] = [];
+  slots: Slot[] = [];
   date!: Date;
   minDate!: Date;
   maxDate!: Date;
-  slots_for_display: any[] = [];
+  slots_for_display: Slot[] = [];
   userId!: string | null;
   selectedTab = 'about';
   showModal = false;
-  selectedSlot: any;
-
+  selectedSlot!: Slot;
   expertDetailsSubscription!: Subscription;
   constructor(
     private router: Router,
@@ -55,20 +55,23 @@ export class UserExpertProfileComponent implements OnInit {
     this.date = new Date();
     this.userId = localStorage.getItem('userId');
     this.expertId = this.route.snapshot.paramMap.get('id');
-    this.getExpertDetails(this.expertId);
-    this.getSlots(this.expertId);
+    this.getExpertDetails(this.expertId!);
+    if (this.expertId) {
+      this.getSlots(this.expertId);
+    }
   }
 
-  getSlotsForDisplay(date: any) {
+  getSlotsForDisplay(date: Date | null) {
+    if (!date) return;
     const selectedDate = new Date(date.setHours(0, 0, 0, 0));
-    this.slots_for_display = this.slots.filter((slot: any) => {
+    this.slots_for_display = this.slots.filter((slot) => {
       const DateinSlot = new Date(slot.time);
       const midnightDateinSlot = new Date(DateinSlot.setHours(0, 0, 0, 0));
       return midnightDateinSlot.getTime() === selectedDate.getTime();
     });
   }
 
-  getExpertDetails(data: string | null) {
+  getExpertDetails(data: string) {
     this.expertDetailsSubscription = this.userService
       .getExpertDetails({ _id: data })
       .subscribe({
@@ -81,7 +84,7 @@ export class UserExpertProfileComponent implements OnInit {
       });
   }
 
-  getSlots(expertId: any) {
+  getSlots(expertId: string) {
     this.userService.getSlots({ _id: expertId }).subscribe({
       next: (Response) => {
         this.slots = Response;
@@ -98,7 +101,7 @@ export class UserExpertProfileComponent implements OnInit {
     });
   }
 
-  confirmSlot(slot: any) {
+  confirmSlot(slot: Slot) {
     this.selectedSlot = slot;
     this.showModal = true;
   }
@@ -112,7 +115,7 @@ export class UserExpertProfileComponent implements OnInit {
     this.showModal = false;
   }
 
-  slotBook(id: any) {
+  slotBook(id: string) {
     this.userService
       .addSlot({ _id: id, expertId: this.expertId, userId: this.userId })
       .subscribe({

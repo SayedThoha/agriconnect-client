@@ -3,6 +3,6 @@ export interface userdata {
   firstName: string;
   lastName: string;
   email: string;
-  is_verified: string;
-  blocked: string;
+  is_verified: boolean;
+  blocked: boolean;
 }

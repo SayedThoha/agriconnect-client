@@ -2,6 +2,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
+import { HttpParamsInput } from '../../core/models/commonModel';
+import { IChat, IMessage } from '../../core/models/chatModel';
 
 @Injectable({
   providedIn: 'root',
@@ -11,47 +13,56 @@ export class ChatServiceService {
 
   private apiUrl: string = environment.apiUrl;
 
-  accessChat(data: any): Observable<any> {
+  accessChat(data: HttpParamsInput): Observable<IChat> {
     const httpParams = new HttpParams({ fromObject: data });
-    return this._http.get(`${this.apiUrl}/user/userAccessChat`, {
+    return this._http.get<IChat>(`${this.apiUrl}/user/userAccessChat`, {
       params: httpParams,
     });
   }
 
-  userFetchAllChat(data: any): Observable<any> {
+  userFetchAllChat(data: HttpParamsInput): Observable<IChat[]> {
     const httpParams = new HttpParams({ fromObject: data });
-    return this._http.get(`${this.apiUrl}/user/userFetchAllChat`, {
+    return this._http.get<IChat[]>(`${this.apiUrl}/user/userFetchAllChat`, {
       params: httpParams,
     });
   }
 
-  sendMessage(data: object): Observable<any> {
-    return this._http.post<any>(`${this.apiUrl}/user/sendMessage`, data);
+  sendMessage(data: object): Observable<IMessage> {
+    return this._http.post<IMessage>(`${this.apiUrl}/user/sendMessage`, data);
   }
 
-  userFetchAllMessages(data: any): Observable<any> {
+  userFetchAllMessages(data: HttpParamsInput): Observable<IMessage[]> {
     const httpParams = new HttpParams({ fromObject: data });
-    return this._http.get(`${this.apiUrl}/user/userFetchAllMessages`, {
-      params: httpParams,
-    });
+    return this._http.get<IMessage[]>(
+      `${this.apiUrl}/user/userFetchAllMessages`,
+      {
+        params: httpParams,
+      }
+    );
   }
 
-  expert_accessed_chats(data: any): Observable<any> {
+  expert_accessed_chats(data: HttpParamsInput): Observable<IChat[]> {
     const httpParams = new HttpParams({ fromObject: data });
-    return this._http.get(`${this.apiUrl}/expert/expert_accessed_chats`, {
-      params: httpParams,
-    });
+    return this._http.get<IChat[]>(
+      `${this.apiUrl}/expert/expert_accessed_chats`,
+      {
+        params: httpParams,
+      }
+    );
   }
 
-  expertFetchAllMessages(data: any): Observable<any> {
+  expertFetchAllMessages(data: HttpParamsInput): Observable<IMessage[]> {
     const httpParams = new HttpParams({ fromObject: data });
-    return this._http.get(`${this.apiUrl}/expert/expertFetchAllMessages`, {
-      params: httpParams,
-    });
+    return this._http.get<IMessage[]>(
+      `${this.apiUrl}/expert/expertFetchAllMessages`,
+      {
+        params: httpParams,
+      }
+    );
   }
 
-  expertSendMessage(data: object): Observable<any> {
-    return this._http.post<any>(
+  expertSendMessage(data: object): Observable<IMessage> {
+    return this._http.post<IMessage>(
       `${this.apiUrl}/expert/expertSendMessage`,
       data
     );

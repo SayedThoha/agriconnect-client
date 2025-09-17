@@ -14,14 +14,14 @@ import { FormsModule } from '@angular/forms';
 export class WalletComponent implements OnInit {
   constructor(private userService: UserService) {}
 
-  wallet!: any;
+  wallet!: number;
 
   ngOnInit(): void {
     const userId = localStorage.getItem('userId');
     if (userId) {
       this.userService.getuserDetails({ _id: userId }).subscribe({
         next: (Response) => {
-          this.wallet = Response.wallet;
+          this.wallet = Response.wallet!;
         },
       });
     }

@@ -13,6 +13,8 @@ import { MessageToasterService } from '../../../shared/services/message-toaster.
 import { debounceTime, Subscription } from 'rxjs';
 import { AutoUnsubscribe } from '../../../core/decorators/auto-usub.decorator';
 import { AppointMent } from '../../admin/models/appointmentModel';
+import { AppointmentCodePipe } from '../../../shared/pipes/appointment-code.pipe';
+
 @AutoUnsubscribe
 @Component({
   selector: 'app-booking-details',
@@ -21,6 +23,7 @@ import { AppointMent } from '../../admin/models/appointmentModel';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
+    AppointmentCodePipe
   ],
   templateUrl: './booking-details.component.html',
   styleUrl: './booking-details.component.css',
@@ -30,7 +33,7 @@ export class BookingDetailsComponent implements OnInit {
   prescriptionModal!: PrescriptionModalComponent;
   userId!: string;
   appointments!: AppointMent[];
-  appointments_to_display!: any;
+  appointments_to_display!: AppointMent[];
   searchForm!: FormGroup;
   consultationForm!: FormGroup;
   prescription_id: string | null = null;
@@ -51,19 +54,20 @@ export class BookingDetailsComponent implements OnInit {
 
   getAppointmentDetails() {
     const userId = localStorage.getItem('userId');
+    if (userId) {
+      this.bookingDetailsSubscription = this.userService
+        .get_booking_details_of_user({ userId: userId })
+        .subscribe({
+          next: (Response) => {
+            this.appointments = Response;
 
-    this.bookingDetailsSubscription = this.userService
-      .get_booking_details_of_user({ userId: userId })
-      .subscribe({
-        next: (Response) => {
-          this.appointments = Response;
-
-          this.appointments_to_display = this.appointments;
-        },
-        error: (error) => {
-          this.messageService.showErrorToastr(error.error.message);
-        },
-      });
+            this.appointments_to_display = this.appointments;
+          },
+          error: (error) => {
+            this.messageService.showErrorToastr(error.error.message);
+          },
+        });
+    }
   }
 
   openPrescriptionModal(prescription_id: string | null) {
@@ -100,7 +104,7 @@ export class BookingDetailsComponent implements OnInit {
     if (searchTerm) {
       const regex = new RegExp(searchTerm, 'i');
       this.appointments_to_display = this.appointments_to_display.filter(
-        (appointment: any) =>
+        (appointment) =>
           regex.test(appointment.userId.firstName) ||
           regex.test(appointment.userId.lastName) ||
           regex.test(appointment.expertId.firstName) ||
@@ -141,7 +145,8 @@ export class BookingDetailsComponent implements OnInit {
     }
   }
 
-  changeStatus(data: any) {
+  changeStatus(data: AppointMent) {
+    alert('confirm to cancel the appointment');
     const slotId = data.slotId._id;
     this.userService.cancelSlot({ slotId: slotId }).subscribe({
       next: (Response) => {
@@ -156,14 +161,12 @@ export class BookingDetailsComponent implements OnInit {
   }
 
   updateInTable(slotId: string) {
-    this.appointments_to_display = this.appointments_to_display.map(
-      (item: { slotId: any; consultation_status: string }) => {
-        if (item.slotId._id === slotId) {
-          item.consultation_status = 'cancelled';
-        }
-        return item;
+    this.appointments_to_display = this.appointments_to_display.map((item) => {
+      if (item.slotId._id === slotId) {
+        item.consultation_status = 'cancelled';
       }
-    );
+      return item;
+    });
     this.cdr.detectChanges();
   }
 }

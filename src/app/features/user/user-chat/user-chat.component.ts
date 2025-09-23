@@ -73,13 +73,11 @@ export class UserChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.userId = localStorage.getItem('userId')!;
     this.getExpertDetails();
     this.initialiseForms();
-    this.userId = localStorage.getItem('userId')!;
     this.userFetchAllChat();
     this.setupSearchSubscription();
-    this.joinChat();
-    this.scrollToBottom();
     this.messageSubscription();
   }
 
@@ -87,7 +85,6 @@ export class UserChatComponent implements OnInit, OnDestroy {
     this.searchForm = this.formBuilder.group({
       searchData: ['', Validators.required],
     });
-
     this.chatForm = this.formBuilder.group({
       message: ['', Validators.required],
     });
@@ -105,6 +102,7 @@ export class UserChatComponent implements OnInit, OnDestroy {
       .subscribe((res) => {
         if (res.chat === this.chatId) {
           this.messages.unshift(res);
+          this.scrollToBottom();
           this.chats.filter((chat) => {
             if (chat._id === this.chatId) {
               chat.latestMessage!.content = res.content;
@@ -178,6 +176,7 @@ export class UserChatComponent implements OnInit, OnDestroy {
   selectExpert(chat: IChat): void {
     this.socketService.register(this.userId);
     this.chatId = chat._id;
+    this.joinChat();
     this.fetchAllMessages(chat._id);
     this.selectedExpert = `${chat.expert.firstName} ${chat.expert.lastName}`;
     this.profile_picture = chat.expert.profile_picture;
@@ -216,8 +215,10 @@ export class UserChatComponent implements OnInit, OnDestroy {
 
   scrollToBottom(): void {
     try {
-      this.chatContainer.nativeElement.scrollTop =
-        this.chatContainer.nativeElement.scrollHeight;
+      setTimeout(() => {
+        this.chatContainer.nativeElement.scrollTop =
+          this.chatContainer.nativeElement.scrollHeight;
+      }, 50);
     } catch (err) {
       console.error(err);
     }

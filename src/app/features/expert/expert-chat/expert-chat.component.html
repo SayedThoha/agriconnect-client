@@ -46,7 +46,6 @@
         <div class="flex-1 p-4 overflow-y-auto">
           <h2 class="text-xl font-semibold mb-4">Messages</h2>
           <div class="space-y-4">
-          
             <div
               *ngFor="let chat of filteredChats"
               class="flex items-center p-2 bg-gray-100 rounded-md cursor-pointer"
@@ -144,7 +143,6 @@
               class="space-y-4"
               *ngFor="let message of messages; let i = index; let isLast = last"
             >
-              <!-- Messages -->
               <div
                 [ngClass]="{
                   'justify-end pb-2 mt-2': message.senderModel === 'Expert',

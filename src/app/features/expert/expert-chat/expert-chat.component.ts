@@ -65,12 +65,10 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.intialiseForms();
     this.expertId = localStorage.getItem('expertId');
+    this.intialiseForms();
     this.fetch_all_chats();
     this.setupSearchSubscription();
-    this.joinChat();
-    this.scrollToBottom();
     this.messageSubscription();
   }
 
@@ -89,13 +87,14 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
       this.socket.emit('joinChat', this.chatId);
     }
   }
-  
+
   messageSubscription() {
     this.onMessageSubscription = this.socketService
       .onMessage()
       .subscribe((res) => {
         if (res.chat === this.chatId) {
           this.messages.unshift(res);
+          this.scrollToBottom();
           this.chats.filter((chat) => {
             if (chat._id === this.chatId) {
               if (chat.latestMessage) {
@@ -148,6 +147,7 @@ export class ExpertChatComponent implements OnInit, OnDestroy {
       this.socketService.register(this.expertId);
     }
     this.chatId = chat._id;
+    this.joinChat();
     this.fetchAllMessages(chat._id);
     this.selectedExpert = `${chat.user.firstName} ${chat.user.lastName}`;
     this.profile_picture = chat.user.profile_picture!;
